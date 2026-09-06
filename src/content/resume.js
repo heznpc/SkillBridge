@@ -207,6 +207,19 @@
     saveRecent();
   }
 
+  // Academy publishes its lesson title after the route changes. Refresh the
+  // existing row when that title arrives without recording another visit or
+  // losing the saved reading position.
+  function refreshCurrentTitle() {
+    if (retentionBlocked() || !isLessonPage()) return;
+    const entry = sb.identity ? sb.identity.find(recent, location) : recent.find((r) => r.url === location.href);
+    const title = (document.title || '').trim();
+    if (!entry || !title || title === entry.title) return;
+    entry.title = title;
+    saveRecent();
+    renderList();
+  }
+
   // Keep the current lesson's scroll position up to date (debounced persist).
   // Keyed to location.href *at scroll time*, so SPA navigation never writes one
   // lesson's scroll onto another.
@@ -267,7 +280,10 @@
       if (wasAssessment || routeChangedBeforePoll) recordVisit();
     });
     setInterval(() => {
-      if (location.href === lastSeenUrl) return;
+      if (location.href === lastSeenUrl) {
+        refreshCurrentTitle();
+        return;
+      }
       lastSeenUrl = location.href;
       if (sb.certDisabled) removeCurrentVisit();
       else recordVisit();

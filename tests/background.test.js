@@ -12,16 +12,17 @@ const { readProductionSource } = require('./helpers/production-source');
 
 const runtimeMessageListeners = [];
 const runtimeConnectListeners = [];
+const runtimeInstallListeners = [];
 
 // Minimal chrome mock for background.js
 global.chrome = {
   runtime: { id: 'test', getManifest: () => ({ version: '1.0.0' }), getURL: (p) => p },
-  alarms: { create: () => {}, onAlarm: { addListener: () => {} } },
+  alarms: { create: () => {}, clear: () => {}, onAlarm: { addListener: () => {} } },
   action: { setBadgeText: () => {}, setBadgeBackgroundColor: () => {} },
   storage: { local: { set: () => {} }, onChanged: { addListener: () => {} } },
   tabs: { query: () => Promise.resolve([]) },
 };
-global.chrome.runtime.onInstalled = { addListener: () => {} };
+global.chrome.runtime.onInstalled = { addListener: (fn) => runtimeInstallListeners.push(fn) };
 global.chrome.runtime.onMessage = { addListener: (fn) => runtimeMessageListeners.push(fn) };
 global.chrome.runtime.onConnect = { addListener: (fn) => runtimeConnectListeners.push(fn) };
 
@@ -76,6 +77,26 @@ const {
 } = fns;
 
 // ── Tests ──────────────────────────────────────────────────────
+
+describe('install preferences', () => {
+  test('seeds a new profile but preserves preferences on repeated installation', async () => {
+    const previousLocal = chrome.storage.local;
+    const store = {};
+    chrome.storage.local = {
+      get: async () => ({ ...store }),
+      set: async (values) => Object.assign(store, values),
+    };
+    try {
+      await runtimeInstallListeners[0]({ reason: 'install' });
+      expect(store).toEqual({ targetLanguage: 'en', autoTranslate: false });
+      Object.assign(store, { targetLanguage: 'ko', autoTranslate: true });
+      await runtimeInstallListeners[0]({ reason: 'install' });
+      expect(store).toEqual({ targetLanguage: 'ko', autoTranslate: true });
+    } finally {
+      chrome.storage.local = previousLocal;
+    }
+  });
+});
 
 describe('gtLangCode', () => {
   test('maps zh-CN to zh-CN', () => {

@@ -278,15 +278,22 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 
 // Install handler
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   // Register maintenance alarms on install or update
   registerAlarms();
 
   if (details.reason === 'install') {
-    chrome.storage.local.set({
-      targetLanguage: 'en',
-      autoTranslate: false,
-    });
+    // Unpacked extensions can receive another install event when loaded into
+    // an existing profile. Seed missing defaults without erasing preferences.
+    try {
+      const stored = await chrome.storage.local.get(['targetLanguage', 'autoTranslate']);
+      const defaults = {};
+      if (stored.targetLanguage === undefined) defaults.targetLanguage = 'en';
+      if (stored.autoTranslate === undefined) defaults.autoTranslate = false;
+      if (Object.keys(defaults).length) await chrome.storage.local.set(defaults);
+    } catch (error) {
+      console.warn('[SkillBridge] Could not initialize preferences:', error);
+    }
   }
 });
 

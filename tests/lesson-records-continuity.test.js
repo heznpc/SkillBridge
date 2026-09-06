@@ -158,7 +158,7 @@ function makeSb(location) {
  */
 function loadModule(
   file,
-  { sb, location, chrome: chromeStub, windowExtras = {}, document: documentObject = document },
+  { sb, location, chrome: chromeStub, windowExtras = {}, document: documentObject = document, interval = () => 0 },
 ) {
   const fakeWindow = Object.assign(
     {
@@ -188,7 +188,7 @@ function loadModule(
     location,
     chromeStub,
     console,
-    () => 0,
+    interval,
     (cb) => cb(),
     constants.A11Y_LABELS,
     constants.NOTE_LABELS,
@@ -361,6 +361,39 @@ describe('bookmarks across platforms', () => {
 });
 
 describe('recent lessons across platforms', () => {
+  test('late lesson titles replace the loading title without losing the saved position', async () => {
+    const here = new URL(PAIR.academy);
+    const chromeStub = makeChrome({
+      sb_recent: [{ url: PAIR.academy, title: 'Earlier title', scrollY: 1450, positions: { academy: 1450 }, ts: 1 }],
+    });
+    const sb = makeSb(here);
+    const previousTitle = document.title;
+    let poll;
+    try {
+      document.title = 'Claude Academy';
+      loadModule('resume.js', {
+        sb,
+        location: here,
+        chrome: chromeStub,
+        interval: (cb) => {
+          poll = cb;
+        },
+      });
+      await flush();
+      document.title = 'What is Claude? · Claude 101 · Claude Academy';
+      poll();
+      await flush();
+      expect(chromeStub._store.sb_recent).toHaveLength(1);
+      expect(chromeStub._store.sb_recent[0]).toMatchObject({
+        title: document.title,
+        scrollY: 1450,
+        positions: { academy: 1450 },
+      });
+    } finally {
+      document.title = previousTitle;
+    }
+  });
+
   test('an Academy lesson is recorded at all — the Skilljar path shape misses it', async () => {
     // /courses/<c>/<slug> carries no numeric id, so the old lesson-page test
     // matched nothing on Academy and no visit was ever recorded there.
