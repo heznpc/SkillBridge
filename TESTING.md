@@ -40,7 +40,7 @@ Coverage report is generated at `coverage/lcov-report/index.html`.
 ### Checked runtime boundaries
 
 `npm run typecheck` uses strict JavaScript checking for the learning-record
-protocol/client, translation request/response validators, page/language tokens
+protocol/client and content-script transport, translation request/response validators, page/language tokens
 and correction interface. `tests/types/runtime-boundaries.ts` asserts that
 invalid calls are rejected. The remaining legacy JavaScript is outside this
 initial scope; this command does not establish type safety for the whole app.
@@ -49,12 +49,28 @@ initial scope; this command does not establish type safety for the whole app.
 
 `tests/learning-records.test.js` covers concurrent mutations, stale revisions,
 durable acknowledgements, worker-restart replay, legacy backup and capacity.
+It also checks that malformed feedback cannot be acknowledged and discarded
+on the next read, and that a failing UI subscriber cannot turn an already
+committed save into a retryable failure. The notes and report UI suites cover
+delayed save responses while the learner opens a new draft; the old response
+must leave the newer editor intact. Report reads recover after a transient
+storage error without requiring a page reload.
+These UI harnesses instrument the loaded production source so execution counts
+toward coverage. CI enforces per-file coverage floors for the record store,
+client, correction index, runtime contracts, notes and Reports panel.
 The default E2E runner includes `multitab-records.spec.js` for two actual
 extension tabs and `correction-workflow.spec.js` for review, language-scoped
 application, cross-tab refresh and rollback. `upgrade-from-legacy.spec.js`
 also seeds pre-identifier records and checks content, backup and stable IDs
 after reload. These fixture checks do not replace a signed-in live Academy
 lesson and Tutor round trip before choosing a CWS release candidate.
+The content-world test bridge preserves nested `null` values through JSON text,
+and correction tests wait for the actual UI to finish initialization before
+changing language.
+
+The release pipeline includes `typecheck` and compares every archived file's
+SHA-256 against the built directory. A matching ZIP file list alone cannot
+prove that an older bundle was not packaged by mistake.
 
 ### Verbose output (see individual test names)
 

@@ -22,7 +22,8 @@
     "src/lib/runtime-contracts.js",
     "src/lib/translation-corrections.js",
     "tests/types/**/*.ts",
-    "src/content/translation-corrections.js"
+    "src/content/translation-corrections.js",
+    "src/content/learning-records.js"
   ],
   "exclude": ["node_modules", "dist", "src/bridge/puter.js"]
 }

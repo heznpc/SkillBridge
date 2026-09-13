@@ -76,6 +76,42 @@
       "!src/bridge/puter.js"
     ],
     "coverageThreshold": {
+      "./src/shared/learning-records.js": {
+        "statements": 90,
+        "branches": 85,
+        "functions": 90,
+        "lines": 90
+      },
+      "./src/lib/learning-record-client.js": {
+        "statements": 85,
+        "branches": 80,
+        "functions": 85,
+        "lines": 90
+      },
+      "./src/lib/translation-corrections.js": {
+        "statements": 90,
+        "branches": 80,
+        "functions": 80,
+        "lines": 90
+      },
+      "./src/lib/runtime-contracts.js": {
+        "statements": 80,
+        "branches": 80,
+        "functions": 80,
+        "lines": 85
+      },
+      "./src/content/notes.js": {
+        "statements": 65,
+        "branches": 45,
+        "functions": 60,
+        "lines": 75
+      },
+      "./src/content/term-reports.js": {
+        "statements": 65,
+        "branches": 55,
+        "functions": 80,
+        "lines": 65
+      },
       "./scripts/lib/**/*.js": {
         "statements": 90,
         "branches": 75,

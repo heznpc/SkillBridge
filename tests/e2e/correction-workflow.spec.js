@@ -16,6 +16,10 @@ test('reviewed corrections apply only to the exact source/language and rollback 
       pages.push(page);
       await page.goto(urls[i]);
       await expect.poll(async () => (await op(i, 'snapshot'))?.methods?.gt?.processOneElement).toBe('function');
+      // The namespace appears before async initialization finishes. A learner
+      // cannot switch from the sidebar until the FAB is ready; respect that
+      // boundary instead of racing the initial language/cache read on CI.
+      await expect(page.locator('#skillbridge-fab')).toBeVisible();
       await op(i, 'switchLanguage', 'ko');
     }
     const baseline = '이 강의는 프롬프트 엔지니어링의 기초와 Claude가 사용자 요청을 처리하는 방법을 다룹니다.';

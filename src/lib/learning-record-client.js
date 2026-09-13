@@ -14,6 +14,16 @@
     const snapshots = new Map();
     /** @type {Map<Collection, Set<(snapshot: Snapshot) => void>>} */
     const listeners = new Map();
+    /** @param {(snapshot: Snapshot) => void} listener @param {Snapshot} snapshot */
+    function notify(listener, snapshot) {
+      try {
+        listener(snapshot);
+      } catch (error) {
+        // The mutation is already durable. A view error must not ask the
+        // caller to retry that mutation or prevent other views from updating.
+        console.warn('[SkillBridge] Learning record view failed:', error);
+      }
+    }
     /** @param {Collection} collection @param {Operation} operation */
     async function request(collection, operation) {
       const requestId = makeId();
@@ -25,7 +35,7 @@
         throw new Error('Invalid learning record response');
       if (response.version >= (snapshots.get(collection)?.version ?? -1)) {
         snapshots.set(collection, response);
-        for (const listener of listeners.get(collection) || []) listener(response);
+        for (const listener of listeners.get(collection) || []) notify(listener, response);
       }
       return response;
     }
@@ -38,7 +48,7 @@
       }
       set.add(listener);
       const current = snapshots.get(collection);
-      if (current) listener(current);
+      if (current) notify(listener, current);
       return () => {
         set.delete(listener);
       };

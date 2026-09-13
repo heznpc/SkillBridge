@@ -1,21 +1,30 @@
+// @ts-check
 /** Connect the small panel record interface to the extension service worker. */
 (function () {
   'use strict';
-  const sb = window._sb;
+  const sb = /** @type {import('../types/learning-records').RecordPage | undefined} */ (Reflect.get(window, '_sb'));
   if (!sb) return;
-  const client = globalThis.SB_LEARNING_RECORD_CLIENT.createClient({
+  const core = /** @type {typeof import('../lib/learning-record-client')} */ (
+    Reflect.get(globalThis, 'SB_LEARNING_RECORD_CLIENT')
+  );
+  const chromeApi = /** @type {import('../types/learning-records').ChromeRecordsApi} */ (
+    Reflect.get(globalThis, 'chrome')
+  );
+  const client = core.createClient({
     send: (request) =>
       new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage(request, (response) => {
-          const error = chrome.runtime.lastError;
+        chromeApi.runtime.sendMessage(request, (response) => {
+          const error = chromeApi.runtime.lastError;
           if (error) reject(new Error(error.message));
+          else if (!response) reject(new Error('Learning record acknowledgement was lost'));
           else resolve(response);
         });
       }),
   });
   sb.records = client;
+  /** @type {Record<string, import('../types/learning-records').Collection>} */
   const collections = { sb_term_reports: 'reports', sb_bookmarks: 'bookmarks', sb_notes: 'notes' };
-  chrome.storage.onChanged.addListener((changes, area) => {
+  chromeApi.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local') return;
     for (const [key, collection] of Object.entries(collections)) {
       if (changes[key])
@@ -26,7 +35,8 @@
     console.warn('[SkillBridge] Learning record:', error.message);
     const target = host || sb.$id('si18n-subpanel');
     if (!target) return;
-    let message = target.querySelector('[data-record-error]');
+    /** @type {HTMLParagraphElement | null} */
+    let message = target.querySelector('p[data-record-error]');
     if (!message) {
       message = document.createElement('p');
       message.dataset.recordError = 'true';

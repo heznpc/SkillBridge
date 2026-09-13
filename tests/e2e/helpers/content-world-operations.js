@@ -44,7 +44,10 @@ const SERVICE_WORKER_READY_TIMEOUT_MS = 20_000;
  * @param {any} [arg]
  */
 async function evalInContentWorld(context, op, arg, targetUrl = null) {
-  const safeArg = arg === undefined ? null : arg;
+  // Chrome's executeScript argument conversion can omit nested null fields.
+  // Carry JSON text across both boundaries so malformed mutations under test
+  // arrive unchanged instead of accidentally becoming an empty valid patch.
+  const safeArg = JSON.stringify(arg === undefined ? null : arg);
   for (let attempt = 0; attempt < 3; attempt++) {
     let sw = context.serviceWorkers()[0];
     if (!sw) {
@@ -1245,7 +1248,7 @@ async function evalInContentWorld(context, op, arg, targetUrl = null) {
                 },
               };
               if (!ops[opNameInner]) throw new Error('Unknown op: ' + opNameInner);
-              return await ops[opNameInner](payloadInner);
+              return await ops[opNameInner](JSON.parse(payloadInner));
             },
             args: [opName, payload],
           });

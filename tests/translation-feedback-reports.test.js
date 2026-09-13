@@ -6,9 +6,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const { readProductionSource } = require('./helpers/production-source');
 
 const CORE_SOURCE = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', 'translation-feedback.js'), 'utf8');
-const SOURCE = fs.readFileSync(path.join(__dirname, '..', 'src', 'content', 'term-reports.js'), 'utf8');
+const SOURCE = readProductionSource('src', 'content', 'term-reports.js');
 
 function loadIdentityLib() {
   const fake = { module: { exports: {} } };
@@ -58,6 +59,7 @@ function makeHarness({
   identity,
   deferSets = false,
   failSets = false,
+  failGets = false,
   pageUrl = 'https://academy.claude.com/courses/course/lesson',
 } = {}) {
   const store = clone(initial);
@@ -65,6 +67,7 @@ function makeHarness({
   const setCalls = [];
   const downloads = [];
   let shouldFailSets = failSets;
+  let shouldFailGets = failGets;
   const location = new URL(pageUrl);
 
   const chromeStub = {
@@ -73,6 +76,12 @@ function makeHarness({
       local: {
         get(keys, callback) {
           events.push('storage.get');
+          if (shouldFailGets) {
+            chromeStub.runtime.lastError = { message: 'temporary read failure' };
+            callback({});
+            chromeStub.runtime.lastError = null;
+            return;
+          }
           const result = {};
           for (const key of [].concat(keys)) if (key in store) result[key] = clone(store[key]);
           callback(result);
@@ -181,6 +190,9 @@ function makeHarness({
     setFailure(value) {
       shouldFailSets = Boolean(value);
     },
+    setReadFailure(value) {
+      shouldFailGets = Boolean(value);
+    },
     store,
   };
 }
@@ -195,6 +207,30 @@ beforeEach(() => {
 });
 
 describe('translation feedback report schema', () => {
+  test('recovers from an initial read failure without reloading or losing prior reports', async () => {
+    const harness = makeHarness({
+      failGets: true,
+      initial: {
+        sb_term_reports: [{ wrongText: 'Keep this earlier report', correction: '', ts: 1 }],
+      },
+    });
+    await flush();
+    harness.setReadFailure(false);
+    await expect(
+      harness.sb._chat.recordTranslationFeedback(
+        {
+          originalText: 'New source',
+          translatedText: 'New translation',
+          selectedText: 'New translation',
+        },
+        'positive',
+      ),
+    ).resolves.toMatchObject({ translatedText: 'New translation' });
+    harness.sb._chat.toggleReportsPanel();
+    await flush();
+    expect(harness.store.sb_term_reports).toHaveLength(2);
+    expect(document.querySelectorAll('.si18n-report-item')).toHaveLength(2);
+  });
   test('renders a legacy wrongText row through the real Reports reader', async () => {
     const harness = makeHarness({
       initial: {
@@ -552,6 +588,22 @@ describe('recording translation feedback', () => {
     expect(harness.setCalls).toHaveLength(1);
     harness.setCalls[0].resolve();
     await flush();
+    expect(harness.store.sb_term_reports).toHaveLength(1);
+  });
+
+  test('an earlier pending save cannot erase a newly opened report draft', async () => {
+    const harness = makeHarness({ deferSets: true });
+    harness.sb._chat.toggleReportsPanel();
+    await flush();
+    document.getElementById('si18n-report-add').click();
+    document.getElementById('si18n-report-wrong').value = 'First report';
+    document.getElementById('si18n-report-save').click();
+    await flush();
+    document.getElementById('si18n-report-add').click();
+    document.getElementById('si18n-report-wrong').value = 'New draft';
+    harness.setCalls[0].resolve();
+    await flush();
+    expect(document.getElementById('si18n-report-wrong')?.value).toBe('New draft');
     expect(harness.store.sb_term_reports).toHaveLength(1);
   });
 

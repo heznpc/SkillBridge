@@ -48,17 +48,12 @@
   // ACTIONS
   // ============================================================
 
-  // The record the editor is currently showing. A save replaces THIS note and
-  // nothing else — see upsertCurrent for why that matters.
-  let editingNote = null;
-  let editingPage = null;
-
-  function currentNoteText() {
+  // Each mounted editor owns its revision and page; an older pending save
+  // cannot change the identity or draft of an editor opened after it.
+  function currentNote() {
     const existing = sb.identity ? sb.identity.find(notes, location) : notes.find((n) => n.url === location.href);
-    editingNote = existing || null;
     const page = { url: location.href, title: (document.title || '').trim() || location.href };
-    editingPage = sb.identity ? sb.identity.stamp(page, page.url) : page;
-    return existing?.text || '';
+    return { record: existing || null, page: sb.identity ? sb.identity.stamp(page, page.url) : page };
   }
 
   /** True when `n` is a note about the page we are on, on either platform. */
@@ -67,9 +62,8 @@
     return sb.identity.recordIdentity(n) === sb.identity.identityOf(location);
   }
 
-  async function upsertCurrent(text) {
+  async function upsertCurrent(text, replacing, editingPage) {
     const trimmed = (text || '').trim();
-    const replacing = editingNote;
     if (!trimmed && !replacing) return;
     const response = await records.request(
       'notes',
@@ -84,7 +78,7 @@
             }
           : { operation: 'create', record: { ...editingPage, text: trimmed, ts: Date.now() } },
     );
-    editingNote = response.record;
+    return response.record;
   }
 
   function removeRecord(target) {
@@ -135,13 +129,13 @@
   function showCompose() {
     const host = sb.$id('si18n-note-compose');
     if (!host) return;
-    const existing = currentNoteText();
+    const editor = currentNote();
     host.replaceChildren();
     host.insertAdjacentHTML(
       'afterbegin',
       `
       <div class="si18n-note-compose">
-        <textarea id="si18n-note-input" class="si18n-chat-input si18n-note-textarea" placeholder="${sb.t(NOTE_LABELS.placeholder)}" rows="3">${sb.escapeHtml(existing)}</textarea>
+        <textarea id="si18n-note-input" class="si18n-chat-input si18n-note-textarea" placeholder="${sb.t(NOTE_LABELS.placeholder)}" rows="3">${sb.escapeHtml(editor.record?.text || '')}</textarea>
         <div class="si18n-note-compose-actions">
           <button class="si18n-note-cancel" id="si18n-note-cancel" type="button">${sb.t(NOTE_LABELS.cancel)}</button>
           <button class="si18n-chat-send-btn" id="si18n-note-save" type="button">${sb.t(NOTE_LABELS.save)}</button>
@@ -157,12 +151,16 @@
     saveButton?.addEventListener('click', async () => {
       if (saveButton.disabled) return;
       saveButton.disabled = true;
+      if (textarea) textarea.disabled = true;
       try {
-        await upsertCurrent(sb.$id('si18n-note-input')?.value || '');
-        if (host.isConnected) host.replaceChildren();
+        editor.record = await upsertCurrent(textarea?.value || '', editor.record, editor.page);
+        if (saveButton.isConnected) host.replaceChildren();
       } catch (error) {
-        sb.showRecordError(error, host);
-        if (saveButton.isConnected) saveButton.disabled = false;
+        if (saveButton.isConnected) {
+          sb.showRecordError(error, host);
+          saveButton.disabled = false;
+          if (textarea) textarea.disabled = false;
+        }
       }
     });
   }

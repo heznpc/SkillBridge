@@ -51,19 +51,26 @@
       'translatedText',
       'selectedText',
       'lang',
+      'wrongText',
     ]) {
       if (record[key] != null && typeof record[key] !== 'string') throw failure('INVALID', `Invalid ${key}`);
       if (typeof record[key] === 'string' && record[key].length > 50000) throw failure('INVALID', `${key} is too long`);
     }
     if (typeof record.url !== 'string' || !/^https?:\/\//i.test(record.url))
       throw failure('INVALID', 'A lesson URL is required');
+    if (record.ts != null && (typeof record.ts !== 'number' || !Number.isFinite(record.ts) || record.ts < 0))
+      throw failure('INVALID', 'Invalid timestamp');
     if (collection === 'notes' && !record.text?.trim()) throw failure('INVALID', 'A note cannot be empty');
     if (collection === 'bookmarks' && (!Number.isFinite(record.scrollY) || Number(record.scrollY) < 0)) {
       throw failure('INVALID', 'Invalid reading position');
     }
     if (
       collection === 'reports' &&
-      (!record.translatedText?.trim() ||
+      (record.reportSchemaVersion !== 1 ||
+        !record.translatedText?.trim() ||
+        !record.selectedText?.trim() ||
+        (record.capture === 'selection' && !record.originalText?.trim()) ||
+        (record.capture === 'manual' && record.originalText != null && !record.originalText.trim()) ||
         !['selection', 'manual'].includes(record.capture || '') ||
         !['positive', 'negative'].includes(record.signal || ''))
     ) {
@@ -149,7 +156,6 @@
         if (request.operation === 'delete') records.splice(index, 1);
         else {
           record = { ...previous, ...request.patch, recordId: previous.recordId, revision: previous.revision + 1 };
-          validateData(request.collection, record);
           if (request.collection === 'reports') {
             if (
               request.patch.correction !== undefined &&
@@ -158,6 +164,7 @@
             ) {
               record.correctionStatus = 'reverted';
             }
+            validateData(request.collection, record);
             if (record.correctionStatus && record.correctionStatus !== previous.correctionStatus) {
               const now = Date.now();
               record.correctionAppliedAt = now;
@@ -187,6 +194,8 @@
               }
             }
           }
+
+          if (request.collection !== 'reports') validateData(request.collection, record);
 
           records.splice(index, 1);
           records.unshift(record);

@@ -69,8 +69,17 @@
   // PERSISTENCE (chrome.storage.local)
   // ============================================================
 
-  const ready = records.refresh('reports');
-  ready.catch(warnStorageError);
+  let ready;
+  function ensureReady() {
+    if (!ready) {
+      ready = records.refresh('reports').catch((error) => {
+        ready = null;
+        throw error;
+      });
+    }
+    return ready;
+  }
+  ensureReady().catch(warnStorageError);
 
   function track(write) {
     _saveQueue = Promise.all([_saveQueue.catch(() => {}), write.catch(() => {})]).then(() => undefined);
@@ -79,7 +88,7 @@
 
   function persistReport(record) {
     return track(
-      ready
+      ensureReady()
         .then(async () => {
           if (sb.identity) await sb.identity.ready();
           const stamped = sb.identity ? sb.identity.stamp(record, record.url) : record;
@@ -138,7 +147,7 @@
     // Snapshot only after every operation that was pending when export was
     // requested has settled. Failed mutations leave `reports` unchanged, so
     // this exports the last committed queue in either outcome.
-    return ready
+    return ensureReady()
       .then(() => _saveQueue)
       .then(() => records.refresh('reports'))
       .then((snapshot) => {
@@ -183,7 +192,9 @@
   function toggleReportsPanel() {
     const opened = mountReportsPanel();
     if (!opened) return false;
-    ready.then(renderList).catch((error) => sb.showRecordError(error, sb.$id('si18n-report-list')));
+    ensureReady()
+      .then(renderList)
+      .catch((error) => sb.showRecordError(error, sb.$id('si18n-report-list')));
     return true;
   }
 
@@ -232,6 +243,10 @@
       saveButton.disabled = true;
       const wrong = sb.$id('si18n-report-wrong')?.value || '';
       const correction = sb.$id('si18n-report-correction')?.value || '';
+      const fields = Array.from(host.querySelectorAll('input, textarea'));
+      fields.forEach((field) => {
+        field.disabled = true;
+      });
       const write = selection
         ? recordTranslationFeedback(
             {
@@ -246,14 +261,17 @@
       const allowRetry = () => {
         saving = false;
         if (saveButton.isConnected) saveButton.disabled = false;
+        fields.forEach((field) => {
+          field.disabled = false;
+        });
       };
       write.then(
         (saved) => {
-          if (saved && host.isConnected) host.replaceChildren();
+          if (saved && saveButton.isConnected) host.replaceChildren();
           else allowRetry();
         },
         (error) => {
-          sb.showRecordError(error, host);
+          if (saveButton.isConnected) sb.showRecordError(error, host);
           allowRetry();
         },
       );
@@ -271,7 +289,7 @@
 
     if (!sb._chat.state.reportsPanelOpen && !mountReportsPanel()) return Promise.resolve(false);
     showCompose(pair);
-    return ready.then(() => {
+    return ensureReady().then(() => {
       renderList();
       return true;
     });
@@ -326,6 +344,7 @@
         buttons.forEach((item) => {
           item.disabled = true;
         });
+        textarea.disabled = true;
         try {
           let current = target;
           const correction = textarea.value.trim();
@@ -340,6 +359,7 @@
                 }),
               )
             ).record;
+            target = current;
           }
           if (action !== 'save') {
             await track(
@@ -351,9 +371,10 @@
               }),
             );
           }
-          if (host.isConnected) host.replaceChildren();
+          if (review.isConnected) host.replaceChildren();
         } catch (error) {
-          sb.showRecordError(error, host);
+          if (review.isConnected) sb.showRecordError(error, host);
+          textarea.disabled = false;
           buttons.forEach((item, i) => {
             item.disabled = disabled[i];
           });
