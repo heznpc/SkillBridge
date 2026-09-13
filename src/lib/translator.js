@@ -513,17 +513,16 @@ class SkilljarTranslator {
       // rendering a placeholder or a mangled brand name.
       const pt = typeof window !== 'undefined' ? window._protectedTerms : null;
       const masked = pt?.maskProtectedTerms ? pt.maskProtectedTerms(text.trim()) : null;
-      const response = await chrome.runtime.sendMessage({
-        type: 'GOOGLE_TRANSLATE',
-        text: masked?.tokens.length ? masked.text : text.trim(),
-        targetLang,
-        sourceLang: 'en',
-      });
-      if (response?.ok && typeof response.translated === 'string' && response.translated) {
+      const contracts = globalThis.SB_RUNTIME_CONTRACTS;
+      const response = await chrome.runtime.sendMessage(
+        contracts.singleRequest(masked?.tokens.length ? masked.text : text.trim(), targetLang),
+      );
+      const translated = contracts.singleResponse(response);
+      if (translated) {
         this._reportTranslationAvailability(true, 'single');
-        if (!masked?.tokens.length) return response.translated;
+        if (!masked?.tokens.length) return translated;
         try {
-          return pt.unmaskProtectedTerms(response.translated, masked);
+          return pt.unmaskProtectedTerms(translated, masked);
         } catch (err) {
           console.warn('[SkillBridge] Protected-term unmask failed:', err.message);
           return null;
@@ -552,20 +551,18 @@ class SkilljarTranslator {
       const pt = typeof window !== 'undefined' ? window._protectedTerms : null;
       const trimmed = texts.map((t) => t.trim());
       const masks = pt?.maskProtectedTerms ? trimmed.map((t) => pt.maskProtectedTerms(t)) : null;
-      const response = await chrome.runtime.sendMessage({
-        type: 'GOOGLE_TRANSLATE_BATCH',
-        texts: masks ? masks.map((m, i) => (m.tokens.length ? m.text : trimmed[i])) : trimmed,
-        targetLang,
-        sourceLang: 'en',
-      });
-      if (response?.ok && Array.isArray(response.translations)) {
-        const wellShaped =
-          response.translations.length === texts.length &&
-          response.translations.every((translation) => typeof translation === 'string' && translation.length > 0);
-        this._reportTranslationAvailability(wellShaped, 'batch');
-        if (!wellShaped) return texts;
-        if (!masks) return response.translations;
-        return response.translations.map((translated, i) => {
+      const contracts = globalThis.SB_RUNTIME_CONTRACTS;
+      const response = await chrome.runtime.sendMessage(
+        contracts.batchRequest(
+          masks ? masks.map((m, i) => (m.tokens.length ? m.text : trimmed[i])) : trimmed,
+          targetLang,
+        ),
+      );
+      const translations = contracts.batchResponse(response, texts.length);
+      if (translations) {
+        this._reportTranslationAvailability(true, 'batch');
+        if (!masks) return translations;
+        return translations.map((translated, i) => {
           if (!masks[i].tokens.length) return translated;
           // Unmask failure → hand back the source. applyGoogleTranslations
           // skips entries equal to their source, so the block stays English

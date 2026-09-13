@@ -17,6 +17,7 @@ export default [
         indexedDB: 'readonly',
         crypto: 'readonly',
         setTimeout: 'readonly',
+        queueMicrotask: 'readonly',
         clearTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',

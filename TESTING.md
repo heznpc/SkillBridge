@@ -37,6 +37,25 @@ npx jest --coverage
 
 Coverage report is generated at `coverage/lcov-report/index.html`.
 
+### Checked runtime boundaries
+
+`npm run typecheck` uses strict JavaScript checking for the learning-record
+protocol/client, translation request/response validators, page/language tokens
+and correction interface. `tests/types/runtime-boundaries.ts` asserts that
+invalid calls are rejected. The remaining legacy JavaScript is outside this
+initial scope; this command does not establish type safety for the whole app.
+
+### Learning-record and correction regressions
+
+`tests/learning-records.test.js` covers concurrent mutations, stale revisions,
+durable acknowledgements, worker-restart replay, legacy backup and capacity.
+The default E2E runner includes `multitab-records.spec.js` for two actual
+extension tabs and `correction-workflow.spec.js` for review, language-scoped
+application, cross-tab refresh and rollback. `upgrade-from-legacy.spec.js`
+also seeds pre-identifier records and checks content, backup and stable IDs
+after reload. These fixture checks do not replace a signed-in live Academy
+lesson and Tutor round trip before choosing a CWS release candidate.
+
 ### Verbose output (see individual test names)
 
 ```bash

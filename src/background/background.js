@@ -20,6 +20,16 @@ try {
   console.warn('[SkillBridge BG] Failed to load shared runtime constants:', err?.message);
 }
 
+if (typeof importScripts === 'function') {
+  importScripts(
+    chrome.runtime.getURL('src/shared/learning-records.js'),
+    chrome.runtime.getURL('src/lib/runtime-contracts.js'),
+    chrome.runtime.getURL('src/lib/translation-feedback.js'),
+    chrome.runtime.getURL('src/lib/lesson-identity.js'),
+    chrome.runtime.getURL('src/background/learning-store.js'),
+  );
+}
+
 const _BG_SHARED_CONSTANTS = globalThis.SB_SHARED_CONSTANTS || {};
 if (!_BG_SHARED_CONSTANTS.GT_LANG_MAP) {
   console.warn('[SkillBridge BG] Shared runtime constants missing or incomplete.');
@@ -325,6 +335,19 @@ function _logMisroutedMessage(msg) {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // Verify sender is this extension
   if (sender.id !== chrome.runtime.id) return;
+  if (msg?.type === 'LEARNING_RECORDS') {
+    if (!globalThis.SB_LEARNING_STORE) {
+      sendResponse({
+        ok: false,
+        requestId: msg.requestId,
+        code: 'STORAGE',
+        error: 'Learning record storage unavailable',
+      });
+    } else {
+      globalThis.SB_LEARNING_STORE.dispatch(msg).then(sendResponse);
+    }
+    return true;
+  }
 
   // Local AI engine reachability probe (v4 A5.3). Content/popup can't fetch
   // localhost cross-origin, so the SW does it and classifies the result:
@@ -335,6 +358,18 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       .then((result) => sendResponse(result))
       .catch((err) => sendResponse({ ok: false, status: 'unreachable', error: err.message }));
     return true;
+  }
+
+  if (msg?.type === 'GOOGLE_TRANSLATE' || msg?.type === 'GOOGLE_TRANSLATE_BATCH') {
+    const validated = globalThis.SB_RUNTIME_CONTRACTS.translationRequest(msg);
+    if (!validated) {
+      sendResponse({
+        ok: false,
+        error: msg.type === 'GOOGLE_TRANSLATE_BATCH' ? 'Invalid translation batch' : 'Invalid translation request',
+      });
+      return true;
+    }
+    msg = validated;
   }
 
   // Google Translate: single text (with rate limiting + exponential backoff)

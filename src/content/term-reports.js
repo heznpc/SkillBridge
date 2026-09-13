@@ -35,17 +35,15 @@
     console.warn('[SkillBridge] term-reports: _sbTranslationFeedback not ready');
     return;
   }
-  const STORAGE_KEY = 'sb_term_reports';
-  const MAX_REPORTS = 200;
   const PREVIEW_MAX = 140;
-
+  const records = sb.records;
+  if (!records) return;
   let reports = [];
-
-  function storageError(operation) {
-    const lastError = chrome.runtime?.lastError;
-    return lastError ? new Error(`Term reports ${operation} failed: ${lastError.message || 'storage error'}`) : null;
-  }
-
+  let _saveQueue = Promise.resolve();
+  records.subscribe('reports', (snapshot) => {
+    reports = snapshot.records;
+    renderList();
+  });
   function warnStorageError(error) {
     console.warn('[SkillBridge] Term reports storage unavailable:', error?.message || error);
   }
@@ -71,110 +69,24 @@
   // PERSISTENCE (chrome.storage.local)
   // ============================================================
 
-  // Serialize writes so rapid add/remove can't interleave (last-write-wins).
-  let _saveQueue = Promise.resolve();
-  function writeReports(snapshot) {
-    const data = {};
-    // Never hand storage the live mutable queue. A second add/remove may run
-    // while an earlier callback is pending, but that earlier write must keep
-    // representing the state at which it was queued.
-    data[STORAGE_KEY] = snapshot;
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.set(data, () => {
-        const error = storageError('write');
-        if (error) reject(error);
-        else resolve();
-      });
-    });
+  const ready = records.refresh('reports');
+  ready.catch(warnStorageError);
+
+  function track(write) {
+    _saveQueue = Promise.all([_saveQueue.catch(() => {}), write.catch(() => {})]).then(() => undefined);
+    return write;
   }
-
-  function enqueueWrite(operation) {
-    const queued = _saveQueue.catch(() => {}).then(operation);
-    // The caller receives `queued` (and therefore the real failure), while the
-    // internal tail must always settle successfully so one rejected write
-    // neither becomes an unhandled child promise nor poisons later retries.
-    _saveQueue = queued.then(
-      () => undefined,
-      () => undefined,
-    );
-    return queued;
-  }
-
-  function saveReports(snapshot = reports.slice()) {
-    return enqueueWrite(() => writeReports(snapshot));
-  }
-
-  /** Persist first, then publish the new queue to memory and UI. */
-  function mutateReports(buildMutation) {
-    return enqueueWrite(async () => {
-      const mutation = buildMutation(reports);
-      if (!mutation) return false;
-      await writeReports(mutation.records);
-      reports = mutation.records;
-      renderList();
-      return mutation.result;
-    });
-  }
-
-  function readStoredReports() {
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.get([STORAGE_KEY], (res) => {
-        const error = storageError('read');
-        if (error) reject(error);
-        else resolve(res?.[STORAGE_KEY]);
-      });
-    });
-  }
-
-  // One readiness boundary owns the entire load. Every panel/action shares it:
-  // storage -> feedback schema -> lesson identity table -> identity migration.
-  // If either migration changes the records, their combined result is written
-  // once, through the same serialized queue used by later actions.
-  const ready = readStoredReports().then(async (stored) => {
-    const normalized = feedback.normalizeReports(stored);
-    reports = normalized.records.slice(0, MAX_REPORTS);
-    let changed = normalized.changed;
-    if (normalized.records.length > MAX_REPORTS) changed = true;
-
-    if (sb.identity) {
-      try {
-        await sb.identity.ready();
-      } catch (_e) {
-        // Identity readiness is best-effort; migrate() safely retains URL
-        // identity when its lookup table could not load.
-      }
-      // Future feedback-schema rows are opaque. Passing them through today's
-      // lesson-identity migration could add fields whose meaning collides with
-      // a future reader, so migrate only records this version understands and
-      // splice them back into their original positions.
-      const currentReports = reports.filter((report) => report.reportSchemaVersion === feedback.REPORT_SCHEMA_VERSION);
-      if (currentReports.length > 0) {
-        const migrated = sb.identity.migrate(currentReports);
-        if (migrated && Array.isArray(migrated.records) && migrated.changed) {
-          let currentIndex = 0;
-          reports = reports.map((report) =>
-            report.reportSchemaVersion === feedback.REPORT_SCHEMA_VERSION ? migrated.records[currentIndex++] : report,
-          );
-          changed = true;
-        }
-      }
-    }
-
-    if (changed) await saveReports(reports.slice());
-    return reports;
-  });
 
   function persistReport(record) {
-    return ready.then(() => {
-      // `ready` may wait for the identity table. Stamp against the URL captured
-      // in the record, not the live Location, which can already point at the
-      // next SPA lesson by the time the promise resumes.
-      const stamped = sb.identity ? sb.identity.stamp(record, record.url || location.href) : record;
-      return mutateReports((current) => ({
-        records: [stamped, ...current].slice(0, MAX_REPORTS),
-        result: stamped,
-      }));
-    });
+    return track(
+      ready
+        .then(async () => {
+          if (sb.identity) await sb.identity.ready();
+          const stamped = sb.identity ? sb.identity.stamp(record, record.url) : record;
+          return records.request('reports', { operation: 'create', record: stamped });
+        })
+        .then((response) => response.record),
+    );
   }
 
   // ============================================================
@@ -204,21 +116,15 @@
     return record ? persistReport(record) : Promise.resolve(false);
   }
 
-  function removeAt(i) {
-    return ready.then(() => {
-      if (i < 0 || i >= reports.length) return false;
-      // Capture what the learner clicked before entering the write queue. A
-      // pending add may prepend a row before this mutation executes; deleting
-      // by the old numeric index would then remove that new feedback instead.
-      const target = reports[i];
-      return mutateReports((current) => {
-        const targetIndex = current.indexOf(target);
-        if (targetIndex < 0) return null;
-        const next = current.slice();
-        next.splice(targetIndex, 1);
-        return { records: next, result: true };
-      });
-    });
+  function removeRecord(target) {
+    if (!target?.recordId) return Promise.resolve(false);
+    return track(
+      records.request('reports', {
+        operation: 'delete',
+        recordId: target.recordId,
+        expectedRevision: target.revision,
+      }),
+    ).then(() => true);
   }
 
   // ============================================================
@@ -234,8 +140,9 @@
     // this exports the last committed queue in either outcome.
     return ready
       .then(() => _saveQueue)
-      .then(() => {
-        const payload = JSON.stringify(reports.slice(), null, 2);
+      .then(() => records.refresh('reports'))
+      .then((snapshot) => {
+        const payload = JSON.stringify(snapshot.records, null, 2);
         const blob = new Blob([payload], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -276,7 +183,7 @@
   function toggleReportsPanel() {
     const opened = mountReportsPanel();
     if (!opened) return false;
-    ready.then(renderList).catch(warnStorageError);
+    ready.then(renderList).catch((error) => sb.showRecordError(error, sb.$id('si18n-report-list')));
     return true;
   }
 
@@ -346,7 +253,7 @@
           else allowRetry();
         },
         (error) => {
-          warnStorageError(error);
+          sb.showRecordError(error, host);
           allowRetry();
         },
       );
@@ -368,6 +275,92 @@
       renderList();
       return true;
     });
+  }
+
+  function reviewCorrection(target) {
+    const host = sb.$id('si18n-report-compose');
+    if (!host || !target.recordId) return;
+    host.replaceChildren();
+    const review = document.createElement('div');
+    review.className = 'si18n-note-compose si18n-correction-review';
+    host.append(review);
+    const source = document.createElement('p');
+    source.textContent = `${sb.t(REPORT_LABELS.original)} (${target.lang || '—'}): ${target.originalText || target.wrongText || ''}`;
+    const scope = document.createElement('p');
+    scope.textContent = sb.t({
+      en: 'Applies only to plain-text passages with this exact original and language. Links and controls stay unchanged.',
+      ko: '원문과 언어가 일치하는 일반 텍스트 구절에만 적용합니다. 링크와 조작 버튼은 유지됩니다.',
+    });
+    const textarea = document.createElement('textarea');
+    textarea.id = 'si18n-correction-edit';
+    textarea.className = 'si18n-chat-input si18n-note-textarea';
+    textarea.rows = 3;
+    textarea.value = target.correction || '';
+    textarea.setAttribute('aria-label', sb.t(REPORT_LABELS.correctionPlaceholder));
+    review.append(source, scope, textarea);
+    const actions = document.createElement('div');
+    actions.className = 'si18n-note-compose-actions';
+    review.append(actions);
+    const canApply = target.capture === 'selection' && target.originalText && target.lang && target.lang !== 'en';
+    for (const [action, label] of [
+      ['save', { en: 'Save correction', ko: '교정안 저장' }],
+      ['apply', { en: 'Apply reviewed correction', ko: '검토한 교정안 적용' }],
+      ['revert', { en: 'Revert correction', ko: '교정 적용 되돌리기' }],
+      ['cancel', { en: 'Close', ko: '닫기' }],
+    ]) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'si18n-note-cancel';
+      button.dataset.correctionAction = action;
+      button.textContent = sb.t(label);
+      button.disabled =
+        (action === 'apply' && !canApply) || (action === 'revert' && target.correctionStatus !== 'applied');
+      actions.append(button);
+      button.addEventListener('click', async () => {
+        if (action === 'cancel') {
+          host.replaceChildren();
+          return;
+        }
+        const buttons = Array.from(actions.querySelectorAll('button'));
+        const disabled = buttons.map((item) => item.disabled);
+        buttons.forEach((item) => {
+          item.disabled = true;
+        });
+        try {
+          let current = target;
+          const correction = textarea.value.trim();
+          if (action !== 'revert' && correction !== target.correction) {
+            current = (
+              await track(
+                records.request('reports', {
+                  operation: 'update',
+                  recordId: current.recordId,
+                  expectedRevision: current.revision,
+                  patch: { correction, correctionStatus: 'reverted' },
+                }),
+              )
+            ).record;
+          }
+          if (action !== 'save') {
+            await track(
+              records.request('reports', {
+                operation: 'update',
+                recordId: current.recordId,
+                expectedRevision: current.revision,
+                patch: { correctionStatus: action === 'apply' ? 'applied' : 'reverted' },
+              }),
+            );
+          }
+          if (host.isConnected) host.replaceChildren();
+        } catch (error) {
+          sb.showRecordError(error, host);
+          buttons.forEach((item, i) => {
+            item.disabled = disabled[i];
+          });
+        }
+      });
+    }
+    textarea.focus();
   }
 
   function previewOf(text) {
@@ -398,7 +391,9 @@
           <span class="si18n-note-preview si18n-report-evidence" data-report-field="translation">${sb.escapeHtml(sb.t(REPORT_LABELS.translation))}: ${sb.escapeHtml(previewOf(translation))}</span>`
               : ''
           }
+          ${r.correctionStatus ? `<span data-correction-status="${sb.escapeHtml(r.correctionStatus)}">${sb.escapeHtml(sb.t(r.correctionStatus === 'applied' ? { en: 'Correction applied', ko: '교정 적용 중' } : { en: 'Correction not applied', ko: '교정 적용 안 함' }))}</span>` : ''}
         </span>
+        ${r.recordId && r.reportSchemaVersion === feedback.REPORT_SCHEMA_VERSION ? `<button type="button" class="si18n-note-cancel" data-review-i="${i}">${sb.escapeHtml(sb.t({ en: 'Review correction', ko: '교정안 검토' }))}</button>` : ''}
         <button class="si18n-bm-remove" data-i="${i}" aria-label="${sb.t(REPORT_LABELS.remove)}">&times;</button>
       </div>`;
       })
@@ -410,9 +405,14 @@
     if (!list) return;
     list.replaceChildren();
     list.insertAdjacentHTML('afterbegin', rowsHTML());
-    list
-      .querySelectorAll('.si18n-bm-remove')
-      .forEach((el) => el.addEventListener('click', () => removeAt(Number(el.dataset.i)).catch(warnStorageError)));
+    list.querySelectorAll('[data-review-i]').forEach((el) => {
+      const target = reports[Number(el.dataset.reviewI)];
+      el.addEventListener('click', () => reviewCorrection(target));
+    });
+    list.querySelectorAll('.si18n-bm-remove').forEach((el) => {
+      const target = reports[Number(el.dataset.i)];
+      el.addEventListener('click', () => removeRecord(target).catch((error) => sb.showRecordError(error, list)));
+    });
   }
 
   // ============================================================

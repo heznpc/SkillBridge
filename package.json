@@ -178,7 +178,10 @@
         "functions": 90,
         "lines": 85
       }
-    }
+    },
+    "setupFiles": [
+      "<rootDir>/tests/setup-runtime-contracts.js"
+    ]
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

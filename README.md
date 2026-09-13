@@ -130,6 +130,18 @@ feedback opens Reports with the English source, translation and selection
 prefilled, plus an optional correction. The queue is local-only: there is no
 telemetry, server submission or automatic GitHub issue.
 
+The current source also serializes feedback, bookmark and note changes across
+tabs. A stale edit asks you to reopen the latest record and keeps your draft.
+Saving at the 200-record limit asks you to export or remove a record instead
+of silently discarding an older one.
+
+In Reports, **Review correction** lets you edit a suggestion and explicitly
+apply or revert it. Applied corrections match the exact source text and target
+language on plain-text passages; passages with nested markup keep their existing
+translation. Saving a suggestion alone does not apply it. Editing an applied
+suggestion requires applying it again. The report and its application history
+remain available for export after rollback.
+
 > **AI Tutor & accounts:** the current source build includes the AI Tutor (Claude Sonnet 4.6, falling back to Sonnet 4.5) through an isolated bundled Puter runtime. The tutor uses a **free Puter sign-in** — no API key and no SkillBridge account. Page translation and the local learning tools need no account at all; only the optional cloud tutor prompts for sign-in. The transport contract is regression-tested; the latest source checkpoint's live signed-in round trip remains a final CWS gate.
 
 Tutor history groups consecutive questions into titled, per-lesson

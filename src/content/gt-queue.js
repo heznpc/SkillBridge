@@ -345,6 +345,12 @@
       originalTexts.set(el, el.innerHTML);
     }
 
+    // Corrections are plain text, never HTML, and never flatten links or controls.
+    const correction = el.children.length === 0 ? sb.corrections?.lookup(fullText, _targetLang) : null;
+    if (correction && sb.safeReplaceText(el, correction) !== false) {
+      trackTranslatedElement(fullText, el);
+      return 'static';
+    }
     const translator = sb.translator;
     const elementMatch = translator.staticLookup(fullText);
     if (elementMatch) {

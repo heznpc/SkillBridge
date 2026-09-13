@@ -38,6 +38,8 @@ const batches = [
     'tests/e2e/notes.spec.js',
     'tests/e2e/byoa.spec.js',
     'tests/e2e/term-reports.spec.js',
+    'tests/e2e/multitab-records.spec.js',
+    'tests/e2e/correction-workflow.spec.js',
   ],
   [
     'tests/e2e/golden-translation.spec.js',

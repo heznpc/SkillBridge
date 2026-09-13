@@ -43,7 +43,7 @@ const SERVICE_WORKER_READY_TIMEOUT_MS = 20_000;
  * @param {string} op
  * @param {any} [arg]
  */
-async function evalInContentWorld(context, op, arg) {
+async function evalInContentWorld(context, op, arg, targetUrl = null) {
   const safeArg = arg === undefined ? null : arg;
   for (let attempt = 0; attempt < 3; attempt++) {
     let sw = context.serviceWorkers()[0];
@@ -52,7 +52,7 @@ async function evalInContentWorld(context, op, arg) {
     }
     try {
       return await sw.evaluate(
-        async ([opName, payload]) => {
+        async ([opName, payload, exactUrl]) => {
           // Query by URL pattern, not active-tab: Playwright sometimes loses
           // "current window" focus during extension-driven page work, and
           // `{active:true}` then returns
@@ -60,7 +60,9 @@ async function evalInContentWorld(context, op, arg) {
           // permission for. Matching on the fixture URL is unambiguous.
           const allTabs = await chrome.tabs.query({ url: ['http://localhost/*', 'http://localhost:*/*'] });
           // Prefer the most-recently-active matching tab.
-          const tab = allTabs.sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0];
+          const tab = exactUrl
+            ? allTabs.find((item) => item.url === exactUrl)
+            : allTabs.sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0];
           if (!tab) throw new Error('No fixture tab to inject into');
 
           const [{ result, error }] = await chrome.scripting.executeScript({
@@ -70,6 +72,29 @@ async function evalInContentWorld(context, op, arg) {
               // Re-declare the ops table inside the content-script world.
               // (chrome.scripting.executeScript can't pass closures.)
               const ops = {
+                openCorrectionReview: (i) => {
+                  const root = window._sb._uiHost?.shadowRoot || document;
+                  const button = root.querySelectorAll('[data-review-i]')[i];
+                  button?.click();
+                  return { found: !!button };
+                },
+                correctionAction: (action) => {
+                  const root = window._sb._uiHost?.shadowRoot || document;
+                  const button = root.querySelector(`[data-correction-action="${action}"]`);
+                  button?.click();
+                  return { found: !!button, disabled: !!button?.disabled };
+                },
+
+                learningRecordRequest: async (input) => {
+                  try {
+                    return await window._sb.records.request(input.collection, input.operation);
+                  } catch (error) {
+                    return { ok: false, code: error.code, error: error.message };
+                  }
+                },
+                recordFeedback: (input) =>
+                  window._sb._chat.recordTranslationFeedback(input.pair, input.signal, input.correction || ''),
+
                 snapshot: () => {
                   const sb = window._sb;
                   if (!sb) return { init: window.__skillbridge_initialized__, sb: null };
@@ -1227,7 +1252,7 @@ async function evalInContentWorld(context, op, arg) {
           if (error) throw new Error('executeScript error: ' + JSON.stringify(error));
           return result;
         },
-        [op, safeArg],
+        [op, safeArg, targetUrl],
       );
     } catch (err) {
       if (

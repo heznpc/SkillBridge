@@ -389,8 +389,8 @@ function rollbackRecords(records) {
   });
 }
 
-if (typeof window !== 'undefined') {
-  window._sbLessonIdentity = {
+if (typeof globalThis !== 'undefined') {
+  globalThis._sbLessonIdentity = {
     IDENTITY_SCHEMA_VERSION,
     IDENTITY_SOURCE,
     PLATFORM_ORIGINS,

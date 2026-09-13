@@ -74,6 +74,12 @@ test.describe('SkillBridge — upgrade from the published v1.0.1', () => {
     fixture = await startFixtureServer();
     extCtx = await launchExtension();
     await registerStubs(extCtx.context);
+    // Worker registration precedes the asynchronous fresh-install defaults.
+    // Finish that install before seeding the state of an existing installation.
+    const [worker] = extCtx.context.serviceWorkers();
+    await expect
+      .poll(() => worker.evaluate(async () => chrome.storage.local.get(['targetLanguage', 'autoTranslate'])))
+      .toEqual({ targetLanguage: 'en', autoTranslate: false });
     page = await extCtx.context.newPage();
     page.on('pageerror', (err) => console.log('[page:pageerror]', err.message));
   });
@@ -134,6 +140,53 @@ test.describe('SkillBridge — upgrade from the published v1.0.1', () => {
     expect(hostKeys.filter((key) => key.startsWith('puter.'))).toEqual([]);
     // The scrub is prefix-scoped: it must not clear the host site's own state.
     expect(hostKeys).toContain('skilljar.course.progress');
+  });
+
+  test('legacy notes, bookmarks and reports retain their content and stable identities after reload', async () => {
+    const url = `${fixture.baseUrl}/lesson`;
+    // Later source builds added these collections without record identifiers.
+    // Seed their actual persisted shapes, then let the packaged worker migrate.
+    const legacy = {
+      sb_notes: [{ url, title: 'Old lesson', text: 'Keep my note', ts: 123 }],
+      sb_bookmarks: [{ url, title: 'Old lesson', scrollY: 420, ts: 123 }],
+      sb_term_reports: [
+        {
+          url,
+          title: 'Old lesson',
+          wrongText: 'Old translation',
+          correction: 'Keep my correction',
+          lang: 'ko',
+          ts: 123,
+        },
+      ],
+    };
+    const [worker] = extCtx.context.serviceWorkers();
+    await worker.evaluate((data) => chrome.storage.local.set(data), legacy);
+    const list = (collection) =>
+      evalInContentWorld(extCtx.context, 'learningRecordRequest', {
+        collection,
+        operation: { operation: 'list' },
+      });
+    const before = await Promise.all(['notes', 'bookmarks', 'reports'].map(list));
+    for (const snapshot of before) {
+      expect(snapshot.ok).toBe(true);
+      expect(snapshot.records).toHaveLength(1);
+      expect(snapshot.records[0].recordId).toEqual(expect.any(String));
+      expect(snapshot.records[0].revision).toBe(1);
+    }
+    expect(before[0].records[0]).toMatchObject(legacy.sb_notes[0]);
+    expect(before[1].records[0]).toMatchObject(legacy.sb_bookmarks[0]);
+    expect(before[2].records[0]).toMatchObject(legacy.sb_term_reports[0]);
+    const backup = await worker.evaluate(
+      async () => (await chrome.storage.local.get('sb_learning_record_legacy_backup')).sb_learning_record_legacy_backup,
+    );
+    expect(backup.notes.records).toEqual(legacy.sb_notes);
+    expect(backup.bookmarks.records).toEqual(legacy.sb_bookmarks);
+    expect(backup.reports.records).toEqual(legacy.sb_term_reports);
+    await page.reload({ waitUntil: 'networkidle' });
+    await waitForSkillBridge(extCtx.context, page);
+    const after = await Promise.all(['notes', 'bookmarks', 'reports'].map(list));
+    expect(after.map((snapshot) => snapshot.records)).toEqual(before.map((snapshot) => snapshot.records));
   });
 
   test('no tutor session is inherited — the upgrader has to sign in again', async () => {

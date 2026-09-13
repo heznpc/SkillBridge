@@ -143,6 +143,7 @@ function makeHarness({
     revokeObjectURL() {},
   };
 
+  require('./helpers/learning-record-harness').attachLearningRecords(sb, chromeStub);
   const fakeWindow = { _sb: sb };
   new Function('window', 'module', CORE_SOURCE)(fakeWindow, undefined);
   new Function(
@@ -185,7 +186,7 @@ function makeHarness({
 }
 
 async function flush() {
-  for (let i = 0; i < 12; i += 1) await Promise.resolve();
+  for (let i = 0; i < 35; i += 1) await Promise.resolve();
 }
 
 beforeEach(() => {
@@ -617,6 +618,8 @@ describe('report list and export safety', () => {
 
   test('deletes the clicked record rather than a pending add that later shifts its index', async () => {
     const existing = {
+      recordId: 'existing-record',
+      revision: 1,
       reportSchemaVersion: 1,
       capture: 'manual',
       signal: 'negative',
@@ -667,6 +670,8 @@ describe('report list and export safety', () => {
 
   test('keeps a row visible and stored when its delete write fails', async () => {
     const report = {
+      recordId: 'existing-report',
+      revision: 1,
       reportSchemaVersion: 1,
       capture: 'manual',
       signal: 'negative',

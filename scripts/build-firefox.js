@@ -54,7 +54,15 @@ firefoxManifest.browser_specific_settings = {
 if (firefoxManifest.background?.service_worker) {
   const sw = firefoxManifest.background.service_worker;
   firefoxManifest.background = {
-    scripts: [sw],
+    scripts: [
+      'src/shared/runtime-constants.js',
+      'src/shared/learning-records.js',
+      'src/lib/runtime-contracts.js',
+      'src/lib/translation-feedback.js',
+      'src/lib/lesson-identity.js',
+      'src/background/learning-store.js',
+      sw,
+    ],
   };
 }
 
@@ -99,6 +107,23 @@ function copyDir(src, dest) {
 for (const dir of ['_locales', 'src']) {
   copyDir(path.join(ROOT, dir), path.join(DIST_DIR, dir));
 }
+// Strip type-only imports from shipped scripts before the runtime-code scan.
+for (const file of [
+  'src/shared/learning-records.js',
+  'src/lib/learning-record-client.js',
+  'src/lib/translation-corrections.js',
+  'src/content/translation-corrections.js',
+  'src/background/background.js',
+]) {
+  fs.writeFileSync(
+    path.join(DIST_DIR, file),
+    require('esbuild').transformSync(fs.readFileSync(path.join(ROOT, file), 'utf8'), {
+      minify: true,
+      target: 'firefox121',
+    }).code,
+  );
+}
+
 // Firefox uses the same reviewed SDK transform as the Chrome package. Raw
 // vendored Puter code is useful for source auditing, but must not be the
 // runtime copy because it contains unused remote imports and host-storage

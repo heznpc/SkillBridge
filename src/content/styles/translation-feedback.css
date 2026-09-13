@@ -192,6 +192,41 @@ body:is(.si18n-lang-ar, .si18n-lang-he) .si18n-selection-action:not([hidden]) ~ 
   -webkit-line-clamp: 1;
 }
 
+.si18n-correction-review p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.si18n-correction-review textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.si18n-correction-review .si18n-note-compose-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.si18n-correction-review button {
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid var(--si18n-border, #e7e5e4);
+  border-radius: 8px;
+}
+
+.si18n-correction-review [data-correction-action='apply'] {
+  color: white;
+  background: var(--si18n-primary, #d97757);
+  opacity: 1;
+}
+
+.si18n-correction-review button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 html.si18n-dark .si18n-report-signal {
   color: #fcd34d;
   background: rgba(146, 64, 14, 0.28);

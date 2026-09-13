@@ -26,9 +26,9 @@
     console.warn('[SkillBridge] bookmarks: _sb._chat not ready (chat-subpanels.js missing?)');
     return;
   }
-  const STORAGE_KEY = 'sb_bookmarks';
+  const records = sb.records;
+  if (!records) return;
   const RESTORE_KEY = 'sb_bookmark_restore';
-  const MAX_BOOKMARKS = 200;
 
   let bookmarks = [];
 
@@ -54,26 +54,12 @@
   // PERSISTENCE (chrome.storage.local)
   // ============================================================
 
-  // Identity comes from lesson-store.js, not from a local URL compare — see
-  // notes.js for why the rule lives in one place. `ready()` waits for the
-  // lookup table and resolves either way; without it every record simply stays
-  // URL-keyed, which is what it was before.
-  function loadBookmarks(cb) {
-    const finish = () => {
-      chrome.storage.local.get([STORAGE_KEY], (res) => {
-        const stored = Array.isArray(res[STORAGE_KEY]) ? res[STORAGE_KEY] : [];
-        if (sb.identity) {
-          const migrated = sb.identity.migrate(stored);
-          bookmarks = migrated.records;
-          if (migrated.changed) saveBookmarks();
-        } else {
-          bookmarks = stored;
-        }
-        if (cb) cb();
-      });
-    };
-    if (sb.identity) sb.identity.ready().then(finish, finish);
-    else finish();
+  records.subscribe('bookmarks', (snapshot) => {
+    bookmarks = snapshot.records;
+    renderList();
+  });
+  function loadBookmarks() {
+    return records.refresh('bookmarks').catch((error) => sb.showRecordError(error, sb.$id('si18n-bm-list')));
   }
 
   /** True when `b` bookmarks the page we are on, on either platform. */
@@ -82,39 +68,28 @@
     return sb.identity.recordIdentity(b) === sb.identity.identityOf(location);
   }
 
-  // Serialize writes so rapid add/remove can't interleave (last-write-wins).
-  let _saveQueue = Promise.resolve();
-  function saveBookmarks() {
-    const data = {};
-    data[STORAGE_KEY] = bookmarks;
-    _saveQueue = _saveQueue
-      .catch(() => {})
-      .then(() => new Promise((resolve) => chrome.storage.local.set(data, resolve)));
-  }
-
-  // ============================================================
-  // ACTIONS
-  // ============================================================
-
-  function addCurrent() {
+  async function addCurrent() {
     const url = location.href;
     const title = (document.title || '').trim() || sb.$('h1')?.textContent?.trim() || url;
-    // De-dupe by lesson, not by URL: re-bookmarking a lesson updates its
-    // position and bumps it to the top, and the same lesson bookmarked once on
-    // each platform is one bookmark, not two.
-    bookmarks = bookmarks.filter((b) => !isCurrent(b));
+    const existing = bookmarks.find(isCurrent);
     const entry = { url, title, scrollY: Math.round(window.scrollY), ts: Date.now() };
-    bookmarks.unshift(sb.identity ? sb.identity.stamp(entry, location) : entry);
-    if (bookmarks.length > MAX_BOOKMARKS) bookmarks.length = MAX_BOOKMARKS;
-    saveBookmarks();
-    renderList();
+    const record = sb.identity ? sb.identity.stamp(entry, url) : entry;
+    try {
+      await records.request(
+        'bookmarks',
+        existing
+          ? { operation: 'update', recordId: existing.recordId, expectedRevision: existing.revision, patch: record }
+          : { operation: 'create', record },
+      );
+    } catch (error) {
+      sb.showRecordError(error, sb.$id('si18n-bm-list'));
+    }
   }
 
-  function removeAt(i) {
-    if (i < 0 || i >= bookmarks.length) return;
-    bookmarks.splice(i, 1);
-    saveBookmarks();
-    renderList();
+  function removeRecord(target) {
+    return records
+      .request('bookmarks', { operation: 'delete', recordId: target.recordId, expectedRevision: target.revision })
+      .catch((error) => sb.showRecordError(error, sb.$id('si18n-bm-list')));
   }
 
   function openBookmark(i) {
@@ -161,7 +136,7 @@
       },
     );
     if (!opened) return;
-    loadBookmarks(renderList);
+    loadBookmarks();
   }
 
   function rowsHTML() {
@@ -189,9 +164,10 @@
     list
       .querySelectorAll('.si18n-bm-open')
       .forEach((el) => el.addEventListener('click', () => openBookmark(Number(el.dataset.i))));
-    list
-      .querySelectorAll('.si18n-bm-remove')
-      .forEach((el) => el.addEventListener('click', () => removeAt(Number(el.dataset.i))));
+    list.querySelectorAll('.si18n-bm-remove').forEach((el) => {
+      const target = bookmarks[Number(el.dataset.i)];
+      el.addEventListener('click', () => removeRecord(target));
+    });
   }
 
   // ============================================================

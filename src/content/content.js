@@ -386,6 +386,7 @@
     // isLikelyEnglish is re-attached by gt-queue.js (declared there since
     // v3.5.15 — every call-site lived inside the GT pipeline).
     switchLanguage,
+    refreshTranslation,
     getPageContext,
     // Helpers consumed by gt-queue.js / banners / route-change handler:
     safeReplaceText: null, // filled below after function definition
@@ -613,6 +614,8 @@
   // PAGE TRANSLATION
   // ============================================================
 
+  const pageState = globalThis.SB_RUNTIME_CONTRACTS.createPageState(() => location.href);
+
   async function translatePage(targetLang) {
     if (!translator) return;
     currentLang = targetLang;
@@ -620,6 +623,7 @@
       restoreOriginal();
       return;
     }
+    const transition = pageState.begin(targetLang);
     // Always load the TARGET language's dictionary. The old `length === 0` guard
     // skipped the load whenever ANY dictionary was already populated, so a popup
     // re-translate to a different language applied the previously-loaded dict.
@@ -627,11 +631,19 @@
     // Same out-of-order-load guard as switchLanguage(): a newer request may have
     // run while we awaited; currentLang is the synchronous source of truth for the
     // latest target, so bail rather than paint a now-stale language.
-    if (currentLang !== targetLang) return;
+    if (!pageState.isCurrent(transition, currentLang)) return;
     sb._gt.applyStaticTranslations(targetLang);
   }
 
+  async function refreshTranslation() {
+    if (isCertDisabled || aiGate.paused || !isReady || currentLang === 'en') return;
+    const lang = currentLang;
+    restoreOriginal();
+    await translatePage(lang);
+  }
+
   function restoreOriginal() {
+    pageState.invalidate();
     originalTexts.forEach((html, el) => {
       if (el && el.parentNode) el.innerHTML = html;
     });
@@ -704,6 +716,7 @@
 
     if (!opts.skipRestore) restoreOriginal();
     currentLang = newLang;
+    const transition = pageState.begin(newLang);
     // Re-resolve before any dictionary or GT work: on a localized site the
     // answer to "may we translate at all" changes with the target.
     sb.localization.setTarget(newLang);
@@ -723,7 +736,7 @@
       // call's target the call is stale — bail rather than paint a now-wrong
       // language over the page. The generation check in the GT queue handles
       // network results; this guards the static-apply path as well.
-      if (currentLang !== newLang) return;
+      if (!pageState.isCurrent(transition, currentLang)) return;
       sb._gt.applyStaticTranslations(newLang);
       window._sb.updateLocalizedLabels?.();
       if (subtitleManager) subtitleManager.setLanguage(newLang);

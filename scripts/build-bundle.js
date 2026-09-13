@@ -89,6 +89,21 @@ async function build() {
   fs.copyFileSync(path.join(ROOT, 'THIRD_PARTY_NOTICES.md'), path.join(DIST, 'THIRD_PARTY_NOTICES.md'));
   copyDir(path.join(ROOT, 'licenses'), path.join(DIST, 'licenses'));
 
+  // Worker imports use the same shared record protocol as raw builds.
+  for (const file of [
+    'src/shared/learning-records.js',
+    'src/lib/runtime-contracts.js',
+    'src/lib/translation-feedback.js',
+    'src/lib/lesson-identity.js',
+    'src/background/learning-store.js',
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(DIST, file)), { recursive: true });
+    fs.writeFileSync(
+      path.join(DIST, file),
+      esbuild.transformSync(fs.readFileSync(path.join(ROOT, file), 'utf8'), { minify: true, target: 'chrome120' }).code,
+    );
+  }
+
   // Copy other web-accessible resources
   fs.mkdirSync(path.join(DIST, 'src/lib'), { recursive: true });
   fs.mkdirSync(path.join(DIST, 'src/shared'), { recursive: true });

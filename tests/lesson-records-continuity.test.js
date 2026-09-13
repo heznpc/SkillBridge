@@ -160,6 +160,7 @@ function loadModule(
   file,
   { sb, location, chrome: chromeStub, windowExtras = {}, document: documentObject = document, interval = () => 0 },
 ) {
+  if (!sb.records) require('./helpers/learning-record-harness').attachLearningRecords(sb, chromeStub);
   const fakeWindow = Object.assign(
     {
       _sb: sb,

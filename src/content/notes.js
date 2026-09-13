@@ -26,8 +26,8 @@
     console.warn('[SkillBridge] notes: _sb._chat not ready (chat-subpanels.js missing?)');
     return;
   }
-  const STORAGE_KEY = 'sb_notes';
-  const MAX_NOTES = 200;
+  const records = sb.records;
+  if (!records) return;
   const PREVIEW_MAX = 140;
 
   let notes = [];
@@ -36,37 +36,12 @@
   // PERSISTENCE (chrome.storage.local)
   // ============================================================
 
-  // Identity is resolved by lesson-store.js, not by comparing URLs here — the
-  // same lesson has different URLs on Skilljar and Academy, and three modules
-  // each inventing their own comparison is how one of them ends up hiding a
-  // learner's notes on a page that looks right. `ready()` waits for the lookup
-  // table; it resolves either way, so a missing table just means URL identity.
-  function loadNotes(cb) {
-    const finish = () => {
-      chrome.storage.local.get([STORAGE_KEY], (res) => {
-        const stored = Array.isArray(res[STORAGE_KEY]) ? res[STORAGE_KEY] : [];
-        if (sb.identity) {
-          const migrated = sb.identity.migrate(stored);
-          notes = migrated.records;
-          if (migrated.changed) saveNotes();
-        } else {
-          notes = stored;
-        }
-        if (cb) cb();
-      });
-    };
-    if (sb.identity) sb.identity.ready().then(finish, finish);
-    else finish();
-  }
-
-  // Serialize writes so rapid save/remove can't interleave (last-write-wins).
-  let _saveQueue = Promise.resolve();
-  function saveNotes() {
-    const data = {};
-    data[STORAGE_KEY] = notes;
-    _saveQueue = _saveQueue
-      .catch(() => {})
-      .then(() => new Promise((resolve) => chrome.storage.local.set(data, resolve)));
+  records.subscribe('notes', (snapshot) => {
+    notes = snapshot.records;
+    renderList();
+  });
+  function loadNotes() {
+    return records.refresh('notes').catch((error) => sb.showRecordError(error, sb.$id('si18n-note-list')));
   }
 
   // ============================================================
@@ -76,10 +51,13 @@
   // The record the editor is currently showing. A save replaces THIS note and
   // nothing else — see upsertCurrent for why that matters.
   let editingNote = null;
+  let editingPage = null;
 
   function currentNoteText() {
     const existing = sb.identity ? sb.identity.find(notes, location) : notes.find((n) => n.url === location.href);
     editingNote = existing || null;
+    const page = { url: location.href, title: (document.title || '').trim() || location.href };
+    editingPage = sb.identity ? sb.identity.stamp(page, page.url) : page;
     return existing?.text || '';
   }
 
@@ -89,44 +67,30 @@
     return sb.identity.recordIdentity(n) === sb.identity.identityOf(location);
   }
 
-  // One note per lesson; saving again overwrites and bumps it to the top. An
-  // empty/whitespace-only save deletes the note instead of storing a blank
-  // entry.
-  function upsertCurrent(text) {
+  async function upsertCurrent(text) {
     const trimmed = (text || '').trim();
-    const url = location.href;
-    // Replaces ONLY the note the editor was showing.
-    //
-    // A canonical match can answer with more than one record — a note taken on
-    // Skilljar and another taken on Academy before identity existed both
-    // belong to this lesson now. The editor only ever showed the newest of
-    // them, so removing every match would delete text the learner never saw
-    // and never chose to overwrite. Editing one note is not consent to discard
-    // another.
-    //
-    // The older record stays. It surfaces the next time this note is cleared,
-    // which is a recoverable outcome; silent deletion is not.
     const replacing = editingNote;
-    notes = notes.filter((n) => n !== replacing && (replacing || !isCurrent(n)));
-    if (trimmed) {
-      const title = (document.title || '').trim() || sb.$('h1')?.textContent?.trim() || url;
-      const note = { url, title, text: trimmed, ts: Date.now() };
-      const stamped = sb.identity ? sb.identity.stamp(note, location) : note;
-      notes.unshift(stamped);
-      editingNote = stamped;
-      if (notes.length > MAX_NOTES) notes.length = MAX_NOTES;
-    } else {
-      editingNote = null;
-    }
-    saveNotes();
-    renderList();
+    if (!trimmed && !replacing) return;
+    const response = await records.request(
+      'notes',
+      !trimmed
+        ? { operation: 'delete', recordId: replacing.recordId, expectedRevision: replacing.revision }
+        : replacing
+          ? {
+              operation: 'update',
+              recordId: replacing.recordId,
+              expectedRevision: replacing.revision,
+              patch: { ...editingPage, text: trimmed, ts: Date.now() },
+            }
+          : { operation: 'create', record: { ...editingPage, text: trimmed, ts: Date.now() } },
+    );
+    editingNote = response.record;
   }
 
-  function removeAt(i) {
-    if (i < 0 || i >= notes.length) return;
-    notes.splice(i, 1);
-    saveNotes();
-    renderList();
+  function removeRecord(target) {
+    return records
+      .request('notes', { operation: 'delete', recordId: target.recordId, expectedRevision: target.revision })
+      .catch((error) => sb.showRecordError(error, sb.$id('si18n-note-list')));
   }
 
   function openNote(i) {
@@ -165,7 +129,7 @@
       },
     );
     if (!opened) return;
-    loadNotes(renderList);
+    loadNotes();
   }
 
   function showCompose() {
@@ -189,9 +153,17 @@
     textarea?.focus();
     if (textarea) textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
     sb.$id('si18n-note-cancel')?.addEventListener('click', () => host.replaceChildren());
-    sb.$id('si18n-note-save')?.addEventListener('click', () => {
-      upsertCurrent(sb.$id('si18n-note-input')?.value || '');
-      host.replaceChildren();
+    const saveButton = sb.$id('si18n-note-save');
+    saveButton?.addEventListener('click', async () => {
+      if (saveButton.disabled) return;
+      saveButton.disabled = true;
+      try {
+        await upsertCurrent(sb.$id('si18n-note-input')?.value || '');
+        if (host.isConnected) host.replaceChildren();
+      } catch (error) {
+        sb.showRecordError(error, host);
+        if (saveButton.isConnected) saveButton.disabled = false;
+      }
     });
   }
 
@@ -225,9 +197,10 @@
     list
       .querySelectorAll('.si18n-bm-open')
       .forEach((el) => el.addEventListener('click', () => openNote(Number(el.dataset.i))));
-    list
-      .querySelectorAll('.si18n-bm-remove')
-      .forEach((el) => el.addEventListener('click', () => removeAt(Number(el.dataset.i))));
+    list.querySelectorAll('.si18n-bm-remove').forEach((el) => {
+      const target = notes[Number(el.dataset.i)];
+      el.addEventListener('click', () => removeRecord(target));
+    });
   }
 
   // ============================================================

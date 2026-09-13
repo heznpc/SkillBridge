@@ -1,7 +1,7 @@
 /**
  * SkillBridge — translation feedback record core.
  *
- * The content UI owns presentation and storage. This module owns the small,
+ * The content UI owns presentation; the background owns storage. This module owns the small,
  * stable boundary beneath it: resolving a DOM selection back to one known
  * translation, constructing versioned records, and reading the legacy
  * `wrongText` queue without losing fields.
@@ -348,4 +348,4 @@
 
   if (root && typeof root === 'object') root._sbTranslationFeedback = api;
   if (typeof module !== 'undefined' && module && module.exports) module.exports = api;
-})(typeof window !== 'undefined' ? window : null);
+})(typeof window !== 'undefined' ? window : globalThis);

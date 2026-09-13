@@ -15,6 +15,10 @@ repository but never shipped to users.
 
 ### Added
 
+- Reports now support explicit correction review, exact-source/language local
+  application on plain-text passages, rollback and retained application history.
+- Strict JavaScript checks now cover learning-record, translation-message and
+  page/language boundaries, including compile-time negative regression cases.
 - Dutch (`nl`) is now the thirteenth Premium locale, with a full 1,129-entry
   curated course dictionary, localized extension UI, companion-plugin data,
   and end-to-end selector/static-hit coverage. Native review remains openly
@@ -35,6 +39,11 @@ repository but never shipped to users.
 
 ### Fixed
 
+- Feedback, bookmarks and notes now use one background mutation queue with
+  stable record IDs, revision conflicts and durable save acknowledgements.
+  Two tabs can add, edit and delete without replacing each other's arrays;
+  failed or stale saves retain the draft. Legacy records receive a recovery
+  backup, and reaching the record limit no longer evicts an older record.
 - Changing the popup language now re-renders the optional translation-refinement
   controls instead of leaving that section in the previously selected language.
 - Companion-plugin generation now includes the Claude Platform 101 terminology

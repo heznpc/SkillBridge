@@ -75,7 +75,8 @@ function buildRestore(sb) {
     'domTranslationObserver',
     'updateLangClass',
     'window',
-    `let currentLang = 'ko';
+    `const pageState = globalThis.SB_RUNTIME_CONTRACTS.createPageState(() => 'https://example.test');
+     let currentLang = 'ko';
      ${extractFunction(CONTENT_SRC, 'restoreOriginal')}
      return restoreOriginal;`,
   )(sb.originalTexts, sb.translatedTexts, sb.originalComments, sb, { resetPending: noop }, noop, {
