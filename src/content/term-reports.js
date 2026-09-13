@@ -303,12 +303,12 @@
     review.className = 'si18n-note-compose si18n-correction-review';
     host.append(review);
     const source = document.createElement('p');
-    source.textContent = `${sb.t(REPORT_LABELS.original)} (${target.lang || '—'}): ${target.originalText || target.wrongText || ''}`;
+    source.textContent = `${sb.t(REPORT_LABELS.original)}: ${target.originalText || target.wrongText || ''}`;
     const scope = document.createElement('p');
-    scope.textContent = sb.t({
+    scope.textContent = `${sb.t({ en: 'Correction language', ko: '교정 적용 언어' })}: ${target.lang || '—'}. ${sb.t({
       en: 'Applies only to plain-text passages with this exact original and language. Links and controls stay unchanged.',
       ko: '원문과 언어가 일치하는 일반 텍스트 구절에만 적용합니다. 링크와 조작 버튼은 유지됩니다.',
-    });
+    })}`;
     const textarea = document.createElement('textarea');
     textarea.id = 'si18n-correction-edit';
     textarea.className = 'si18n-chat-input si18n-note-textarea';
