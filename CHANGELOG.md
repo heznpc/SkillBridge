@@ -39,6 +39,13 @@ repository but never shipped to users.
 
 ### Fixed
 
+- Learning-record saves remain successful when a view listener fails, and
+  malformed feedback is rejected before it can disappear on a later read.
+  Report loading can retry after a transient storage error. Delayed note and
+  feedback saves no longer close a newer draft opened while the save was pending.
+- Release verification now runs the checked runtime boundaries and compares
+  ZIP file contents against the production bundle, rejecting stale artifacts
+  even when their entry names match.
 - Feedback, bookmarks and notes now use one background mutation queue with
   stable record IDs, revision conflicts and durable save acknowledgements.
   Two tabs can add, edit and delete without replacing each other's arrays;

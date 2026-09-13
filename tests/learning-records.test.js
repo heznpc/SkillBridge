@@ -1,6 +1,7 @@
 const { createStore } = require('../src/shared/learning-records');
 const { createClient } = require('../src/lib/learning-record-client');
 const { createIndex } = require('../src/lib/translation-corrections');
+const { normalizeReports } = require('../src/lib/translation-feedback');
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 function harness(initial = {}, options = {}) {
@@ -188,6 +189,46 @@ test('an older acknowledgement cannot roll a tab back over its newer snapshot', 
   waiting[0].resolve({ ok: true, requestId: waiting[0].request.requestId, records: [], record: null, version: 1 });
   await first;
   expect(versions).toEqual([2]);
+});
+
+test('a broken view subscriber cannot turn a committed write into a failed acknowledgement', async () => {
+  const h = harness();
+  const client = h.client();
+  const observed = [];
+  client.subscribe('notes', () => {
+    throw new Error('view render failed');
+  });
+  client.subscribe('notes', (snapshot) => observed.push(snapshot));
+  await expect(
+    client.request('notes', { operation: 'create', record: note('one', 'saved once') }),
+  ).resolves.toMatchObject({ ok: true });
+  expect(h.state.sb_notes).toHaveLength(1);
+  expect(observed).toHaveLength(1);
+});
+
+test.each([
+  { reportSchemaVersion: undefined },
+  { reportSchemaVersion: 2 },
+  { selectedText: null },
+  { originalText: null },
+  { ts: 'yesterday' },
+])('rejects invalid or unsupported report mutations: %j', async (patch) => {
+  const h = harness({}, { normalize: (_collection, rows) => rows.flatMap((row) => normalizeReports([row]).records) });
+  const client = h.client();
+  await expect(
+    client.request('reports', { operation: 'create', record: { ...report(), ...patch } }),
+  ).rejects.toMatchObject({ code: 'INVALID' });
+  expect(h.state.sb_term_reports).toBeUndefined();
+  const saved = (await client.request('reports', { operation: 'create', record: report() })).record;
+  await expect(
+    client.request('reports', {
+      operation: 'update',
+      recordId: saved.recordId,
+      expectedRevision: saved.revision,
+      patch,
+    }),
+  ).rejects.toMatchObject({ code: 'INVALID' });
+  expect((await client.refresh('reports')).records).toHaveLength(1);
 });
 
 test('review, apply, replace and revert keep evidence while the exact matching rule changes', async () => {

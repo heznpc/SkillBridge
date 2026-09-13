@@ -63,6 +63,12 @@ describe('release upload ZIP verification', () => {
     expect(() => verifyZipMatchesBundle(fixture)).toThrow(/missing from ZIP: added-after-zip\.js/);
   });
 
+  test('rejects stale file contents even when every ZIP filename still matches', () => {
+    const fixture = createBundleFixture();
+    fs.writeFileSync(path.join(fixture.bundleDir, 'src', 'popup', 'popup.js'), 'void 1;');
+    expect(() => verifyZipMatchesBundle(fixture)).toThrow(/content.*src\/popup\/popup.js/i);
+  });
+
   test('rejects a corrupt ZIP before comparing its entries', () => {
     const fixture = createBundleFixture();
     fs.truncateSync(fixture.zipPath, Math.floor(fs.statSync(fixture.zipPath).size / 2));
@@ -146,6 +152,7 @@ describe('release pipeline orchestration', () => {
     expect(npmScripts).toEqual(
       expect.arrayContaining([
         'check:version',
+        'typecheck',
         'test:ci',
         'build:bundle',
         'build:firefox',

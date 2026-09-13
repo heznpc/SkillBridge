@@ -58,3 +58,21 @@ export interface CorrectionPage {
   refreshTranslation(): Promise<void>;
   registerModule?(name: string): void;
 }
+
+export interface RecordPage {
+  records?: ReturnType<typeof import('../lib/learning-record-client').createClient>;
+  $id(id: string): HTMLElement | null;
+  t(labels: { en: string; ko: string }): string;
+  showRecordError?: (error: Error & { code?: string }, host?: HTMLElement | null) => void;
+  registerModule?(name: string): void;
+}
+
+export interface ChromeRecordsApi {
+  runtime: {
+    lastError?: { message?: string };
+    sendMessage(request: Request, callback: (response: Response | undefined) => void): void;
+  };
+  storage: {
+    onChanged: { addListener(listener: (changes: Record<string, unknown>, area: string) => void): void };
+  };
+}

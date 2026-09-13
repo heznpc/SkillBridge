@@ -133,7 +133,7 @@ function verifyPromoMedia() {
 function runCaptured(label, command, commandArgs, options = {}) {
   const result = spawnSync(command, commandArgs, {
     cwd: options.cwd || ROOT,
-    encoding: 'utf8',
+    encoding: Object.hasOwn(options, 'encoding') ? options.encoding : 'utf8',
     timeout: options.timeoutMs || 60_000,
     maxBuffer: 10 * 1024 * 1024,
   });
@@ -227,6 +227,12 @@ function verifyZipMatchesBundle({
   const zipFiles = parseZipFileEntries(runCaptured('Upload ZIP entry listing', UNZIP, ['-Z1', zipPath]));
   const bundleFiles = listBundleFiles(bundleDir);
   assertMatchingFileLists(bundleFiles, zipFiles);
+  for (const file of bundleFiles) {
+    const archived = runCaptured('Upload ZIP content read', UNZIP, ['-p', zipPath, file], { encoding: null });
+    const expected = fs.readFileSync(path.join(bundleDir, file));
+    const digest = (data) => crypto.createHash('sha256').update(data).digest('hex');
+    if (digest(archived) !== digest(expected)) throw new Error(`Upload ZIP content mismatch: ${file}`);
+  }
   return { fileCount: bundleFiles.length };
 }
 
@@ -318,6 +324,7 @@ function smoke(operations = DEFAULT_OPERATIONS) {
 function localQualityGates(operations = DEFAULT_OPERATIONS) {
   operations.runNpm('Release version identity check', 'check:version');
   operations.runNpm('Lint', 'lint');
+  operations.runNpm('Checked runtime boundaries', 'typecheck');
   operations.runNpm('Format check', 'format:check');
   operations.runNpm('Unit tests with coverage gates', 'test:ci');
   operations.runNpm('Validate translation JSON', 'validate');

@@ -113,6 +113,7 @@ for (const file of [
   'src/lib/learning-record-client.js',
   'src/lib/translation-corrections.js',
   'src/content/translation-corrections.js',
+  'src/content/learning-records.js',
   'src/background/background.js',
 ]) {
   fs.writeFileSync(

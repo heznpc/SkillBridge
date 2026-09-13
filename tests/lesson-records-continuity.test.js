@@ -26,6 +26,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { readProductionSource } = require('./helpers/production-source');
 
 const ROOT = path.join(__dirname, '..');
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), 'utf8');
@@ -182,7 +183,7 @@ function loadModule(
     'NOTE_LABELS',
     'BOOKMARK_LABELS',
     'RESUME_LABELS',
-    read('src', 'content', file),
+    readProductionSource('src', 'content', file),
   )(
     fakeWindow,
     documentObject,
@@ -236,6 +237,30 @@ beforeEach(() => {
 // ────────────────────────────────────────────────────────────────────
 
 describe('notes across platforms', () => {
+  test('a delayed save does not close a newer editor or erase its draft', async () => {
+    const here = new URL(UNMATCHED);
+    const chromeStub = makeChrome();
+    const sb = makeSb(here);
+    loadModule('notes.js', { sb, location: here, chrome: chromeStub });
+    sb._chat.toggleNotesPanel();
+    await flush();
+    const originalSet = chromeStub.storage.local.set;
+    let finishSave;
+    chromeStub.storage.local.set = (data, callback) => {
+      finishSave = () => originalSet(data, callback);
+    };
+    document.getElementById('si18n-note-add').click();
+    document.getElementById('si18n-note-input').value = 'First submitted note';
+    document.getElementById('si18n-note-save').click();
+    await flush();
+    // The add button is still available while the earlier write is pending.
+    document.getElementById('si18n-note-add').click();
+    document.getElementById('si18n-note-input').value = 'A newer unsaved draft';
+    finishSave();
+    await flush();
+    expect(document.getElementById('si18n-note-input')?.value).toBe('A newer unsaved draft');
+    expect(chromeStub._store.sb_notes[0].text).toBe('First submitted note');
+  });
   test('a note written on Skilljar is found on Academy', async () => {
     const chromeStub = makeChrome();
 

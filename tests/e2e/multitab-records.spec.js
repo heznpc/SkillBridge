@@ -35,6 +35,16 @@ test('two tabs preserve feedback, bookmarks and notes through concurrent create/
     );
     expect((await request(0, 'reports', { operation: 'list' })).records).toHaveLength(2);
     expect(new Set(feedback.map((row) => row.recordId)).size).toBe(2);
+    // A malformed edit must be refused at the actual runtime-message boundary;
+    // acknowledging it would let the next read silently discard the report.
+    const malformed = await request(1, 'reports', {
+      operation: 'update',
+      recordId: feedback[0].recordId,
+      expectedRevision: feedback[0].revision,
+      patch: { selectedText: null },
+    });
+    expect(malformed).toMatchObject({ ok: false, code: 'INVALID' });
+    expect((await request(0, 'reports', { operation: 'list' })).records).toHaveLength(2);
 
     for (const collection of ['reports', 'bookmarks', 'notes']) {
       const created =
