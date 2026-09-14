@@ -19,7 +19,7 @@ export const copy: Record<Locale, Copy> = {
     title: 'SkillBridge - AI courses in your language',
     description: 'Read supported AI Academy lessons in your language with curated terminology, local study tools, and exam safeguards.',
     nav: { experience: 'Experience', tools: 'Learning tools', how: 'How it works', install: 'Get extension' },
-    hero: { eyebrow: 'A language layer for learning', title: 'Read the idea.\nNot the translation.', lead: 'Read supported AI Academy lessons in your language without leaving the course page. The lesson flow and technical terms stay intact.', primary: 'Get the extension', secondary: 'See the experience', assurances: ['No account for translation', 'Cached in your browser', 'Exam-aware behavior'] },
+    hero: { eyebrow: 'A language layer for learning', title: 'Change the language,\nnot the way you learn.', lead: 'Read supported AI Academy lessons in your language without leaving the course page. The lesson flow and technical terms stay intact.', primary: 'Get the extension', secondary: 'See the experience', assurances: ['No account for translation', 'Cached in your browser', 'Exam-aware behavior'] },
     language: { title: 'Your course is not a language test.', lead: 'Read in the language that lets you focus on the concept.', more: 'more languages' },
     proof: { eyebrow: 'What stays intact', title: 'The course still feels like the course.', lead: 'Translation belongs inside the lesson, not in another tab, document, or assistant.', cards: [
       { id: '01', title: 'Read in context', body: 'Course navigation, lesson structure, and translated copy stay together on the same page.', note: 'LESSON FLOW PRESERVED' },
@@ -32,7 +32,7 @@ export const copy: Record<Locale, Copy> = {
       { id: '02', title: 'Choose your language', body: 'Open a supported course and choose a course language from the globe menu.', note: 'LANGUAGE ON DEMAND' },
       { id: '03', title: 'Build a study rhythm', body: 'Read, review, save, and return to the lesson where you stopped.', note: 'ALL IN ONE PLACE' },
     ] },
-    cta: { title: 'Make the course meet you halfway.', lead: 'Read supported AI Academy lessons in the language that lets you focus on the idea.', primary: 'Get SkillBridge', source: 'View source on GitHub' },
+    cta: { title: 'Open the lesson. Read it in the language that works for you.', lead: 'Read supported AI Academy lessons in the language that lets you focus on the idea.', primary: 'Get SkillBridge', source: 'View source on GitHub' },
     footer: { disclaimer: 'Independent project. Not affiliated with, endorsed by, or sponsored by Anthropic or Skilljar.', privacy: 'Privacy', source: 'GitHub', license: 'MIT License' },
   },
   ko: {
