@@ -42,6 +42,12 @@ repository but never shipped to users.
 - Academy's video Summary/Transcript switch no longer activates exam mode on
   an ordinary lesson or injects a false exam restriction into the Tutor.
   Assessment routes, headings and actual answer choices remain protected.
+- Page-driven navigation now resets Tutor conversations and page state across
+  the extension's isolated execution boundary. Academy's `course-quiz` route
+  protects before its questions render, and exam banners follow settled state
+  even on officially localized pages that do not need translation.
+- Academy's Tutor launcher and panel now sit above the host support button,
+  keeping both the launcher and message-send button accessible.
 - Learning-record saves remain successful when a view listener fails, and
   malformed feedback is rejected before it can disappear on a later read.
   Report loading can retry after a transient storage error. Delayed note and

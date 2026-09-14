@@ -46,7 +46,7 @@ const ACADEMY_HOST = 'academy.claude.com';
  * pattern is exactly what fails on this site.
  */
 const ACADEMY_ASSESSMENT_PATH_PATTERNS = Object.freeze([
-  /\/quiz(?:-[a-z0-9-]*)?(?:\/|\?|#|$)/i,
+  /\/(?:[a-z0-9]+-)*quiz(?:-[a-z0-9-]*)?(?:\/|\?|#|$)/i,
   /\/[a-z0-9-]*assessment(?:-[a-z0-9-]*)?(?:\/|\?|#|$)/i,
   /\/[a-z0-9-]*exam(?:-[a-z0-9-]*)?(?:\/|\?|#|$)/i,
 ]);

@@ -232,7 +232,7 @@ body:is(.si18n-lang-ar, .si18n-lang-he) .si18n-dark-toggle-btn {
 
 @media (max-width: 768px) {
   .skillbridge-sidebar {
-    bottom: 0;
+    bottom: var(--si18n-widget-bottom, 0px);
     right: 0;
     left: 0;
     width: 100%;
@@ -247,7 +247,7 @@ body:is(.si18n-lang-ar, .si18n-lang-he) .si18n-dark-toggle-btn {
 
 @media (max-width: 600px) {
   .skillbridge-sidebar {
-    bottom: 0;
+    bottom: var(--si18n-widget-bottom, 0px);
     right: 0;
     left: 0;
     width: 100%;

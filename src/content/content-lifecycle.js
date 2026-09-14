@@ -87,7 +87,9 @@
 
   function createRouteController({
     getHref,
-    historyObject = history,
+    navigationObject = window.navigation,
+    scheduleInterval = setInterval,
+    cancelInterval = clearInterval,
     addWindowListener = (...args) => window.addEventListener(...args),
     removeWindowListener = (...args) => window.removeEventListener(...args),
     isCertificationHref,
@@ -109,8 +111,8 @@
     logInfo = console.info,
   } = {}) {
     let lastHref = getHref?.() || location.href;
-    let origPushState = null;
-    let origReplaceState = null;
+    let started = false;
+    let routePoll = null;
 
     function onRouteChange() {
       const href = getHref?.() || location.href;
@@ -153,35 +155,34 @@
     }
 
     function start() {
+      if (started) return;
+      started = true;
       addWindowListener('popstate', onRouteChange);
       addWindowListener('hashchange', onRouteChange);
       addWindowListener('pagehide', stop);
 
-      // Catch pushState/replaceState (Skilljar SPA uses these). Guard against
-      // wrapper stacking across extension reloads or bfcache restores.
-      if (!historyObject.pushState.__sb_wrapped__) {
-        origPushState = historyObject.pushState;
-        origReplaceState = historyObject.replaceState;
-        historyObject.pushState = function (...args) {
-          origPushState.apply(this, args);
-          onRouteChange();
-        };
-        historyObject.replaceState = function (...args) {
-          origReplaceState.apply(this, args);
-          onRouteChange();
-        };
-        historyObject.pushState.__sb_wrapped__ = true;
-        historyObject.replaceState.__sb_wrapped__ = true;
+      // A content script's History wrapper cannot observe page-world calls.
+      // The browser's Navigation event crosses that isolated-world boundary
+      // and fires after the URL changes, before the new lesson DOM is ready.
+      if (navigationObject?.addEventListener) {
+        navigationObject.addEventListener('currententrychange', onRouteChange);
+      } else {
+        // Older Firefox versions have no Navigation API. Read the shared URL
+        // without injecting page-world code or requesting another permission.
+        routePoll = scheduleInterval(onRouteChange, 250);
       }
     }
 
     function stop() {
+      if (!started) return;
+      started = false;
       removeWindowListener('popstate', onRouteChange);
       removeWindowListener('hashchange', onRouteChange);
       removeWindowListener('pagehide', stop);
+      navigationObject?.removeEventListener?.('currententrychange', onRouteChange);
+      if (routePoll !== null) cancelInterval(routePoll);
+      routePoll = null;
       onPageHide?.();
-      if (origPushState) historyObject.pushState = origPushState;
-      if (origReplaceState) historyObject.replaceState = origReplaceState;
     }
 
     return { start, stop, onRouteChange };

@@ -79,4 +79,38 @@ test.describe('SkillBridge — shadow UI isolation', () => {
     // …and the shared sheet is adopted into #skillbridge-root's shadow root.
     expect(r.adopted).toBeGreaterThanOrEqual(1);
   });
+
+  test('Academy Tutor stays clickable above the host support launcher on desktop and mobile', async () => {
+    await evalInContentWorld(extCtx.context, 'useAcademyProfile');
+    await evalInContentWorld(extCtx.context, 'suppressOnboarding');
+    await page.evaluate(() => {
+      document.getElementById('skillbridge-root')?.remove();
+      const launcher = document.createElement('div');
+      launcher.id = 'host-support-launcher';
+      launcher.style.cssText =
+        'position:fixed;bottom:20px;right:20px;width:56px;height:56px;z-index:2147483000;background:blue';
+      document.body.appendChild(launcher);
+    });
+    await evalInContentWorld(extCtx.context, 'fabProbe');
+    await evalInContentWorld(extCtx.context, 'injectSidebar');
+    const fab = page.locator('#skillbridge-fab');
+    const sidebar = page.locator('#skillbridge-sidebar');
+    await expect(sidebar).toHaveAttribute('data-sb-bound', '1');
+    for (const viewport of [
+      { width: 1280, height: 720 },
+      { width: 390, height: 844 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await fab.click();
+      await expect(sidebar).toHaveClass(/open/);
+      const panelBox = await sidebar.boundingBox();
+      const supportBox = await page.locator('#host-support-launcher').boundingBox();
+      expect(panelBox.y).toBeGreaterThanOrEqual(0);
+      expect(panelBox.x).toBeGreaterThanOrEqual(0);
+      expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(viewport.width);
+      expect(panelBox.y + panelBox.height).toBeLessThan(supportBox.y);
+      await page.locator('#si18n-close').click();
+      await expect(sidebar).not.toHaveClass(/open/);
+    }
+  });
 });

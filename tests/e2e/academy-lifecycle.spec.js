@@ -100,13 +100,19 @@ test.describe('SkillBridge — Claude Academy lesson ↔ quiz lifecycle', () => 
 
   /**
    * One client-side navigation: swap the body and push the new path, exactly
-   * as `replaceBodyAndPushState` does for the Skilljar SPA spec. The wrapped
-   * history.pushState fires the route controller; the MutationObserver then
+   * as `replaceBodyAndPushState` does for the Skilljar SPA spec. The page-world
+   * history.pushState must reach the isolated content script; the observer then
    * sees the swap and settles the state.
    */
   async function spaNavigate(path, expectExam) {
     const html = await fetchFixture(path);
-    await evalInContentWorld(extCtx.context, 'replaceBodyAndPushState', { html, path });
+    await page.evaluate(
+      ({ html, path }) => {
+        document.body.innerHTML = html;
+        history.pushState({}, '', path);
+      },
+      { html, path },
+    );
 
     // Poll for the value the lifecycle settles on, with NOTHING forced. The
     // settle here has to come from the real MutationObserver and its debounce,
@@ -143,6 +149,12 @@ test.describe('SkillBridge — Claude Academy lesson ↔ quiz lifecycle', () => 
     const state = await evalInContentWorld(extCtx.context, 'examState');
     expect(state.isExamPage, 'the media view switch must not turn a lesson into an exam').toBe(false);
     expect(state.choiceCount, 'the lesson fixture must actually carry the two media radio controls').toBe(2);
+  });
+
+  test('a page-world course-quiz route protects before the new DOM arrives', async () => {
+    await gotoAcademy(LESSON_PATH);
+    await page.evaluate(() => history.pushState({}, '', '/academy/courses/c/course-quiz'));
+    expect((await evalInContentWorld(extCtx.context, 'examState')).isExamPage).toBe(true);
   });
 
   test('step B: an Academy quiz IS detected, on a route the Skilljar patterns miss', async () => {
@@ -199,6 +211,15 @@ test.describe('SkillBridge — Claude Academy lesson ↔ quiz lifecycle', () => 
       await page.waitForTimeout(100);
     }
     expect(state.isExamPage, 'a late-rendering quiz must trip exam mode through the observer alone').toBe(true);
+  });
+
+  test('exam banner follows page-world lesson and quiz transitions', async () => {
+    await gotoAcademy(LESSON_PATH);
+    await evalInContentWorld(extCtx.context, 'switchLanguage', 'ko');
+    await spaNavigate(QUIZ_PATH, true);
+    await expect(page.locator('#si18n-exam-banner')).toBeVisible();
+    await spaNavigate(LESSON_PATH, false);
+    await expect(page.locator('#si18n-exam-banner')).toHaveCount(0);
   });
 
   test('step E: answer-choice text reaches neither Google Translate nor the tutor', async () => {

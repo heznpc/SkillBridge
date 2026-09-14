@@ -98,6 +98,13 @@ function addMediaSwitch(main) {
 }
 
 describe('lesson media controls are not exam answers', () => {
+  test('the live course-quiz route protects while the previous media lesson DOM remains', () => {
+    addMediaSwitch(renderPage());
+    const verdict = detectAcademyAssessment(document, at('/ko/courses/c/course-quiz'));
+    expect(verdict.isAssessment).toBe(true);
+    expect(verdict.signals).toContain(ASSESSMENT_SIGNAL.ROUTE);
+  });
+
   test('the summary/transcript switch does not remove lesson context from Tutor', () => {
     addMediaSwitch(renderPage());
     expect(detectAcademyAssessment(document, at('/ko/courses/c/lesson'))).toEqual({

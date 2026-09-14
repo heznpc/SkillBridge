@@ -27,6 +27,13 @@ function routeHarness(overrides = {}) {
     href = new URL(nextHref, href).href;
   });
   const historyObject = { pushState: originalPushState, replaceState: originalReplaceState };
+  const navigationListeners = new Map();
+  const navigationObject = {
+    addEventListener: (type, handler) => navigationListeners.set(type, handler),
+    removeEventListener: (type) => navigationListeners.delete(type),
+  };
+  const scheduleInterval = jest.fn(() => 42);
+  const cancelInterval = jest.fn();
   const calls = {
     teardownCertificationSurface: jest.fn(),
     evaluateGate: jest.fn(),
@@ -45,7 +52,9 @@ function routeHarness(overrides = {}) {
   };
   const controller = createRouteController({
     getHref: () => href,
-    historyObject,
+    navigationObject,
+    scheduleInterval,
+    cancelInterval,
     addWindowListener: (type, handler) => listeners.set(type, handler),
     removeWindowListener: (type, handler) => {
       if (listeners.get(type) === handler) listeners.delete(type);
@@ -61,6 +70,9 @@ function routeHarness(overrides = {}) {
     calls,
     listeners,
     historyObject,
+    navigationListeners,
+    scheduleInterval,
+    cancelInterval,
     originalPushState,
     originalReplaceState,
     setHref: (value) => {
@@ -71,10 +83,11 @@ function routeHarness(overrides = {}) {
 
 describe('route lifecycle', () => {
   test('replaceState, popstate, and hashchange run route work, while certification gets the stronger teardown', () => {
-    const { controller, calls, listeners, historyObject, setHref } = routeHarness();
+    const { controller, calls, listeners, historyObject, navigationListeners, setHref } = routeHarness();
     controller.start();
 
     historyObject.replaceState({}, '', '/courses/replaced');
+    navigationListeners.get('currententrychange')();
     expect(calls.evaluateGate).toHaveBeenCalledTimes(1);
     expect(calls.redetectPageLocale).toHaveBeenCalledTimes(1);
     expect(calls.reapplyTranslations).toHaveBeenCalledTimes(1);
@@ -98,22 +111,50 @@ describe('route lifecycle', () => {
     expect(calls.reapplyTranslations).toHaveBeenCalledTimes(3);
   });
 
-  test('pagehide stops listeners, restores History methods, and prevents later History calls from routing', () => {
-    const { controller, calls, listeners, historyObject, originalPushState, originalReplaceState } = routeHarness();
+  test('pagehide stops browser navigation listeners without changing History methods', () => {
+    const {
+      controller,
+      calls,
+      listeners,
+      navigationListeners,
+      historyObject,
+      originalPushState,
+      originalReplaceState,
+    } = routeHarness();
+    controller.start();
     controller.start();
     const pagehide = listeners.get('pagehide');
 
-    expect(historyObject.pushState).not.toBe(originalPushState);
-    expect(historyObject.replaceState).not.toBe(originalReplaceState);
+    expect(historyObject.pushState).toBe(originalPushState);
+    expect(historyObject.replaceState).toBe(originalReplaceState);
+    expect(navigationListeners.size).toBe(1);
     pagehide();
 
     expect(calls.onPageHide).toHaveBeenCalledTimes(1);
     expect(listeners.size).toBe(0);
+    expect(navigationListeners.size).toBe(0);
     expect(historyObject.pushState).toBe(originalPushState);
     expect(historyObject.replaceState).toBe(originalReplaceState);
 
     historyObject.replaceState({}, '', '/after-pagehide');
     expect(calls.evaluateGate).not.toHaveBeenCalled();
+  });
+
+  test('older browsers poll URL changes once and cancel the fallback on stop', () => {
+    const { controller, calls, scheduleInterval, cancelInterval, setHref } = routeHarness({ navigationObject: null });
+    controller.start();
+    controller.start();
+    expect(scheduleInterval).toHaveBeenCalledTimes(1);
+    const checkRoute = scheduleInterval.mock.calls[0][0];
+    setHref('/courses/from-page-world');
+    checkRoute();
+    checkRoute();
+    expect(calls.cancelActiveStream).toHaveBeenCalledTimes(1);
+    expect(calls.redetectPageLocale).toHaveBeenCalledTimes(1);
+    controller.stop();
+    expect(cancelInterval).toHaveBeenCalledWith(42);
+    controller.start();
+    expect(scheduleInterval).toHaveBeenCalledTimes(2);
   });
 
   test('a non-AI route pauses an initialized surface and a later AI route fully rehydrates it', () => {

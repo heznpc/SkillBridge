@@ -19,6 +19,11 @@
     if (sb._uiHost && sb._uiHost.isConnected) return sb._uiHost.shadowRoot;
     const host = document.createElement('div');
     host.id = 'skillbridge-root';
+    // Academy places its own support launcher in the bottom-right corner.
+    // Leave it usable while keeping Tutor's launcher and send button clear.
+    if (sb.hostCaps?.platform === 'claude-academy') {
+      host.style.setProperty('--si18n-widget-bottom', '96px');
+    }
     host.attachShadow({ mode: 'open' });
     window._sbShadowCss?.ensureShadowStylesheet(host.shadowRoot);
     syncHostThemeClasses(host);
