@@ -30,13 +30,14 @@ const streamMatch = bgSrc.match(/async function _streamLocalChat\(port, req\)\s*
 if (!streamMatch) throw new Error('Could not extract _streamLocalChat from background.js');
 
 /** Build the real relay with its platform collaborators injected. */
-const makeStream = (fakeFetch) =>
+const makeStream = (fakeFetch, runtime = {}) =>
   new Function(
     'fetch',
     'TextDecoder',
     'AbortController',
+    'chrome',
     `${baseMatch[0]}\n${parserMatch[0]}\n${streamMatch[0]}\nreturn _streamLocalChat;`,
-  )(fakeFetch, TextDecoder, AbortController);
+  )(fakeFetch, TextDecoder, AbortController, { runtime });
 
 function makeStreamPort({ postMessage } = {}) {
   const disconnectListeners = [];
@@ -196,6 +197,7 @@ describe('_checkLocalEngine — origin block is detected at probe time, not firs
 describe('_streamLocalChat — cancellation and dead-port safety', () => {
   test('a disconnect aborts an in-flight fetch without posting a server error', async () => {
     let fetchSignal;
+    const readDisconnectError = jest.fn(() => ({ message: 'The page moved into back/forward cache' }));
     const fakeFetch = jest.fn(
       (_url, init) =>
         new Promise((_resolve, reject) => {
@@ -204,13 +206,18 @@ describe('_streamLocalChat — cancellation and dead-port safety', () => {
         }),
     );
     const port = makeStreamPort();
-    const pending = makeStream(fakeFetch)(port, { baseUrl: 'http://localhost:11434/v1' });
+    const pending = makeStream(fakeFetch, {
+      get lastError() {
+        return readDisconnectError();
+      },
+    })(port, { baseUrl: 'http://localhost:11434/v1' });
     await Promise.resolve();
 
     port.emitDisconnect();
     await expect(pending).resolves.toBeUndefined();
 
     expect(fetchSignal.aborted).toBe(true);
+    expect(readDisconnectError).toHaveBeenCalledTimes(1);
     expect(port.posted).toEqual([]);
   });
 

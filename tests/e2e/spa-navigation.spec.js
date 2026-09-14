@@ -13,8 +13,8 @@
  * Steps:
  *   A. Setup at `/lesson`, switchLanguage('ko'), wait for the H1 to swap.
  *   B. Simulate SPA nav: replace body HTML with lesson-2 content + push
- *      `/lesson-2` via `history.pushState`. content.js wraps pushState to
- *      fire onRouteChange.
+ *      `/lesson-2` via page-world `history.pushState`. The browser navigation event
+ *      must reach the isolated content script and fire onRouteChange.
  *   C. Wait for re-translation. Assert lesson-2 content is translated AND
  *      lesson-1 stale text (`Claude 소개`) is NOT present in the DOM.
  *      Generation must bump again.
@@ -89,10 +89,10 @@ test.describe('SkillBridge — SPA navigation flow', () => {
         </ul>
       </main>
     `;
-    await evalInContentWorld(extCtx.context, 'replaceBodyAndPushState', {
-      html: newHtml,
-      path: '/lesson-2',
-    });
+    await page.evaluate((html) => {
+      document.body.innerHTML = html;
+      history.pushState({}, '', '/lesson-2');
+    }, newHtml);
 
     // Wait for onRouteChange's deferred applyStaticTranslations to land
     // (it's scheduled via setTimeout(LATE_CONTENT) ≈ 1.5s).

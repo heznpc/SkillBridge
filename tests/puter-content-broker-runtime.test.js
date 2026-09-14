@@ -248,7 +248,16 @@ function bootBroker({ stored = {}, chat, signIn, authenticateWithPuter, deferred
     portRecords.push(record);
     return record.port;
   });
-  const chrome = { runtime: { connect }, storage: { local: storage } };
+  const readDisconnectError = jest.fn(() => ({ message: 'The page moved into back/forward cache' }));
+  const chrome = {
+    runtime: {
+      connect,
+      get lastError() {
+        return readDisconnectError();
+      },
+    },
+    storage: { local: storage },
+  };
   new Function('chrome', 'globalThis', brokerSrc)(chrome, isolatedGlobal);
   const firstPort = portRecords[0];
   const element = (action) => isolatedGlobal.document.created.find((node) => node.dataset.sbAction === action);
@@ -259,6 +268,7 @@ function bootBroker({ stored = {}, chat, signIn, authenticateWithPuter, deferred
     port: firstPort.port,
     portRecords,
     connect,
+    readDisconnectError,
     storage,
     values,
     puter,
@@ -424,6 +434,7 @@ describe('Puter isolated-world content broker', () => {
     expect(broker.storage.get).toHaveBeenCalledTimes(1);
 
     broker.listeners.disconnect[0]();
+    expect(broker.readDisconnectError).toHaveBeenCalledTimes(1);
     expect(broker.isolatedGlobal.__SKILLBRIDGE_ENSURE_PUTER_BROKER__()).toBe(true);
     expect(broker.connect).toHaveBeenCalledTimes(2);
     const replacement = broker.portRecords[1];

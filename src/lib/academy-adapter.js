@@ -46,7 +46,7 @@ const ACADEMY_HOST = 'academy.claude.com';
  * pattern is exactly what fails on this site.
  */
 const ACADEMY_ASSESSMENT_PATH_PATTERNS = Object.freeze([
-  /\/quiz(?:-[a-z0-9-]*)?(?:\/|\?|#|$)/i,
+  /\/(?:[a-z0-9]+-)*quiz(?:-[a-z0-9-]*)?(?:\/|\?|#|$)/i,
   /\/[a-z0-9-]*assessment(?:-[a-z0-9-]*)?(?:\/|\?|#|$)/i,
   /\/[a-z0-9-]*exam(?:-[a-z0-9-]*)?(?:\/|\?|#|$)/i,
 ]);
@@ -98,6 +98,27 @@ function _headingText(root) {
 }
 
 /**
+ * Academy's video Summary/Transcript switch also uses radio roles. Recognize
+ * only the observed component + two semantic input values, independent of
+ * translated labels. Other segmented controls remain assessment signals.
+ */
+function _isMediaViewSwitch(element) {
+  const group = element.closest('[role="radiogroup"][data-cds="SegmentedControl"]');
+  if (
+    !group ||
+    group.querySelectorAll('[role="radio"]').length !== 2 ||
+    group.querySelector('[role="checkbox"], [role="option"], [role="listbox"]')
+  )
+    return false;
+  const inputs = Array.from(group.querySelectorAll('input[type="radio"][aria-hidden="true"]'));
+  return (
+    inputs.length === 2 &&
+    inputs.some((input) => input.value === 'summary') &&
+    inputs.some((input) => input.value === 'transcript')
+  );
+}
+
+/**
  * Decide whether the current page is an assessment.
  *
  * Multi-signal on purpose, and deliberately lopsided: a single signal is
@@ -128,9 +149,12 @@ function detectAcademyAssessment(doc, loc) {
     signals.push(ASSESSMENT_SIGNAL.HEADING);
   }
 
-  if (root.querySelector('[role="radiogroup"], [role="listbox"]')) signals.push(ASSESSMENT_SIGNAL.RADIOGROUP);
+  const groups = Array.from(root.querySelectorAll('[role="radiogroup"], [role="listbox"]'));
+  if (groups.some((group) => !_isMediaViewSwitch(group))) signals.push(ASSESSMENT_SIGNAL.RADIOGROUP);
 
-  const choices = root.querySelectorAll('[role="radio"], [role="checkbox"], [role="option"]');
+  const choices = Array.from(root.querySelectorAll('[role="radio"], [role="checkbox"], [role="option"]')).filter(
+    (choice) => !_isMediaViewSwitch(choice),
+  );
   if (choices.length > 0) signals.push(ASSESSMENT_SIGNAL.CHOICE_ROLES);
 
   return { isAssessment: signals.length > 0, signals, choiceCount: choices.length };

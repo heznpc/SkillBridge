@@ -710,7 +710,10 @@ class SkilljarTranslator {
           finish(reject, new Error(msg.error || 'Local AI error'));
         }
       });
-      port.onDisconnect.addListener(() => finish(reject, new Error('Local AI connection closed')));
+      port.onDisconnect.addListener(() => {
+        void chrome.runtime.lastError;
+        finish(reject, new Error('Local AI connection closed'));
+      });
       if (opts.signal) {
         if (opts.signal.aborted) return onAbort();
         opts.signal.addEventListener('abort', onAbort, { once: true });
@@ -916,6 +919,7 @@ User: ${userMessage}`;
   }
 
   async chatStream(userMessage, targetLang, courseContext = '', onChunk, opts = {}) {
+    if (opts.isExamPage) throw new Error('Tutor is unavailable on assessments.');
     try {
       const prompt = this._buildTutorPrompt({
         userMessage,
@@ -1044,6 +1048,7 @@ User: ${userMessage}`;
         }
       });
       port.onDisconnect.addListener(() => {
+        void chrome.runtime.lastError;
         if (this._cloudPort !== port) return;
         const wasWaiting = waiting;
         cleanupReady();

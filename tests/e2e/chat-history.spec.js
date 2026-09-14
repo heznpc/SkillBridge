@@ -153,6 +153,7 @@ test.describe('SkillBridge — Tutor conversation lifecycle', () => {
 
     // A same-tab SPA lesson change is another automatic boundary. With the
     // sidebar hidden, it must reset the transcript without stealing page focus.
+    // Navigate in the PAGE world, as the host does, not via a content-script helper.
     await evalInContentWorld(extCtx.context, 'closeSubPanel');
     await evalInContentWorld(extCtx.context, 'toggleSidebar');
     await page.evaluate(() => {
@@ -161,9 +162,11 @@ test.describe('SkillBridge — Tutor conversation lifecycle', () => {
       heading.focus();
     });
     expect(
-      await evalInContentWorld(extCtx.context, 'pushTutorLesson', {
-        path: '/lesson-two',
-        title: 'Second Lesson',
+      await page.evaluate(() => {
+        const heading = document.querySelector('h1');
+        heading.textContent = 'Second Lesson';
+        history.pushState({}, '', '/lesson-two');
+        return { title: heading.textContent };
       }),
     ).toMatchObject({ title: 'Second Lesson' });
     await page.waitForTimeout(250);

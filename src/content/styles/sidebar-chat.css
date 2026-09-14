@@ -1,7 +1,7 @@
 /* Chatbot widget — bottom-right popup */
 .skillbridge-sidebar {
   position: fixed;
-  bottom: 24px;
+  bottom: var(--si18n-widget-bottom, 24px);
   right: 24px;
   width: var(--si18n-sidebar-width);
   height: 560px;

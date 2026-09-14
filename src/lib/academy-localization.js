@@ -1,8 +1,8 @@
 /**
  * SkillBridge — Translation policy for a site that is already localized.
  *
- * Skilljar is English, so "translate the page" needed no policy. Academy
- * ships seven official locales, and the observation run found every non-English
+ * Skilljar is English, so "translate the page" needed no policy. The original
+ * Academy observation sampled seven locales and found every non-English
  * one to be PARTIAL: course titles translated, section and lesson titles and
  * body copy `mixed`, and in one case a course title that was pure English
  * residue under a Korean locale. So the page a learner sees is genuinely two
@@ -184,6 +184,7 @@ function readObservedLocale(doc, loc) {
  */
 const ACADEMY_LOCALE_LABELS = Object.freeze({
   English: 'en',
+  Deutsch: 'de',
   Español: 'es',
   Français: 'fr',
   日本語: 'ja',

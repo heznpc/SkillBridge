@@ -1,28 +1,7 @@
 /**
- * SkillBridge — the Tutor's exam-safe contract on a Claude Academy assessment.
- *
- * The bridge was held off for academy.claude.com until this existed. The
- * reasoning was specific: Academy's assessment signals are nothing like
- * Skilljar's, so a tutor shipped there before the guard was verified would be
- * a tutor answering live quiz questions — the one failure this host must not
- * have.
- *
- * Everything here is asserted on THE PROMPT THE MODEL RECEIVED, captured by
- * the Puter stub, and not on the page or the rendered reply. A guard that is
- * built and then dropped somewhere between the sidebar and the transport looks
- * identical from both of those ends.
- *
- * Four claims:
- *   1. On an Academy quiz the prompt carries the exam guard.
- *   2. It carries no answer-choice text — not the choices themselves, and not
- *      the lesson body they live in.
- *   3. On an Academy lesson the guard is absent, so it is a real signal rather
- *      than something always on.
- *   4. With the engine Off, nothing is asked at all.
- *   5. And none of that is undone when the quiz becomes its own result page.
- *
- * tests/tutor-safety-contract.test.js owns the same contract across all three
- * engines at unit level. This one owns "and it survives the real transport".
+ * Academy assessments disable Tutor completely: no visible entry point and
+ * zero transport calls, including after results or a page-world transition.
+ * Ordinary lessons retain cloud and local Tutor access.
  */
 
 const { test, expect } = require('@playwright/test');
@@ -41,14 +20,6 @@ const QUIZ_PATH = '/academy/courses/building-with-the-claude-api/quiz-on-accessi
 const RESULTS_PATH = `${QUIZ_PATH}/results`;
 
 const EXAM_MARKER = 'CRITICAL: The user is on a certification exam page.';
-/** Nonsense on purpose — each string exists in exactly one place in the fixture. */
-const CHOICE_FRAGMENTS = [
-  'Zebra-cipher-alpha',
-  'Marmalade-vector-bravo',
-  'Quartzite-harbor-charlie',
-  'Pelican-lantern-delta',
-];
-
 function startLocalTutorStub() {
   return new Promise((resolve) => {
     const requests = [];
@@ -135,54 +106,42 @@ test.describe('SkillBridge — Academy tutor exam safety', () => {
     await stopFixtureServer(fixture.server);
   });
 
-  test('on an Academy quiz, the prompt the model receives carries the exam guard', async () => {
-    await gotoAcademy(QUIZ_PATH);
-    expect((await evalInContentWorld(extCtx.context, 'examState')).isExamPage).toBe(true);
+  for (const path of [QUIZ_PATH, RESULTS_PATH]) {
+    test(`Tutor is hidden and sends nothing on ${path}`, async () => {
+      await gotoAcademy(path);
+      expect((await evalInContentWorld(extCtx.context, 'examState')).isExamPage).toBe(true);
+      await expect(page.locator('#skillbridge-fab')).toBeHidden();
+      await expect(page.locator('#skillbridge-sidebar')).toBeHidden();
+      // Exercise the event handler directly as well as the hidden entry point.
+      // Hiding the UI alone must not be the only barrier to a model call.
+      await evalInContentWorld(extCtx.context, 'sendChat', 'Explain this question.');
+      await page.waitForTimeout(500);
+      expect((await evalInContentWorld(extCtx.context, 'lastTutorPrompt')).prompt).toBeFalsy();
+      await page.keyboard.press(process.platform === 'darwin' ? 'Meta+Shift+S' : 'Control+Shift+S');
+      await expect(page.locator('#skillbridge-fab')).toBeHidden();
+      await expect(page.locator('#skillbridge-sidebar')).not.toHaveClass(/open/);
+    });
+  }
 
-    const prompt = await askTutor('Which of these answers is correct?');
-    expect(prompt, 'the tutor must have been asked at all').toBeTruthy();
-    expect(prompt).toContain(EXAM_MARKER);
-    expect(prompt).toContain('MUST NOT provide answers');
-  });
-
-  test('and it carries no answer-choice text', async () => {
-    await gotoAcademy(QUIZ_PATH);
-    const prompt = await askTutor('Explain what an API credential is.');
-    expect(prompt).toBeTruthy();
-    for (const fragment of CHOICE_FRAGMENTS) {
-      expect(prompt, `answer choice "${fragment}" must never reach the model`).not.toContain(fragment);
-    }
-    // The whole lesson body is withheld on an assessment page, not just the
-    // choices — so the sentence they sit in is gone too.
-    expect(prompt).not.toContain('carries the credential');
-  });
-
-  test('after submission, at the same URL, the guard is still on the prompt', async () => {
-    // Nothing in the result DOM says "assessment" any more: no quiz heading,
-    // and the choices carry correctness marks rather than an unanswered
-    // question. The URL is unchanged, which is the signal that a re-render
-    // cannot take away.
-    await gotoAcademy(RESULTS_PATH);
-    expect((await evalInContentWorld(extCtx.context, 'examState')).isExamPage).toBe(true);
-
-    const prompt = await askTutor('Why was my answer wrong?');
-    expect(prompt, 'the tutor must have been asked at all').toBeTruthy();
-    expect(prompt).toContain(EXAM_MARKER);
-  });
-
-  test('and the revealed answers do not reach the model either', async () => {
-    await gotoAcademy(RESULTS_PATH);
-    const prompt = await askTutor('Summarise this page for me.');
-    expect(prompt).toBeTruthy();
-    for (const fragment of CHOICE_FRAGMENTS) {
-      expect(prompt, `answer choice "${fragment}" must never reach the model`).not.toContain(fragment);
-    }
-    // The prose line is the one choice exclusion would not have caught: it is
-    // outside every radiogroup. It is withheld because the page is still an
-    // assessment and the whole body is given up, not because it looks like a
-    // choice — which is why the route signal is the thing being tested.
-    expect(prompt).not.toContain('Ptarmigan-meridian-echo');
-    expect(prompt).not.toContain('You scored 3 out of 4');
+  test('quiz navigation closes an open Tutor, cancels its stream and restores access on a lesson', async () => {
+    await gotoAcademy(LESSON_PATH);
+    await evalInContentWorld(extCtx.context, 'setPuterChunkDelay', 1000);
+    await evalInContentWorld(extCtx.context, 'sendChat', 'A lesson question in progress');
+    await expect(page.locator('.si18n-streaming-cursor')).toBeVisible();
+    await page.evaluate(() => history.pushState({}, '', '/academy/courses/c/course-quiz'));
+    await expect(page.locator('#skillbridge-fab')).toBeHidden();
+    await expect(page.locator('#skillbridge-sidebar')).toBeHidden();
+    await expect(page.locator('#skillbridge-sidebar')).not.toHaveClass(/open/);
+    await expect(page.locator('.si18n-streaming-cursor')).toHaveCount(0);
+    await page.evaluate((path) => history.pushState({}, '', path), LESSON_PATH);
+    // The old lesson DOM is still present. A real mutation settles the route.
+    await page.evaluate(() => document.querySelector('main').appendChild(document.createElement('span')));
+    await expect(page.locator('#skillbridge-fab')).toBeVisible();
+    await evalInContentWorld(extCtx.context, 'setPuterChunkDelay', 20);
+    await page.locator('#skillbridge-fab').click();
+    await expect(page.locator('#skillbridge-sidebar')).toHaveClass(/open/);
+    await evalInContentWorld(extCtx.context, 'clearTutorPrompt');
+    expect(await askTutor('A new lesson question')).toBeTruthy();
   });
 
   test('on an Academy lesson the guard is absent, so it means something when present', async () => {
@@ -198,7 +157,7 @@ test.describe('SkillBridge — Academy tutor exam safety', () => {
   });
 
   test('with the Tutor engine Off, the model is never asked', async () => {
-    await gotoAcademy(QUIZ_PATH);
+    await gotoAcademy(LESSON_PATH);
     await evalInContentWorld(extCtx.context, 'setTutorEngine', 'off');
     await evalInContentWorld(extCtx.context, 'clearTutorPrompt');
 

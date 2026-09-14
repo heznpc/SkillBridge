@@ -30,6 +30,28 @@
     _activeStreamController = null;
   }
 
+  function syncAssessmentAccess() {
+    const blocked = !!(sb.certDisabled || sb.isExamPage);
+    // Keep unrelated shadow UI (such as the lesson TOC) available.
+    // The Tutor launcher and panel are the assessment access boundary.
+    for (const element of [sb.$id('skillbridge-sidebar'), sb.$id('skillbridge-fab')]) {
+      if (!element) continue;
+      element.hidden = blocked;
+      element.inert = blocked;
+      if (blocked) element.style.setProperty('display', 'none', 'important');
+      else element.style.removeProperty('display');
+    }
+    if (!blocked) return;
+    cancelActiveStream();
+    sb.dismissSelectionToolbar?.();
+    sb.sidebarVisible = false;
+    const sidebar = sb.$id('skillbridge-sidebar');
+    sidebar?.classList.remove('open');
+    sidebar?.removeEventListener('keydown', trapFocus);
+    sidebar?.getRootNode().activeElement?.blur?.();
+    sb.$id('skillbridge-fab')?.classList.remove('hidden');
+  }
+
   // ============================================================
   // FLOATING BUTTON
   // ============================================================
@@ -74,6 +96,7 @@
         }
       });
       root.appendChild(btn);
+      syncAssessmentAccess();
 
       // Pulse animation on first visit to draw attention
       chrome.storage.local.get(['fabSeen'], (result) => {
@@ -104,6 +127,7 @@
     const root = sb.uiRoot?.();
     if (!root) return;
     root.appendChild(sidebar);
+    syncAssessmentAccess();
     setTimeout(bindSidebarEvents, SKILLBRIDGE_DELAYS.SIDEBAR_BIND);
     // The selection toolbar also owns local translation feedback, which works
     // on bridge-free hosts; it hides only the Ask Tutor action there.
@@ -338,9 +362,6 @@
     if (!messages) return false;
     messages.innerHTML = initialChatMessagesHTML();
     bindExampleQuestions();
-    if (sb.isExamPage && !messages.querySelector('.si18n-exam-warning')) {
-      sb._chat.dom.appendExamWarning(messages);
-    }
     if (options.focus !== false && sb.sidebarVisible) sb.$id('si18n-chat-input')?.focus();
     return true;
   }
@@ -500,7 +521,7 @@
   }
 
   async function sendChatMessage() {
-    if (sb.certDisabled) return;
+    if (sb.certDisabled || sb.isExamPage) return;
     if (isSending) return;
     const input = sb.$id('si18n-chat-input');
     const messages = sb.$id('si18n-chat-messages');
@@ -514,6 +535,10 @@
     // The local engine talks to a server on this machine, so losing internet
     // access does not stop it; only the cloud engine needs the guard.
     const offlineBlocks = sb.isOffline && (await _currentEngine()) !== 'local';
+    if (sb.certDisabled || sb.isExamPage) {
+      isSending = false;
+      return;
+    }
     if (offlineBlocks) {
       chatDom.appendOfflineMessage(messages);
       scrollToBottom(messages);
@@ -618,7 +643,10 @@
   // ============================================================
 
   function toggleSidebar() {
-    if (sb.certDisabled) return;
+    if (sb.certDisabled || sb.isExamPage) {
+      syncAssessmentAccess();
+      return;
+    }
     const sidebar = sb.$id('skillbridge-sidebar');
     const fab = sb.$id('skillbridge-fab');
     sb.sidebarVisible = !sb.sidebarVisible;
@@ -630,17 +658,10 @@
     if (fab) fab.classList.toggle('hidden', sb.sidebarVisible);
 
     if (sb.sidebarVisible) {
-      // Show exam warning immediately when sidebar opens on exam page
-      if (sb.isExamPage) {
-        const messages = sb.$id('si18n-chat-messages');
-        if (messages && !messages.querySelector('.si18n-exam-warning')) {
-          sb._chat.dom.appendExamWarning(messages);
-        }
-      }
-
       // Move focus into the modal. The AI-enabled edition prefers chat;
       // bridge-free CWS/local surfaces start at the language selector.
       setTimeout(() => {
+        if (sb.certDisabled || sb.isExamPage || !sb.sidebarVisible) return;
         const initialControl =
           sb.$id('si18n-chat-input') || sb.$id('si18n-sidebar-lang-select') || sb.$id('si18n-tools-btn');
         initialControl?.focus();
@@ -702,5 +723,7 @@
   sb.cancelActiveStream = cancelActiveStream;
   sb._chat.restoreChatPanelEvents = restoreChatPanelEvents;
   sb._chat.resetConversationUI = resetConversationUI;
+  sb._chat.syncAssessmentAccess = syncAssessmentAccess;
+  document.addEventListener('skillbridge:assessmentstate', syncAssessmentAccess);
   sb.registerModule?.('sidebar-chat');
 })();

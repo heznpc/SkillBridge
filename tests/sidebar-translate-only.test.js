@@ -183,7 +183,9 @@ describe('bridge flag is read consistently across the surface', () => {
   test('selection feedback is wired whenever the local sidebar exists while Ask Tutor stays bridge-gated', () => {
     expect(SIDEBAR_SRC).toContain('sb.initAskTutorButton?.();');
     expect(SIDEBAR_SRC).not.toContain('if (sb.hostCaps?.bridge !== false) sb.initAskTutorButton?.();');
-    expect(TEXT_SELECTION_SRC).toContain('const canAskTutor = sb.hostCaps?.bridge !== false;');
+    expect(TEXT_SELECTION_SRC).toContain(
+      'const canAskTutor = sb.hostCaps?.bridge !== false && !sb.isExamPage && !sb.certDisabled;',
+    );
   });
 
   test('event binding routes to the language panel instead of the chat', () => {

@@ -659,6 +659,7 @@ function _registerCloudBroker(port) {
     }
   });
   port.onDisconnect.addListener(() => {
+    void chrome.runtime.lastError;
     if (_cloudBrokers.get(tabId)?.port !== port) return;
     _cloudBrokers.delete(tabId);
     _failCloudTabActive(tabId, port, 'Puter broker closed');
@@ -722,6 +723,7 @@ function _registerCloudClient(port) {
     }
   });
   port.onDisconnect.addListener(() => {
+    void chrome.runtime.lastError;
     clients.delete(port);
     if (clients.size === 0) _cloudClients.delete(tabId);
     const broker = _cloudBrokers.get(tabId)?.port;
@@ -911,6 +913,7 @@ async function _streamLocalChat(port, req) {
   }
 
   port.onDisconnect.addListener(() => {
+    void chrome.runtime.lastError;
     aborted = true;
     try {
       controller.abort();

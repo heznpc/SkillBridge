@@ -985,9 +985,9 @@ async function evalInContentWorld(context, op, arg, targetUrl = null) {
                 // What the tutor would be sent for the current page.
                 tutorContext: () => ({ context: window._sb?.getPageContext?.() || '' }),
                 // Simulate a Skilljar SPA-style navigation: atomically swap the
-                // body HTML and push a new history entry. Triggers the wrapped
-                // `history.pushState` which content.js intercepts to fire
-                // `onRouteChange`. payload = { html, path }.
+                // body HTML and push a new history entry. Dedicated navigation
+                // specs use page.evaluate instead, so they also prove the
+                // page-world/isolated-world boundary. payload = { html, path }.
                 replaceBodyAndPushState: (p) => {
                   document.body.innerHTML = p.html;
                   history.pushState({}, '', p.path);

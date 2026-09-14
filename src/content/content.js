@@ -234,6 +234,14 @@
     } else {
       isExamPage = assessmentLifecycle.onDomSettled(document, location);
     }
+    // Localized Academy pages can skip translation entirely. Keep the exam
+    // indicator in sync with safety state even when no translation pass runs.
+    const examBanner = document.getElementById('si18n-exam-banner');
+    if (isExamPage && currentLang !== 'en') {
+      if (!examBanner) sb.showExamBanner?.();
+    } else {
+      examBanner?.remove();
+    }
 
     // Retention modules must wait for the DOM-backed verdict. In particular,
     // quiz -> lesson SPA navigation keeps the provisional assessment state
@@ -1026,6 +1034,7 @@
         return;
       }
       isExamPage = assessmentLifecycle.onRouteChange(location);
+      window._sb._chat?.syncAssessmentAccess?.();
     },
     onExamDomSettled,
     redetectPageLocale: () => sb.localization.onRouteChange(location),
