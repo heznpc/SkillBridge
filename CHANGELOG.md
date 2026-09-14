@@ -39,6 +39,9 @@ repository but never shipped to users.
 
 ### Fixed
 
+- Academy's video Summary/Transcript switch no longer activates exam mode on
+  an ordinary lesson or injects a false exam restriction into the Tutor.
+  Assessment routes, headings and actual answer choices remain protected.
 - Learning-record saves remain successful when a view listener fails, and
   malformed feedback is rejected before it can disappear on a later read.
   Report loading can retry after a transient storage error. Delayed note and

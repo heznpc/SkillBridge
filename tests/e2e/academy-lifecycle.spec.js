@@ -138,11 +138,11 @@ test.describe('SkillBridge — Claude Academy lesson ↔ quiz lifecycle', () => 
     await stopFixtureServer(fixture.server);
   });
 
-  test('step A: an Academy lesson is not an assessment, and the Skilljar path would agree', async () => {
+  test('step A: an Academy lesson with media radio controls is not an assessment', async () => {
     await gotoAcademy(LESSON_PATH);
     const state = await evalInContentWorld(extCtx.context, 'examState');
-    expect(state.isExamPage, 'a lesson route with no choice roles must not be exam-detected').toBe(false);
-    expect(state.choiceCount, 'the lesson fixture must carry no answer choices at all').toBe(0);
+    expect(state.isExamPage, 'the media view switch must not turn a lesson into an exam').toBe(false);
+    expect(state.choiceCount, 'the lesson fixture must actually carry the two media radio controls').toBe(2);
   });
 
   test('step B: an Academy quiz IS detected, on a route the Skilljar patterns miss', async () => {
@@ -174,7 +174,7 @@ test.describe('SkillBridge — Claude Academy lesson ↔ quiz lifecycle', () => 
     // pass that would have corrected it could only turn protection on.
     const backOnLesson = await spaNavigate(LESSON_PATH, false);
     expect(backOnLesson.isExamPage, 'quiz → lesson must RELEASE once the lesson DOM is there').toBe(false);
-    expect(backOnLesson.choiceCount, 'the lesson DOM really did replace the quiz DOM').toBe(0);
+    expect(backOnLesson.choiceCount, 'only the two media controls remain after leaving the quiz').toBe(2);
 
     const onSecondQuiz = await spaNavigate(ASSESSMENT_PATH, true);
     expect(onSecondQuiz.isExamPage, 'lesson → assessment must protect again').toBe(true);

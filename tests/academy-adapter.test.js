@@ -18,6 +18,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { readProductionSource } = require('./helpers/production-source');
 
 /**
  * Both modules ship as bare content scripts and export through a `globalThis`
@@ -25,7 +26,7 @@ const path = require('path');
  * them any other way silently yields an empty object.
  */
 function load(file) {
-  const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', file), 'utf8');
+  const src = readProductionSource('src', 'lib', file);
   const fake = { module: { exports: {} } };
   new Function('globalThis', src)(fake);
   return fake.module.exports;
@@ -79,6 +80,63 @@ function renderPage({ heading = 'A Lesson', choices = 0 } = {}) {
 
 beforeEach(() => {
   document.body.innerHTML = '';
+});
+
+// The media switch observed on an authenticated Academy lesson, 2026-09-14.
+// Its labels are localized, while these component and input values are stable.
+function addMediaSwitch(main) {
+  main.insertAdjacentHTML(
+    'beforeend',
+    `<div role="radiogroup" data-cds="SegmentedControl" aria-label="동영상 보조 콘텐츠">
+      <span role="radio" aria-checked="true">요약</span>
+      <input type="radio" aria-hidden="true" value="summary" checked>
+      <span role="radio" aria-checked="false">대본</span>
+      <input type="radio" aria-hidden="true" value="transcript">
+    </div>`,
+  );
+  return main.lastElementChild;
+}
+
+describe('lesson media controls are not exam answers', () => {
+  test('the summary/transcript switch does not remove lesson context from Tutor', () => {
+    addMediaSwitch(renderPage());
+    expect(detectAcademyAssessment(document, at('/ko/courses/c/lesson'))).toEqual({
+      isAssessment: false,
+      signals: [],
+      choiceCount: 0,
+    });
+  });
+
+  test('a media switch beside actual choices still protects those choices', () => {
+    const main = renderPage({ choices: 4 });
+    addMediaSwitch(main);
+    const verdict = detectAcademyAssessment(document, at('/courses/c/lesson'));
+    expect(verdict.isAssessment).toBe(true);
+    expect(verdict.choiceCount).toBe(4);
+    expect(isWithinAcademyChoice(main.querySelector('[role="radio"] span'))).toBe(true);
+  });
+
+  test.each(['component', 'values', 'extra-choice', 'checkbox'])(
+    'an unrecognized segmented control stays protected: %s',
+    (kind) => {
+      const group = addMediaSwitch(renderPage());
+      if (kind === 'component') group.removeAttribute('data-cds');
+      if (kind === 'values') group.querySelector('input').value = 'answer-a';
+      if (kind === 'extra-choice') group.insertAdjacentHTML('beforeend', '<span role="radio">Another answer</span>');
+      if (kind === 'checkbox') group.insertAdjacentHTML('beforeend', '<span role="checkbox">Another answer</span>');
+      expect(detectAcademyAssessment(document, at('/courses/c/lesson')).isAssessment).toBe(true);
+    },
+  );
+
+  test.each([
+    ['A lesson', '/courses/c/final-assessment', ASSESSMENT_SIGNAL.ROUTE],
+    ['Course quiz', '/courses/c/lesson', ASSESSMENT_SIGNAL.HEADING],
+  ])('media controls never cancel a separate assessment signal: %s', (heading, route, signal) => {
+    addMediaSwitch(renderPage({ heading }));
+    const verdict = detectAcademyAssessment(document, at(route));
+    expect(verdict.isAssessment).toBe(true);
+    expect(verdict.signals).toContain(signal);
+  });
 });
 
 describe('platform registration', () => {
