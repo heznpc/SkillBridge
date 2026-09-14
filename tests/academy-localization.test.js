@@ -25,6 +25,12 @@ function load(file) {
 const { TRANSLATION_POLICY, resolveTranslationPolicy, mayTranslateText, readObservedLocale, createLocalizationPolicy } =
   load('academy-localization.js');
 
+test('Premium dictionaries preserve Academy brand naming separately from Skilljar', () => {
+  const dictionary = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'ko.json'), 'utf8'));
+  expect(dictionary.ui['Claude Academy']).toBe('Claude 아카데미');
+  expect(dictionary.ui['Anthropic Academy']).toBe('Anthropic Academy');
+});
+
 describe('resolveTranslationPolicy', () => {
   test('an English page translates normally', () => {
     const r = resolveTranslationPolicy({ observedLocale: 'en', targetLang: 'ko' });
