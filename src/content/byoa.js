@@ -95,6 +95,7 @@
   }
 
   function toggleByoaPanel() {
+    if (sb.certDisabled || sb.isExamPage) return;
     const opened = sb._chat.openSubPanel(
       'byoa',
       `
@@ -157,6 +158,7 @@
   }
 
   async function copyPrompt() {
+    if (sb.certDisabled || sb.isExamPage) return;
     const preview = sb.$id('si18n-byoa-preview');
     const button = sb.$id('si18n-byoa-copy');
     const text = preview?.value || '';
@@ -182,6 +184,7 @@
   }
 
   function openAssistant(id) {
+    if (sb.certDisabled || sb.isExamPage) return;
     const assistant = bundleLib.BYOA_ASSISTANTS.find((a) => a.id === id);
     if (!assistant) return;
     // A blank chat, and nothing else: no query parameter, no prefill, no

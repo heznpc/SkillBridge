@@ -129,7 +129,7 @@
           : window._sbTranslationFeedback?.resolveSelection(range, sb.originalTexts, sb.translatedTexts) || null;
       pendingContext = { url: location.href, lang: sb.currentLang };
 
-      const canAskTutor = sb.hostCaps?.bridge !== false;
+      const canAskTutor = sb.hostCaps?.bridge !== false && !sb.isExamPage && !sb.certDisabled;
       const canRateTranslation = !!pendingFeedback;
       if (!canAskTutor && !canRateTranslation) {
         hideToolbar();
@@ -205,6 +205,10 @@
   }
 
   function handleAskTutor() {
+    if (sb.isExamPage || sb.certDisabled) {
+      hideToolbar();
+      return;
+    }
     if (!pendingQuote || !selectionContextIsCurrent()) {
       hideToolbar();
       return;
@@ -302,5 +306,6 @@
   // Keep the established public name so lifecycle and integrations do not need
   // a migration; it now initializes the complete selection toolbar.
   sb.initAskTutorButton = initAskTutorButton;
+  sb.dismissSelectionToolbar = hideToolbar;
   sb.registerModule?.('text-selection');
 })();

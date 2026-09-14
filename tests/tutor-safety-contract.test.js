@@ -5,13 +5,11 @@
  * a server the learner runs, Off sends nothing. It must NOT also be a safety
  * choice: a learner who switches to a local model has not opted out of exam
  * protection, and one who leaves it on Cloud has not opted into a stricter
- * prompt. The three paths were assembled in the same function, which made that
- * true by adjacency rather than by design; the prompt builder is now separate
- * and every engine is handed its output.
+ * prompt. Assessments reject before any engine or transport is selected.
  *
  * What is asserted here is behavioural, not textual. `chatStream` is actually
  * invoked with each engine setting and the transports are faked at their
- * boundaries, so a change that routes one engine around the builder fails —
+ * boundaries, so a change that routes one engine around the access check fails —
  * which a source-string assertion could not catch.
  *
  * "AI Off = zero model calls" is the strongest claim in the set, so it is
@@ -173,41 +171,27 @@ describe('the prompt builder is the single source of the guard', () => {
   });
 });
 
-describe('every engine carries the same guard', () => {
-  test('cloud sends the guarded prompt', async () => {
-    const translator = makeTranslator({ engine: 'cloud' });
-    await sendAndCancel(translator, { isExamPage: true });
-    expect(calls.puterChats).toHaveLength(1);
-    expect(calls.puterChats[0]).toContain(EXAM_MARKER);
+describe('assessments make zero model calls on every engine', () => {
+  test.each(['cloud', 'local', 'off'])('%s rejects before opening a transport', async (engine) => {
+    const translator = makeTranslator({ engine });
+    await expect(translator.chatStream(ASK, 'ko', CHOICE, () => {}, { isExamPage: true })).rejects.toThrow(
+      /unavailable on assessments/i,
+    );
+    expect(calls.ports).toEqual([]);
+    expect(calls.fetches).toEqual([]);
+    expect(calls.puterChats).toEqual([]);
+    expect(calls.prompts).toEqual([]);
   });
 
-  test('local sends the guarded prompt, byte for byte the same one', async () => {
+  test('ordinary lessons still reach both selected engines', async () => {
     const cloud = makeTranslator({ engine: 'cloud' });
-    await sendAndCancel(cloud, { isExamPage: true });
-    const cloudPrompt = calls.puterChats[0];
-
+    await sendAndCancel(cloud, { isExamPage: false });
+    const prompt = calls.puterChats[0];
+    expect(prompt).toBeTruthy();
     const local = makeTranslator({ engine: 'local' });
-    await sendAndCancel(local, { isExamPage: true });
+    await sendAndCancel(local, { isExamPage: false });
     expect(calls.ports).toContain('sb-local-chat');
-    expect(calls.prompts[0]).toContain(EXAM_MARKER);
-    // Not merely "also guarded" — identical. The engine choice is a privacy
-    // choice and must not change a single character of the instruction.
-    expect(calls.prompts[0]).toBe(cloudPrompt);
-  });
-
-  test('neither engine is handed answer-choice text', async () => {
-    // The context the content script builds on an assessment page is the
-    // title and a refusal instruction; the lesson body, which is where the
-    // choices live, is dropped before it ever reaches the tutor.
-    const examContext = 'Certification Exam: Quiz on accessing Claude with the API. DO NOT help with answers.';
-    for (const engine of ['cloud', 'local']) {
-      const translator = makeTranslator({ engine });
-
-      await sendAndCancel(translator, { isExamPage: true, courseContext: examContext });
-      const sent = [...calls.puterChats, ...calls.prompts].join('\n');
-      expect(sent).not.toContain(CHOICE);
-      expect(sent).toContain(EXAM_MARKER);
-    }
+    expect(calls.prompts[0]).toBe(prompt);
   });
 });
 
@@ -244,7 +228,7 @@ describe('AI Off makes no model call at all', () => {
   test('it rejects, and nothing is sent anywhere', async () => {
     const translator = makeTranslator({ engine: 'off' });
     await expect(translator.chatStream(ASK, 'ko', 'ctx', () => {}, { isExamPage: true })).rejects.toThrow(
-      /turned off/i,
+      /unavailable on assessments/i,
     );
     // Every boundary at once: no Port opened, no fetch issued, nothing posted
     // to the cloud broker.

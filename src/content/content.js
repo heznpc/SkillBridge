@@ -1034,6 +1034,7 @@
         return;
       }
       isExamPage = assessmentLifecycle.onRouteChange(location);
+      window._sb._chat?.syncAssessmentAccess?.();
     },
     onExamDomSettled,
     redetectPageLocale: () => sb.localization.onRouteChange(location),

@@ -62,6 +62,7 @@ const READY_TIMEOUT_MS = 20_000;
  */
 const LOCALE_LABELS = Object.freeze({
   English: 'en',
+  Deutsch: 'de',
   'Espa\u00f1ol': 'es',
   'Fran\u00e7ais': 'fr',
   '\u65e5\u672c\u8a9e': 'ja',
@@ -137,7 +138,7 @@ async function discoverLocales(page) {
     .locator('button[aria-label]')
     .filter({
       hasText:
-        /English|Espa\u00f1ol|Fran\u00e7ais|\u65e5\u672c\u8a9e|\ud55c\uad6d\uc5b4|\u7b80\u4f53\u4e2d\u6587|\u7e41\u9ad4\u4e2d\u6587/,
+        /English|Deutsch|Espa\u00f1ol|Fran\u00e7ais|\u65e5\u672c\u8a9e|\ud55c\uad6d\uc5b4|\u7b80\u4f53\u4e2d\u6587|\u7e41\u9ad4\u4e2d\u6587/,
     })
     .first();
   await trigger.click({ timeout: READY_TIMEOUT_MS });

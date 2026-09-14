@@ -618,6 +618,9 @@
   }
 
   function handlePortDisconnect(disconnectedPort) {
+    // Navigation/BFCache closes ports normally. Consume Chrome's callback error
+    // while preserving the existing cancellation and on-demand reconnect path.
+    void chrome.runtime.lastError;
     if (port !== disconnectedPort) return;
     port = null;
     for (const session of active.values()) void session.cancel();

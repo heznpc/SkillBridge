@@ -149,20 +149,20 @@ const LOCALIZED_MISMATCH_LABELS = {
 };
 
 const EXAM_BANNER_LABELS = {
-  en: 'Exam mode — answer choices are not translated to preserve accuracy.',
-  ko: '시험 모드 — 정확성을 위해 답안 선택지는 번역되지 않습니다.',
-  id: 'Mode ujian — pilihan jawaban tidak diterjemahkan demi menjaga akurasi.',
-  it: "Modalità esame — le opzioni di risposta non vengono tradotte per preservare l'accuratezza.",
-  nl: 'Examenmodus — antwoordopties worden niet vertaald om de nauwkeurigheid te behouden.',
-  ja: '試験モード — 正確性のため、回答選択肢は翻訳されません。',
-  'zh-CN': '考试模式 — 为确保准确性，答案选项不会被翻译。',
-  'zh-TW': '考試模式 — 為確保準確性，答案選項不會被翻譯。',
-  es: 'Modo examen — las opciones de respuesta no se traducen para mayor precisión.',
-  fr: 'Mode examen — les choix de réponse ne sont pas traduits pour préserver la précision.',
-  de: 'Prüfungsmodus — Antwortmöglichkeiten werden nicht übersetzt, um die Genauigkeit zu wahren.',
-  'pt-BR': 'Modo prova — as opções de resposta não são traduzidas para preservar a precisão.',
-  ru: 'Режим экзамена — варианты ответов не переводятся для сохранения точности.',
-  vi: 'Chế độ thi — các lựa chọn đáp án không được dịch để đảm bảo độ chính xác.',
+  en: 'Exam mode — Tutor is unavailable and answer choices are not translated.',
+  ko: '시험 모드 — Tutor를 사용할 수 없으며, 답안 선택지는 번역하지 않습니다.',
+  id: 'Mode ujian — Tutor tidak tersedia dan pilihan jawaban tidak diterjemahkan.',
+  it: 'Modalità esame — Tutor non è disponibile e le opzioni di risposta non vengono tradotte.',
+  nl: 'Examenmodus — Tutor is niet beschikbaar en antwoordopties worden niet vertaald.',
+  ja: '試験モード — Tutorは利用できず、回答の選択肢は翻訳されません。',
+  'zh-CN': '考试模式 — 无法使用 Tutor，答案选项不会被翻译。',
+  'zh-TW': '考試模式 — 無法使用 Tutor，答案選項不會被翻譯。',
+  es: 'Modo examen — Tutor no está disponible y las opciones de respuesta no se traducen.',
+  fr: 'Mode examen — Tutor est indisponible et les choix de réponse ne sont pas traduits.',
+  de: 'Prüfungsmodus — Tutor ist nicht verfügbar und Antwortmöglichkeiten werden nicht übersetzt.',
+  'pt-BR': 'Modo prova — Tutor está indisponível e as opções de resposta não são traduzidas.',
+  ru: 'Режим экзамена — Tutor недоступен, варианты ответов не переводятся.',
+  vi: 'Chế độ thi — Tutor không khả dụng và các lựa chọn đáp án không được dịch.',
 };
 
 const TUTOR_EXAM_LABELS = {

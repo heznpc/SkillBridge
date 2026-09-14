@@ -252,6 +252,19 @@ describe('createLocalizationPolicy', () => {
     document.documentElement.removeAttribute('lang');
   });
 
+  test('the official German selector blocks stale English fallback during hydration', () => {
+    document.documentElement.setAttribute('lang', 'en');
+    renderSelector('Deutsch');
+    const policy = createLocalizationPolicy({ localizedHost: true, doc: document, loc: loc('/courses/c/lesson') });
+    policy.setTarget('de');
+    expect(policy.observedLocale()).toBe('');
+    expect(policy.mayTranslate()).toBe(false);
+    document.documentElement.setAttribute('lang', 'de');
+    policy.onDomSettled(document, loc('/courses/c/lesson'));
+    expect(policy.observedLocale()).toBe('de');
+    expect(policy.resolved().policy).toBe(TRANSLATION_POLICY.BLOCKED);
+  });
+
   test('announces exactly once per transition into a blocking state', () => {
     document.documentElement.setAttribute('lang', 'es');
     const seen = [];

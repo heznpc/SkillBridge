@@ -10,8 +10,8 @@
  *     because "I could not see what I was about to send" is what this feature
  *     answers;
  *   - Copy prompt puts exactly the visible text on the real clipboard;
- *   - a real DOM Selection reaches the prompt on a lesson, and a real Selection
- *     over an answer choice does NOT reach it on a quiz.
+ *   - a real DOM Selection reaches the prompt on a lesson;
+ *   - assessments cannot open the panel or copy a stale lesson prompt.
  *
  * That last pair is the one worth a browser. The guard reads a live Range, and
  * a jsdom Range is not the thing a learner's drag produces.
@@ -111,33 +111,25 @@ test.describe('SkillBridge — ask another assistant', () => {
     await evalInContentWorld(extCtx.context, 'clearSelection');
   });
 
-  test('a real selection over an answer choice does NOT reach the prompt', async () => {
+  test('a quiz cannot open the assistant panel, even with text selected', async () => {
     const panel = await openPanelAt(QUIZ_PATH);
     expect((await evalInContentWorld(extCtx.context, 'examState')).isExamPage).toBe(true);
-    // The exam note is already on screen before anything is selected.
-    expect(panel.notes.join(' ')).toMatch(/quiz|Answer choices/i);
-
+    expect(panel.present).toBe(false);
+    await expect(page.locator('#skillbridge-sidebar')).toBeHidden();
     const selected = await evalInContentWorld(extCtx.context, 'selectElementText', '#academy-choice-a');
     expect(selected.selected, 'the choice really was selected').toContain('Zebra-cipher-alpha');
-
-    await evalInContentWorld(extCtx.context, 'typeByoaQuestion', 'is this right?');
+    await evalInContentWorld(extCtx.context, 'toggleByoaPanel');
     const after = await evalInContentWorld(extCtx.context, 'readByoaPanel');
-    expect(after.prompt, 'answer-choice text must not reach the clipboard prompt').not.toContain('Zebra-cipher-alpha');
-    // And the learner is told, rather than left assuming the assistant has it.
-    expect(after.notes.join(' ')).toMatch(/answer choice/i);
-
-    // The clipboard gets the withheld version too — not a second build that
-    // forgot the guard.
-    const copied = await evalInContentWorld(extCtx.context, 'clickByoaCopy');
-    expect(copied.clipboard).not.toContain('Zebra-cipher-alpha');
+    expect(after.present).toBe(false);
     await evalInContentWorld(extCtx.context, 'clearSelection');
   });
 
-  test('on a quiz the prompt carries the do-not-answer instruction and no lesson body', async () => {
-    const panel = await openPanelAt(QUIZ_PATH);
-    expect(panel.prompt).toContain('Do not give me the answer');
-    for (const fragment of ['Zebra-cipher-alpha', 'Marmalade-vector-bravo', 'carries the credential']) {
-      expect(panel.prompt).not.toContain(fragment);
-    }
+  test('entering a quiz hides an open panel and blocks its stale copy handler', async () => {
+    await openPanelAt(LESSON_PATH);
+    await page.evaluate(() => navigator.clipboard.writeText('unchanged clipboard'));
+    await page.evaluate(() => history.pushState({}, '', '/academy/courses/c/course-quiz'));
+    await expect(page.locator('#skillbridge-sidebar')).toBeHidden();
+    const copied = await evalInContentWorld(extCtx.context, 'clickByoaCopy');
+    expect(copied.clipboard).toBe('unchanged clipboard');
   });
 });
