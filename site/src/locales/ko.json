@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "사용 흐름",
+    "navContext": "문맥 안에서",
+    "navLanguages": "지원 언어",
+    "install": "CWS — 기존 v1.0.1",
+    "eyebrow": "지원되는 강의 안에서 시작됩니다",
+    "lead": "SkillBridge는 지원되는 AI 강의의 원래 화면에 번역과 학습 도구를 더합니다. 페이지를 복사하거나 다른 탭으로 옮길 필요가 없습니다.",
+    "versionNotice": "현재 페이지는 GitHub 소스 v{version}을 기준으로 합니다. Chrome 웹 스토어에는 아직 이전 버전 v1.0.1이 게시되어 있으며, 새 버전의 CWS 배포는 개발을 마친 뒤 진행합니다.",
+    "validationNotice": "자동 테스트는 Academy 경로와 Tutor 전송을 확인합니다. 로그인 상태의 실제 강의 제출 화면과 Puter 왕복은 최종 배포 검증 항목으로 남아 있습니다.",
+    "launch": "사용 흐름 보기",
+    "flowTitle": "강의 화면은 그대로 두고, 읽는 언어만 바꿉니다.",
+    "flowLead": "강의 탐색, 전문 용어, 읽던 위치, 복습 도구를 한 화면에서 이어서 사용할 수 있습니다.",
+    "stepOpen": "지원되는 강의를 엽니다",
+    "stepOpenBody": "평소처럼 AI Academy 수업을 엽니다. 별도 작업 공간이나 복사·붙여넣기는 필요하지 않습니다.",
+    "stepChoose": "지구본 메뉴에서 언어를 선택합니다",
+    "stepChooseBody": "언어를 고르면 현재 강의의 읽을 수 있는 텍스트가 같은 자리에서 바뀝니다.",
+    "stepStay": "강의 안에서 바로 복습합니다",
+    "stepStayBody": "Tutor, 플래시카드, 북마크가 옆에서 열리므로 읽던 문단을 놓치지 않습니다.",
+    "demoLabel": "라이브 전환 데모",
+    "local": "브라우저 내 전환",
+    "contextEyebrow": "문맥은 그대로",
+    "contextTitle": "번역 때문에 다른 탭으로 이동하지 않습니다.",
+    "contextBody": "강의 목록, 본문, 복습 도구가 한 흐름 안에 남아 있어 읽던 자리로 돌아갈 필요가 없습니다.",
+    "contextNote": "Tutor와 복습 도구가 지금 읽는 문단 옆에서 열립니다.",
+    "featureEyebrow": "기능 한눈에 보기",
+    "featureTitle": "읽기부터 복습과 피드백까지 한곳에서.",
+    "featureLead": "번역만 바꾸는 확장 프로그램이 아닙니다. 강의를 읽고, 저장하고, 다시 보고, 번역을 개선하는 데 필요한 도구를 함께 제공합니다.",
+    "languageTitle": "{count}개 언어로 시작하세요",
+    "languageLead": "Premium 사전이 있는 언어는 기술 용어를 우선 보호하고, 나머지 지원 언어는 Google Translate와 용어 복원을 사용합니다.",
+    "languageMore": "지원 언어 전체 보기",
+    "finalTitle": "이해되는 언어로 강의를 바로 시작하세요.",
+    "finalBody": "계정 없이 번역을 켜고, 필요한 순간에만 학습 도구를 사용하세요.",
+    "source": "GitHub v{version} 릴리즈 보기",
+    "footer": "독립 커뮤니티 프로젝트. Anthropic 또는 Skilljar와 제휴·후원·승인 관계가 아닙니다.",
+    "privacy": "개인정보 처리방침",
+    "sourceLabel": "GitHub",
+    "license": "MIT 라이선스",
+    "flowAria": "제품 사용 흐름",
+    "settingsAria": "SkillBridge 확장 프로그램 설정",
+    "flowTag": "강의 흐름 유지",
+    "lessonAlt": "SkillBridge 번역이 켜진 AI Academy 강의",
+    "contextAlt": "SkillBridge 조작 화면이 보이는 번역된 AI Academy 강의",
+    "languageCount": "{count}개 언어"
+  },
+  "titleLines": [
+    "강의를 떠나지 않고,",
+    "필요한 언어로 읽으세요."
+  ],
+  "featureItems": [
+    [
+      "전체 페이지 번역",
+      "강의 제목, 본문, 목록, 탐색 메뉴와 지원되는 댓글·자막을 강의 안에서 번역합니다."
+    ],
+    [
+      "오프라인 캐시",
+      "이미 번역한 문장은 브라우저 캐시에 남아 연결이 잠시 끊겨도 다시 읽을 수 있습니다."
+    ],
+    [
+      "로컬 학습 도구",
+      "플래시카드, 북마크, 노트, 최근 강의, 진도, 목차와 PDF 내보내기를 제공합니다."
+    ],
+    [
+      "번역 피드백과 교정",
+      "문제가 있는 번역을 리포트하고, 검토한 교정안을 적용하거나 되돌릴 수 있습니다."
+    ],
+    [
+      "자동 자막과 다크 모드",
+      "지원되는 강의 영상 자막을 번역하고, 어두운 화면에서도 학습할 수 있습니다."
+    ],
+    [
+      "시험 안전 장치",
+      "퀴즈 선택지는 번역하지 않고, 인식된 감독형 시험에서는 확장 프로그램을 끕니다."
+    ],
+    [
+      "스마트 감지와 단축키",
+      "브라우저 언어와 SPA 강의 이동을 감지하고, 자주 쓰는 도구를 키보드로 엽니다."
+    ],
+    [
+      "정확한 전문 용어",
+      "Premium 사전과 보호 용어 복원으로 브랜드명과 AI 용어를 지킵니다."
+    ]
+  ],
+  "demo": {
+    "language": "번역 언어",
+    "auto": "이 강의 자동 번역",
+    "comments": "댓글도 번역",
+    "openSidebar": "사이드바 열기",
+    "learningTools": "학습 도구",
+    "askPassage": "현재 문단에 질문하기",
+    "recentLessons": "최근 강의",
+    "bookmarks": "북마크",
+    "notes": "노트",
+    "reports": "용어 리포트",
+    "flashcards": "플래시카드",
+    "exportPdf": "PDF 내보내기",
+    "closeSidebar": "사이드바 닫기",
+    "tutorGreeting": "강의 내용을 떠나지 않고 질문해 보세요.",
+    "send": "보내기",
+    "currentLesson": "현재 강의에 번역이 켜져 있습니다.",
+    "chatPreview": "인터랙티브 미리보기입니다. 이 데모에서는 메시지를 전송하지 않습니다.",
+    "chatReady": "질문 흐름 미리보기가 표시됐습니다. 외부로 전송된 내용은 없습니다.",
+    "languageSet": "번역 언어를 {language}로 설정했습니다. 현재 강의에 번역이 적용됩니다.",
+    "autoOn": "현재 강의의 자동 번역을 켰습니다.",
+    "autoOff": "현재 강의의 자동 번역을 일시 중지했습니다.",
+    "commentsOn": "현재 강의에서 댓글 번역을 켰습니다.",
+    "commentsOff": "현재 강의에서 댓글 번역을 껐습니다.",
+    "toolDisclosure": "학습 도구 미리보기입니다. 이 데모에서는 데이터를 열거나 저장하지 않습니다."
+  },
+  "meta": {
+    "title": "SkillBridge - AI 강의를 내 언어로",
+    "description": "핵심 용어, 로컬 학습 도구, 시험 안전 장치를 유지하며 지원되는 AI Academy 강의를 내 언어로 읽으세요."
+  },
+  "common": {
+    "home": "SkillBridge 홈",
+    "navigation": "주요 메뉴",
+    "language": "언어",
+    "chooseLanguage": "랜딩 페이지 언어 선택",
+    "version": "버전 안내",
+    "validation": "검증 경계",
+    "localePrompt": "브라우저 언어가 {language}입니다. 해당 언어로 볼까요?",
+    "viewIn": "{language}로 보기",
+    "previewLabel": "데모 강의 발췌 · {language}",
+    "productDescription": "AI 강의 번역기"
+  },
+  "tools": {
+    "recent": "최근 강의 미리보기: 마지막으로 읽던 도구 사용 강의로 돌아갑니다.",
+    "bookmarks": "북마크 미리보기: 저장한 문단을 현재 강의 맥락에서 다시 엽니다.",
+    "notes": "노트 미리보기: 현재 문단 옆에 개인 학습 메모를 표시합니다.",
+    "reports": "용어 리포트 미리보기: 이번 강의의 핵심 용어를 한곳에 모읍니다.",
+    "flashcards": "플래시카드 미리보기: 현재 강의의 핵심 개념으로 복습 카드를 만듭니다.",
+    "pdf": "PDF 내보내기 미리보기: 번역된 강의의 인쇄용 구성을 준비합니다."
+  },
+  "sample": {
+    "title": "도구 사용은 명확한 계약에서 시작됩니다.",
+    "body": "모델이 도구를 안정적으로 선택하고 호출하려면 도구 설명과 명시적인 입력 형식이 모두 필요합니다."
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Come funziona",
+    "navContext": "Nel contesto",
+    "navLanguages": "Lingue",
+    "install": "CWS — vecchia versione v1.0.1",
+    "eyebrow": "Inizia dentro un corso compatibile",
+    "lead": "SkillBridge aggiunge la tua lingua alla schermata originale di AI Academy, insieme a navigazione, lezioni e strumenti di studio.",
+    "versionNotice": "Questa pagina descrive il codice GitHub v{version}, non un invio al Chrome Web Store. Lo store installa ancora v1.0.1; la prossima pubblicazione attende la fine dello sviluppo. Negli Stati Uniti è disponibile l’installazione manuale da GitHub.",
+    "validationNotice": "I test automatici coprono navigazione Academy e comunicazione Tutor. La schermata dopo l’invio con accesso effettuato e lo scambio reale con Puter restano da verificare prima della pubblicazione CWS.",
+    "launch": "Scopri come funziona",
+    "flowTitle": "La lezione resta al suo posto.",
+    "flowLead": "Cambia solo la lingua. Navigazione, termini, posizione di lettura e ripasso restano nella lezione.",
+    "stepOpen": "Apri una lezione compatibile",
+    "stepOpenBody": "Apri AI Academy come sempre, senza un altro spazio di lavoro né copia e incolla.",
+    "stepChoose": "Scegli una lingua dal menu del globo",
+    "stepChooseBody": "Il testo della lezione cambia sul posto appena scegli la lingua.",
+    "stepStay": "Ricevi aiuto dentro la lezione",
+    "stepStayBody": "Tutor, schede e segnalibri si aprono accanto al corso. Il paragrafo rimane visibile.",
+    "demoLabel": "Demo di cambio lingua",
+    "local": "Cambio nel browser",
+    "contextEyebrow": "Il contesto rimane",
+    "contextTitle": "La traduzione non apre un’altra scheda.",
+    "contextBody": "Elenco corsi, testo e ripasso restano insieme, senza interrompere la lettura per ritrovare il punto.",
+    "contextNote": "Tutor e strumenti di ripasso si aprono accanto al paragrafo.",
+    "featureEyebrow": "Tutto in un posto",
+    "featureTitle": "Dalla lettura al ripasso e al feedback.",
+    "featureLead": "Con SkillBridge puoi anche salvare, rileggere, esportare e migliorare i termini nel corso.",
+    "languageTitle": "Inizia in {count} lingue",
+    "languageLead": "I dizionari Premium proteggono i termini tecnici. Le altre lingue usano Google Translate con ripristino dei termini protetti.",
+    "languageMore": "Vedi tutte le lingue",
+    "finalTitle": "Apri la lezione. Leggi nella tua lingua.",
+    "finalBody": "Attiva la traduzione senza account e usa gli strumenti quando servono.",
+    "source": "Vedi la versione v{version} su GitHub",
+    "footer": "Progetto indipendente della comunità, senza affiliazione, sponsorizzazione o approvazione di Anthropic o Skilljar.",
+    "privacy": "Privacy",
+    "sourceLabel": "GitHub",
+    "license": "Licenza MIT",
+    "flowAria": "Percorso del prodotto",
+    "settingsAria": "Impostazioni dell’estensione SkillBridge",
+    "flowTag": "Continuità della lezione",
+    "lessonAlt": "Lezione AI Academy tradotta con SkillBridge",
+    "contextAlt": "Lezione AI Academy tradotta con i controlli SkillBridge",
+    "languageCount": "{count} lingue"
+  },
+  "titleLines": [
+    "Cambia la lingua,",
+    "non il modo di imparare."
+  ],
+  "featureItems": [
+    [
+      "Traduzione dell’intera pagina",
+      "Traduci sul posto titoli, testo, navigazione, commenti e sottotitoli compatibili."
+    ],
+    [
+      "Lettura offline dalla cache",
+      "Il testo già tradotto resta leggibile nella cache quando manca la connessione."
+    ],
+    [
+      "Strumenti di studio locali",
+      "Schede, segnalibri, note, lezioni recenti, progressi, indice ed esportazione PDF."
+    ],
+    [
+      "Feedback sulla traduzione",
+      "Segnala un passaggio, verifica una correzione, applicala a una corrispondenza esatta o annullala."
+    ],
+    [
+      "Sottotitoli e modalità scura",
+      "Traduci sottotitoli compatibili e studia con un’interfaccia scura."
+    ],
+    [
+      "Protezione delle valutazioni",
+      "Le opzioni di risposta restano invariate; negli esami sorvegliati riconosciuti l’estensione si disattiva."
+    ],
+    [
+      "Rilevamento e scorciatoie",
+      "Rileva lingua e cambi di lezione SPA e apri gli strumenti dalla tastiera."
+    ],
+    [
+      "Terminologia precisa",
+      "Dizionari Premium e ripristino dei termini preservano marchi e lessico dell’IA."
+    ]
+  ],
+  "demo": {
+    "language": "Traduci in",
+    "auto": "Traduci automaticamente questa lezione",
+    "comments": "Traduci i commenti",
+    "openSidebar": "Apri la barra laterale SkillBridge",
+    "learningTools": "Strumenti di studio",
+    "askPassage": "Chiedi di questo passaggio",
+    "recentLessons": "Lezioni recenti",
+    "bookmarks": "Segnalibri",
+    "notes": "Note",
+    "reports": "Rapporti sui termini",
+    "flashcards": "Schede",
+    "exportPdf": "Esporta PDF",
+    "closeSidebar": "Chiudi barra laterale",
+    "tutorGreeting": "Fai domande senza lasciare la lezione.",
+    "send": "Invia",
+    "currentLesson": "La traduzione è attiva per questa lezione.",
+    "chatPreview": "Anteprima interattiva. La demo non invia messaggi.",
+    "chatReady": "Il flusso delle domande è visibile. Nulla è stato inviato fuori dalla pagina.",
+    "languageSet": "Lingua impostata su {language}. La traduzione si applica alla lezione.",
+    "autoOn": "Traduzione automatica attivata.",
+    "autoOff": "Traduzione automatica in pausa.",
+    "commentsOn": "Traduzione dei commenti attivata.",
+    "commentsOff": "Traduzione dei commenti disattivata.",
+    "toolDisclosure": "Anteprima degli strumenti. Non apre né salva dati."
+  },
+  "meta": {
+    "title": "SkillBridge - Corsi di IA nella tua lingua",
+    "description": "Leggi le lezioni AI Academy compatibili nella tua lingua con terminologia curata, strumenti locali e protezioni per gli esami."
+  },
+  "common": {
+    "home": "Pagina iniziale di SkillBridge",
+    "navigation": "Navigazione principale",
+    "language": "Lingua",
+    "chooseLanguage": "Scegli la lingua di questa pagina",
+    "version": "Informazioni sulla versione",
+    "validation": "Ambito della verifica",
+    "localePrompt": "Il browser usa {language}. Vuoi vedere la pagina in questa lingua?",
+    "viewIn": "Visualizza in {language}",
+    "previewLabel": "Estratto della lezione dimostrativa · {language}",
+    "productDescription": "Traduttore di corsi di IA"
+  },
+  "tools": {
+    "recent": "Anteprima lezioni recenti: riprendi la lezione sugli strumenti dal punto lasciato.",
+    "bookmarks": "Anteprima segnalibri: riapri un passaggio salvato nella sua lezione.",
+    "notes": "Anteprima note: mostra gli appunti accanto al passaggio.",
+    "reports": "Anteprima termini: raccogli i termini chiave della lezione.",
+    "flashcards": "Anteprima schede: crea schede dai concetti principali.",
+    "pdf": "Anteprima PDF: prepara la lezione tradotta per la stampa."
+  },
+  "sample": {
+    "title": "L’uso degli strumenti inizia con un contratto chiaro.",
+    "body": "Un modello ha bisogno della descrizione dello strumento e di un formato di input esplicito per sceglierlo e chiamarlo in modo affidabile."
+  }
+}

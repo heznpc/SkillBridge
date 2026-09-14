@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Cum funcționează",
+    "navContext": "În context",
+    "navLanguages": "Limbi",
+    "install": "CWS — versiunea veche v1.0.1",
+    "eyebrow": "Începe într-un curs compatibil",
+    "lead": "SkillBridge adaugă limba ta în ecranul original AI Academy, alături de navigare, text și instrumentele de studiu.",
+    "versionNotice": "Pagina prezintă codul GitHub v{version}, nu o trimitere către Chrome Web Store. Magazinul instalează încă v1.0.1; următoarea publicare așteaptă finalizarea dezvoltării. În SUA este disponibilă instalarea manuală din GitHub.",
+    "validationNotice": "Testele automate acoperă navigarea Academy și comunicarea Tutor. Ecranul după trimitere cu autentificare și schimbul real cu Puter necesită încă verificare înainte de publicarea CWS.",
+    "launch": "Vezi cum funcționează",
+    "flowTitle": "Lecția rămâne la locul ei.",
+    "flowLead": "Se schimbă doar limba. Navigarea, termenii, poziția de citire și recapitularea rămân în lecție.",
+    "stepOpen": "Deschide o lecție compatibilă",
+    "stepOpenBody": "Deschide AI Academy ca de obicei, fără alt spațiu de lucru sau copiere și lipire.",
+    "stepChoose": "Alege limba din meniul glob",
+    "stepChooseBody": "Textul lecției se schimbă pe loc când alegi limba.",
+    "stepStay": "Primește ajutor în lecție",
+    "stepStayBody": "Tutor, fișele și semnele de carte se deschid lângă curs. Paragraful rămâne vizibil.",
+    "demoLabel": "Demonstrație de schimbare",
+    "local": "Schimbare în browser",
+    "contextEyebrow": "Contextul se păstrează",
+    "contextTitle": "Traducerea nu te trimite în altă filă.",
+    "contextBody": "Lista cursurilor, textul și recapitularea rămân împreună, fără să întrerupi lectura pentru a-ți regăsi locul.",
+    "contextNote": "Tutor și instrumentele de recapitulare se deschid lângă paragraf.",
+    "featureEyebrow": "Totul într-un singur loc",
+    "featureTitle": "De la citire la recapitulare și feedback.",
+    "featureLead": "SkillBridge permite și salvarea, recitirea, exportul și îmbunătățirea termenilor în curs.",
+    "languageTitle": "Începe în {count} de limbi",
+    "languageLead": "Dicționarele Premium protejează termenii tehnici. Alte limbi folosesc Google Translate cu restaurarea termenilor protejați.",
+    "languageMore": "Vezi toate limbile",
+    "finalTitle": "Deschide lecția. Citește în limba ta.",
+    "finalBody": "Activează traducerea fără cont și folosește instrumentele când ai nevoie.",
+    "source": "Vezi versiunea v{version} pe GitHub",
+    "footer": "Proiect comunitar independent, fără afiliere, sponsorizare sau aprobare din partea Anthropic ori Skilljar.",
+    "privacy": "Confidențialitate",
+    "sourceLabel": "GitHub",
+    "license": "Licență MIT",
+    "flowAria": "Fluxul produsului",
+    "settingsAria": "Setările extensiei SkillBridge",
+    "flowTag": "Fluxul lecției păstrat",
+    "lessonAlt": "Lecție AI Academy tradusă cu SkillBridge",
+    "contextAlt": "Lecție AI Academy tradusă cu comenzile SkillBridge",
+    "languageCount": "{count} de limbi"
+  },
+  "titleLines": [
+    "Schimbă limba,",
+    "nu felul în care înveți."
+  ],
+  "featureItems": [
+    [
+      "Traducerea întregii pagini",
+      "Tradu pe loc titluri, text, navigare, comentarii și subtitrări compatibile."
+    ],
+    [
+      "Citire offline din cache",
+      "Textul deja tradus rămâne disponibil din cache-ul browserului când cade conexiunea."
+    ],
+    [
+      "Instrumente locale de studiu",
+      "Fișe, semne de carte, notițe, lecții recente, progres, cuprins și export PDF."
+    ],
+    [
+      "Feedback pentru traducere",
+      "Raportează un pasaj, verifică o corecție, aplic-o unei potriviri exacte sau anuleaz-o."
+    ],
+    [
+      "Subtitrări și mod întunecat",
+      "Tradu subtitrările compatibile și studiază într-o interfață întunecată."
+    ],
+    [
+      "Protecție la evaluări",
+      "Opțiunile de răspuns rămân intacte; examenele supravegheate recunoscute dezactivează extensia."
+    ],
+    [
+      "Detectare și scurtături",
+      "Detectează limba browserului și schimbările lecțiilor SPA, apoi deschide instrumentele din tastatură."
+    ],
+    [
+      "Terminologie precisă",
+      "Dicționarele Premium și restaurarea termenilor păstrează mărcile și vocabularul IA."
+    ]
+  ],
+  "demo": {
+    "language": "Tradu în",
+    "auto": "Tradu automat această lecție",
+    "comments": "Tradu comentariile",
+    "openSidebar": "Deschide panoul lateral SkillBridge",
+    "learningTools": "Instrumente de studiu",
+    "askPassage": "Întreabă despre acest pasaj",
+    "recentLessons": "Lecții recente",
+    "bookmarks": "Semne de carte",
+    "notes": "Notițe",
+    "reports": "Rapoarte de termeni",
+    "flashcards": "Fișe de studiu",
+    "exportPdf": "Exportă PDF",
+    "closeSidebar": "Închide panoul lateral",
+    "tutorGreeting": "Pune întrebări despre lecție fără să părăsești pagina.",
+    "send": "Trimite",
+    "currentLesson": "Traducerea este activată pentru această lecție.",
+    "chatPreview": "Previzualizare interactivă. Demonstrația nu trimite mesaje.",
+    "chatReady": "Fluxul întrebărilor este afișat. Nu s-a trimis nimic în afara paginii.",
+    "languageSet": "Limba a fost setată la {language}. Traducerea se aplică acestei lecții.",
+    "autoOn": "Traducere automată activată.",
+    "autoOff": "Traducere automată întreruptă.",
+    "commentsOn": "Traducerea comentariilor activată.",
+    "commentsOff": "Traducerea comentariilor dezactivată.",
+    "toolDisclosure": "Previzualizare a instrumentelor. Nu deschide și nu salvează date."
+  },
+  "meta": {
+    "title": "SkillBridge - Cursuri de IA în limba ta",
+    "description": "Citește lecțiile AI Academy compatibile în limba ta, cu terminologie îngrijită, instrumente locale și protecție la examene."
+  },
+  "common": {
+    "home": "Pagina principală SkillBridge",
+    "navigation": "Navigare principală",
+    "language": "Limbă",
+    "chooseLanguage": "Alege limba acestei pagini",
+    "version": "Informații despre versiune",
+    "validation": "Domeniul verificării",
+    "localePrompt": "Browserul tău folosește {language}. Vrei să vezi pagina în această limbă?",
+    "viewIn": "Vezi în {language}",
+    "previewLabel": "Fragment din lecția demonstrativă · {language}",
+    "productDescription": "Traducător de cursuri IA"
+  },
+  "tools": {
+    "recent": "Previzualizare lecții recente: revino unde ai rămas în lecția despre instrumente.",
+    "bookmarks": "Previzualizare semne de carte: redeschide un pasaj salvat în lecția sa.",
+    "notes": "Previzualizare notițe: arată notițele lângă pasaj.",
+    "reports": "Previzualizare termeni: adună termenii-cheie ai lecției.",
+    "flashcards": "Previzualizare fișe: creează fișe din conceptele principale.",
+    "pdf": "Previzualizare PDF: pregătește lecția tradusă pentru imprimare."
+  },
+  "sample": {
+    "title": "Folosirea instrumentelor începe cu un contract clar.",
+    "body": "Un model are nevoie de descrierea instrumentului și de un format explicit de intrare pentru a-l alege și apela în mod fiabil."
+  }
+}

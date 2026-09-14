@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '../i18n';
-import { localePath } from '../i18n';
+import { getCopy, lessonSamples, localePath, locales, languageNames } from '../i18n';
+import { formatText } from '../locale';
 import { buildInfo } from '../data/build-info';
 
 interface Props { locale: Locale; }
@@ -10,113 +11,35 @@ const storeUrl = 'https://chromewebstore.google.com/detail/skillbridge-for-anthr
 const releaseUrl = `https://github.com/heznpc/skillBridge/releases/tag/v${buildInfo.version}`;
 const privacyUrl = `${base}privacy.html`;
 
-const ui = locale === 'ko'
-  ? {
-      navFlow: '사용 흐름', navContext: '문맥 안에서', navLanguages: '지원 언어', install: 'CWS — 기존 v1.0.1',
-      eyebrow: '지원되는 강의 안에서 시작됩니다', title: '강의를 떠나지 않고, 필요한 언어로 읽으세요.',
-      lead: 'SkillBridge는 지원되는 AI 강의의 원래 화면에 번역과 학습 도구를 더합니다. 페이지를 복사하거나 다른 탭으로 옮길 필요가 없습니다.',
-      versionNotice: `현재 페이지는 GitHub 소스 v${buildInfo.version}을 기준으로 합니다. Chrome 웹 스토어에는 아직 이전 버전 v1.0.1이 게시되어 있으며, 새 버전의 CWS 배포는 개발을 마친 뒤 진행합니다.`,
-      validationNotice: '자동 테스트는 Academy 경로와 Tutor 전송을 확인합니다. 로그인 상태의 실제 강의 제출 화면과 Puter 왕복은 최종 배포 검증 항목으로 남아 있습니다.',
-      launch: '사용 흐름 보기', flowTitle: '강의 화면은 그대로 두고, 읽는 언어만 바꿉니다.',
-      flowLead: '강의 탐색, 전문 용어, 읽던 위치, 복습 도구를 한 화면에서 이어서 사용할 수 있습니다.',
-      stepOpen: '지원되는 강의를 엽니다', stepOpenBody: '평소처럼 AI Academy 수업을 엽니다. 별도 작업 공간이나 복사·붙여넣기는 필요하지 않습니다.',
-      stepChoose: '지구본 메뉴에서 언어를 선택합니다', stepChooseBody: '언어를 고르면 현재 강의의 읽을 수 있는 텍스트가 같은 자리에서 바뀝니다.',
-      stepStay: '강의 안에서 바로 복습합니다', stepStayBody: 'Tutor, 플래시카드, 북마크가 옆에서 열리므로 읽던 문단을 놓치지 않습니다.',
-      demoLabel: '라이브 전환 데모', local: '브라우저 내 전환',
-      contextEyebrow: '문맥은 그대로', contextTitle: '번역 때문에 다른 탭으로 이동하지 않습니다.',
-      contextBody: '강의 목록, 본문, 복습 도구가 한 흐름 안에 남아 있어 읽던 자리로 돌아갈 필요가 없습니다.',
-      contextNote: 'Tutor와 복습 도구가 지금 읽는 문단 옆에서 열립니다.',
-      featureEyebrow: '기능 한눈에 보기', featureTitle: '읽기부터 복습과 피드백까지 한곳에서.', featureLead: '번역만 바꾸는 확장 프로그램이 아닙니다. 강의를 읽고, 저장하고, 다시 보고, 번역을 개선하는 데 필요한 도구를 함께 제공합니다.',
-      languageTitle: '32개 언어로 시작하세요', languageLead: 'Premium 사전이 있는 언어는 기술 용어를 우선 보호하고, 나머지 지원 언어는 Google Translate와 용어 복원을 사용합니다.', languageMore: '지원 언어 전체 보기',
-      finalTitle: '이해되는 언어로 강의를 바로 시작하세요.', finalBody: '계정 없이 번역을 켜고, 필요한 순간에만 학습 도구를 사용하세요.',
-      source: `GitHub v${buildInfo.version} 릴리즈 보기`, footer: '독립 커뮤니티 프로젝트. Anthropic 또는 Skilljar와 제휴·후원·승인 관계가 아닙니다.',
-      privacy: '개인정보 처리방침', sourceLabel: 'GitHub', license: 'MIT 라이선스',
-      flowAria: '제품 사용 흐름', settingsAria: 'SkillBridge 확장 프로그램 설정',
-      flowTag: '강의 흐름 유지', languages: '개 언어',
-      lessonAlt: 'SkillBridge 번역이 켜진 AI Academy 강의', contextAlt: 'SkillBridge 조작 화면이 보이는 번역된 AI Academy 강의',
-    }
-  : {
-      navFlow: 'The flow', navContext: 'In context', navLanguages: 'Languages', install: 'CWS — legacy v1.0.1',
-      eyebrow: 'It starts inside a supported course', title: 'Change the language, not the way you learn.',
-      lead: 'SkillBridge adds the language you need to the original AI Academy screen, where navigation, lesson text, and study tools already live.',
-      versionNotice: `This page reflects the GitHub v${buildInfo.version} source release. It is not a Chrome Web Store submission; the store still installs legacy v1.0.1. The next CWS version and dashboard upload remain deferred until code development is complete. The listing is currently unavailable in the United States, where GitHub manual installation is the available path.`,
-      validationNotice: 'Automated browser fixtures cover Academy routing and the Tutor transport, but this release does not claim an authenticated post-submit Academy capture or a final signed-in Puter round trip. Both remain final CWS gates.',
-      launch: 'See the flow', flowTitle: 'The lesson stays where it is.',
-      flowLead: 'Only the language changes. Navigation, protected terminology, your place in the course, and review tools remain in the lesson context.',
-      stepOpen: 'Open a supported lesson', stepOpenBody: 'Start in AI Academy as usual. There is no second workspace and no copy-paste translation loop.',
-      stepChoose: 'Choose a language from the globe menu', stepChooseBody: 'The readable text on the current lesson changes in place as soon as you choose a language.',
-      stepStay: 'Stay in the lesson when you need help', stepStayBody: 'Tutor, flashcards, and bookmarks open beside the course. The paragraph you were reading remains visible.',
-      demoLabel: 'Live switch demo', local: 'In-browser switch',
-      contextEyebrow: 'Context remains', contextTitle: 'Translation does not send you to another tab.',
-      contextBody: 'The course list, lesson body, and review tools stay in one path, so you do not have to stop reading to find your way back.',
-      contextNote: 'Tutor and review tools open beside the paragraph you are reading.',
-      featureEyebrow: 'Everything in one place', featureTitle: 'From first read to review and feedback.', featureLead: 'SkillBridge keeps more than translation in the course workspace: save, revisit, export, and improve the terms you encounter.',
-      languageTitle: 'Start in 32 languages', languageLead: 'Premium dictionaries protect technical terms first. Other supported languages use Google Translate with protected-term restoration.', languageMore: 'See all supported languages',
-      finalTitle: 'Open the lesson. Read it in the language that works for you.', finalBody: 'Turn translation on without an account, then use study tools only when you need them.',
-      source: `View GitHub release v${buildInfo.version}`, footer: 'Independent community project. Not affiliated with, sponsored by, or endorsed by Anthropic or Skilljar.',
-      privacy: 'Privacy', sourceLabel: 'GitHub', license: 'MIT license',
-      flowAria: 'Product flow', settingsAria: 'SkillBridge extension settings',
-      flowTag: 'Lesson flow retained', languages: 'languages',
-      lessonAlt: 'AI Academy lesson with SkillBridge translation enabled', contextAlt: 'A translated AI Academy lesson with SkillBridge controls',
-    };
-
-const titleLines = locale === 'ko'
-  ? ['강의를 떠나지 않고,', '필요한 언어로 읽으세요.']
-  : ['Change the language,', 'not the way you learn.'];
-
-const featureItems = locale === 'ko'
-  ? [
-      ['전체 페이지 번역', '강의 제목, 본문, 목록, 탐색 메뉴와 지원되는 댓글·자막을 강의 안에서 번역합니다.'],
-      ['오프라인 캐시', '이미 번역한 문장은 브라우저 캐시에 남아 연결이 잠시 끊겨도 다시 읽을 수 있습니다.'],
-      ['로컬 학습 도구', '플래시카드, 북마크, 노트, 최근 강의, 진도, 목차와 PDF 내보내기를 제공합니다.'],
-      ['번역 피드백과 교정', '문제가 있는 번역을 리포트하고, 검토한 교정안을 적용하거나 되돌릴 수 있습니다.'],
-      ['자동 자막과 다크 모드', '지원되는 강의 영상 자막을 번역하고, 어두운 화면에서도 학습할 수 있습니다.'],
-      ['시험 안전 장치', '퀴즈 선택지는 번역하지 않고, 인식된 감독형 시험에서는 확장 프로그램을 끕니다.'],
-      ['스마트 감지와 단축키', '브라우저 언어와 SPA 강의 이동을 감지하고, 자주 쓰는 도구를 키보드로 엽니다.'],
-      ['정확한 전문 용어', 'Premium 사전과 보호 용어 복원으로 브랜드명과 AI 용어를 지킵니다.'],
-    ]
-  : [
-      ['Full-page translation', 'Translate lesson headings, body copy, navigation, supported comments, and subtitles in place.'],
-      ['Warm-cache offline fallback', 'Previously translated text remains readable from the browser cache when a connection drops.'],
-      ['Local learning tools', 'Use flashcards, bookmarks, notes, recent lessons, progress, outlines, and PDF export.'],
-      ['Translation feedback', 'Report a passage, review a correction, apply it to an exact match, or roll it back.'],
-      ['Auto-subtitles and dark mode', 'Translate supported course subtitles and keep studying in a darker lesson view.'],
-      ['Assessment safety', 'Answer choices stay untouched, and recognized proctored exams disable the extension.'],
-      ['Smart detection and shortcuts', 'Detect browser language and SPA lesson changes, then open tools from the keyboard.'],
-      ['Precise terminology', 'Premium dictionaries and protected-term restoration keep brand and AI vocabulary intact.'],
-    ];
-
-const demoText = locale === 'ko'
-  ? {
-      language: '\uBC88\uC5ED \uC5B8\uC5B4', auto: '\uC774 \uAC15\uC758 \uC790\uB3D9 \uBC88\uC5ED', comments: '\uB313\uAE00\uB3C4 \uBC88\uC5ED', openSidebar: '\uC0AC\uC774\uB4DC\uBC14 \uC5F4\uAE30', learningTools: '\uD559\uC2B5 \uB3C4\uAD6C', askPassage: '\uD604\uC7AC \uBB38\uB2E8\uC5D0 \uC9C8\uBB38\uD558\uAE30', recentLessons: '\uCD5C\uADFC \uAC15\uC758', bookmarks: '\uBD81\uB9C8\uD06C', notes: '\uB178\uD2B8', reports: '\uC6A9\uC5B4 \uB9AC\uD3EC\uD2B8', flashcards: '\uD50C\uB798\uC2DC\uCE74\uB4DC', exportPdf: 'PDF \uB0B4\uBCF4\uB0B4\uAE30', closeSidebar: '\uC0AC\uC774\uB4DC\uBC14 \uB2EB\uAE30', tutorGreeting: '\uAC15\uC758 \uB0B4\uC6A9\uC744 \uB5A0\uB098\uC9C0 \uC54A\uACE0 \uC9C8\uBB38\uD574 \uBCF4\uC138\uC694.', send: '\uBCF4\uB0B4\uAE30', currentLesson: '\uD604\uC7AC \uAC15\uC758\uC5D0 \uBC88\uC5ED\uC774 \uCF1C\uC838 \uC788\uC2B5\uB2C8\uB2E4.', chatPreview: '\uC778\uD130\uB799\uD2F0\uBE0C \uBBF8\uB9AC\uBCF4\uAE30\uC785\uB2C8\uB2E4. \uC774 \uB370\uBAA8\uC5D0\uC11C\uB294 \uBA54\uC2DC\uC9C0\uB97C \uC804\uC1A1\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.', chatReady: '\uC9C8\uBB38 \uD750\uB984 \uBBF8\uB9AC\uBCF4\uAE30\uAC00 \uD45C\uC2DC\uB410\uC2B5\uB2C8\uB2E4. \uC678\uBD80\uB85C \uC804\uC1A1\uB41C \uB0B4\uC6A9\uC740 \uC5C6\uC2B5\uB2C8\uB2E4.'
-    }
-  : {
-      language: 'Translate to', auto: 'Auto-translate this lesson', comments: 'Translate comments', openSidebar: 'Open SkillBridge sidebar', learningTools: 'Learning tools', askPassage: 'Ask about this passage', recentLessons: 'Recent lessons', bookmarks: 'Bookmarks', notes: 'Notes', reports: 'Term reports', flashcards: 'Flashcards', exportPdf: 'Export PDF', closeSidebar: 'Close sidebar', tutorGreeting: 'Ask about the lesson without leaving the page.', send: 'Send', currentLesson: 'Translation is enabled for this lesson.', chatPreview: 'Interactive preview. This demo does not send messages.', chatReady: 'The question-flow preview is shown. Nothing was sent outside this page.'
-    };
+const { ui, titleLines, featureItems, demo: demoText, common, tools, sample } = getCopy(locale);
+const clientCopy = { demo: demoText, common, tools };
+const previewLabel = formatText(common.previewLabel, { language: languageNames[locale] });
 ---
+<div data-landing data-locale={locale} data-site-base={base} data-copy={JSON.stringify(clientCopy)} data-samples={JSON.stringify(lessonSamples)}>
 <header class="flow-header shell">
-  <a class="mark" href={localePath('en', base)} aria-label="SkillBridge home">
+  <a class="mark" href={localePath(locale, base)} aria-label={common.home}>
     <img src={`${base}images/icon128.png`} alt="" width="34" height="34" />
     <span>SkillBridge</span>
   </a>
-  <nav class="flow-nav" aria-label="Primary navigation">
+  <nav class="flow-nav" aria-label={common.navigation}>
     <a href="#flow">{ui.navFlow}</a>
     <a href="#context">{ui.navContext}</a>
     <a href="#languages">{ui.navLanguages}</a>
   </nav>
   <div class="header-right">
-    <div class="locale-switch" aria-label="Language switch">
-      <span>EN</span>
-      <button type="button" role="switch" aria-checked={locale === 'ko'} data-locale-toggle aria-label={locale === 'ko' ? 'Switch to English' : '한국어로 전환'}><i></i></button>
-      <span>한국어</span>
-    </div>
+    <label class="locale-switch" aria-label={common.chooseLanguage}>
+      <span>{common.language}</span>
+      <select data-locale-select aria-label={common.chooseLanguage}>
+        {locales.map((code) => <option value={code} selected={code === locale} lang={code}>{languageNames[code]}</option>)}
+      </select>
+    </label>
     <a class="header-install" href={storeUrl}>{ui.install}</a>
   </div>
 </header>
 
-<aside class="locale-prompt shell" data-locale-prompt data-site-base={base} hidden>
+<aside class="locale-prompt shell" data-locale-prompt hidden>
   <p data-locale-prompt-text></p>
-  <button type="button" role="switch" aria-checked="false" data-locale-prompt-toggle><i></i><span>{locale === 'ko' ? '한국어로 보기' : '한국어로 보기'}</span></button>
+  <button type="button" data-locale-prompt-toggle>{common.language}</button>
 </aside>
 
 <main>
@@ -125,10 +48,10 @@ const demoText = locale === 'ko'
     <div class="opening-copy">
       <h1 id="opening-title">{titleLines[0]}<br /><span>{titleLines[1]}</span></h1>
       <p>{ui.lead}</p>
-      <p class="version-notice"><strong>{locale === 'ko' ? '버전 안내' : 'Version notice'}</strong> {ui.versionNotice}<span class="validation-boundary"><b>{locale === 'ko' ? '검증 경계' : 'Validation boundary'}</b> {ui.validationNotice}</span></p>
+      <p class="version-notice"><strong>{common.version}</strong> {ui.versionNotice}<span class="validation-boundary"><b>{common.validation}</b> {ui.validationNotice}</span></p>
       <a class="anchor-link" href="#flow"><span>↓</span>{ui.launch}</a>
     </div>
-    <div class="opening-meta"><span>{buildInfo.languageCount}{locale === 'ko' ? '' : ' '}{ui.languages}</span><span>{ui.local}</span></div>
+    <div class="opening-meta"><span>{ui.languageCount}</span><span>{ui.local}</span></div>
   </section>
 
   <section class="journey" id="flow" aria-labelledby="journey-title">
@@ -144,15 +67,15 @@ const demoText = locale === 'ko'
       <figure class="extension-capture">
         <img src={`${base}images/lesson-translated.png`} alt={ui.lessonAlt} />
         <div class="translation-preview" data-translation-preview aria-live="polite">
-          <small data-preview-label>{locale === 'ko' ? '데모 강의 발췌 · 한국어' : 'Demo lesson excerpt · English'}</small>
-          <strong data-preview-title lang={locale}>{locale === 'ko' ? '도구 사용은 명확한 계약에서 시작됩니다.' : 'Tool use begins with a clear contract.'}</strong>
-          <p data-preview-body lang={locale}>{locale === 'ko' ? '모델이 도구를 안정적으로 선택하고 호출하려면 도구 설명과 명시적인 입력 형식이 모두 필요합니다.' : 'A model needs both a tool description and an explicit input shape before it can choose and call that tool reliably.'}</p>
+          <small data-preview-label>{previewLabel}</small>
+          <strong data-preview-title lang={locale}>{sample.title}</strong>
+          <p data-preview-body lang={locale}>{sample.body}</p>
         </div>
         <figcaption><span class="capture-dot"></span>{ui.local}</figcaption>
       </figure>
       <aside class="extension-popup" aria-label={ui.settingsAria}>
-        <div class="extension-popup-head"><img src={`${base}images/icon128.png`} alt="" width="26" height="26" /><div><strong>SkillBridge</strong><small>AI Course Translator</small></div></div>
-        <label class="extension-field"><span>{demoText.language}</span><select data-popup-language>{buildInfo.supportedLanguages.map(({ code, label }) => <option value={code} selected={code === (locale === 'ko' ? 'ko' : 'en')}>{locale === 'ko' ? label : (code === 'en' ? 'English' : label)}</option>)}</select></label>
+        <div class="extension-popup-head"><img src={`${base}images/icon128.png`} alt="" width="26" height="26" /><div><strong>SkillBridge</strong><small>{common.productDescription}</small></div></div>
+        <label class="extension-field"><span>{demoText.language}</span><select data-popup-language>{buildInfo.supportedLanguages.map(({ code, label }) => <option value={code} selected={code === locale} lang={code}>{label}</option>)}</select></label>
         <label class="extension-toggle"><input type="checkbox" data-auto-translate checked /><span>{demoText.auto}</span></label>
         <label class="extension-toggle"><input type="checkbox" data-comment-translate /><span>{demoText.comments}</span></label>
         <button class="extension-sidebar-button" type="button" data-sidebar-toggle aria-controls={`demo-sidebar-${locale}`} aria-expanded="false">{demoText.openSidebar}</button>
@@ -181,212 +104,16 @@ const demoText = locale === 'ko'
 
   <section class="language-zone shell" id="languages" aria-labelledby="languages-title">
     <div><p class="section-kicker">05 / {ui.languageMore}</p><h2 id="languages-title">{ui.languageTitle}</h2><p>{ui.languageLead}</p></div>
-    <ul>{buildInfo.supportedLanguages.filter(({ code }) => code !== 'en').map(({ code, label }) => <li><a href={localePath(code as Locale, base)} hreflang={code}>{label}</a></li>)}</ul>
+    <ul>{buildInfo.supportedLanguages.filter(({ code }) => code !== 'en').map(({ code, label }) => <li><a href={localePath(code as Locale, base)} hreflang={code} lang={code} dir="auto">{label}</a></li>)}</ul>
   </section>
 
   <section class="finish shell"><div class="finish-line"><span>06</span><i></i><small>{ui.flowTag}</small></div><div class="finish-copy"><h2>{ui.finalTitle}</h2><p>{ui.finalBody}</p></div><div class="finish-actions"><a class="install-button" href={storeUrl}>{ui.install}</a><a class="source-link" href={releaseUrl}>{ui.source}</a></div></section>
 </main>
 
-<footer class="flow-footer shell"><a class="mark" href={localePath('en', base)}><img src={`${base}images/icon128.png`} alt="" width="28" height="28" /><span>SkillBridge</span></a><p>{ui.footer}</p><nav><a href={privacyUrl}>{ui.privacy}</a><a href="https://github.com/heznpc/skillBridge">{ui.sourceLabel}</a><a href="https://github.com/heznpc/skillBridge/blob/main/LICENSE">{ui.license}</a></nav></footer>
+<footer class="flow-footer shell"><a class="mark" href={localePath(locale, base)}><img src={`${base}images/icon128.png`} alt="" width="28" height="28" /><span>SkillBridge</span></a><p>{ui.footer}</p><nav><a href={privacyUrl}>{ui.privacy}</a><a href="https://github.com/heznpc/skillBridge">{ui.sourceLabel}</a><a href="https://github.com/heznpc/skillBridge/blob/main/LICENSE">{ui.license}</a></nav></footer>
+
+</div>
 
 <script>
-  const currentLocale = document.documentElement.lang || 'en';
-  const localeTarget = currentLocale === 'ko' ? 'en' : 'ko';
-  const siteBase = document.querySelector('[data-site-base]')?.getAttribute('data-site-base') || '/SkillBridge/';
-  const localeHref = `${window.location.origin}${siteBase}${localeTarget === 'en' ? '' : `${localeTarget}/`}`;
-  const browserLanguage = (navigator.language || 'en').toLowerCase();
-  const browserLocale = browserLanguage.startsWith('ko') ? 'ko' : browserLanguage.startsWith('ja') ? 'ja' : browserLanguage.startsWith('zh-tw') ? 'zh-TW' : browserLanguage.startsWith('zh') ? 'zh-CN' : browserLanguage.split('-')[0];
-  const supportedLocales = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'es', 'fr', 'it', 'nl', 'de', 'pt-BR', 'ru', 'vi', 'id', 'pt', 'pl', 'uk', 'cs', 'sv', 'da', 'fi', 'no', 'tr', 'ar', 'hi', 'th', 'ms', 'tl', 'bn', 'he', 'ro', 'hu', 'el'];
-  const detectedLocale = supportedLocales.find((code) => code.toLowerCase() === browserLocale.toLowerCase()) || 'en';
-  const prompt = document.querySelector('[data-locale-prompt]');
-  const promptText = document.querySelector('[data-locale-prompt-text]');
-  const promptToggle = document.querySelector('[data-locale-prompt-toggle]');
-  const localeToggle = document.querySelector('[data-locale-toggle]');
-  const switchLocale = () => { window.location.href = localeHref; };
-  const switchToDetectedLocale = () => { window.location.href = `${window.location.origin}${siteBase}${detectedLocale === 'en' ? '' : `${detectedLocale}/`}`; };
-  localeToggle?.addEventListener('click', switchLocale);
-  promptToggle?.addEventListener('click', switchToDetectedLocale);
-  if (detectedLocale !== currentLocale && !sessionStorage.getItem('skillbridge-locale-prompt-dismissed')) {
-    const detectedLabel = new Intl.DisplayNames([navigator.language || 'en'], { type: 'language' }).of(detectedLocale) || detectedLocale;
-    if (promptText) promptText.textContent = currentLocale === 'ko' ? `브라우저 언어가 ${detectedLabel}입니다. 해당 언어로 볼까요?` : `Your browser is set to ${detectedLabel}. View this landing page in that language?`;
-    if (promptToggle) {
-      promptToggle.setAttribute('aria-checked', detectedLocale !== 'en' ? 'true' : 'false');
-      const label = promptToggle.querySelector('span');
-      if (label) label.textContent = currentLocale === 'ko' ? `${detectedLabel}로 보기` : `View in ${detectedLabel}`;
-    }
-    prompt?.removeAttribute('hidden');
-    sessionStorage.setItem('skillbridge-locale-prompt-dismissed', '1');
-  }
-
-  document.querySelectorAll('[data-extension-demo]').forEach((demo) => {
-    const sidebar = demo.querySelector('[data-extension-sidebar]');
-    const sidebarToggle = demo.querySelector('[data-sidebar-toggle]');
-    const sidebarClose = demo.querySelector('[data-sidebar-close]');
-    const toolsToggle = demo.querySelector('[data-tools-toggle]');
-    const toolsMenu = demo.querySelector('[data-tools-menu]');
-    const language = demo.querySelector('[data-popup-language]');
-    const autoTranslate = demo.querySelector('[data-auto-translate]');
-    const commentTranslate = demo.querySelector('[data-comment-translate]');
-    const status = demo.querySelector('[data-extension-status]');
-    const demoQuestion = demo.querySelector('[data-demo-question]');
-    const chatInput = demo.querySelector('[data-chat-input]');
-    const chatSend = demo.querySelector('[data-chat-send]');
-    const chatFeedback = demo.querySelector('[data-chat-feedback]');
-    const tutorMessage = demo.querySelector('[data-tutor-message]');
-    const toolButtons = toolsMenu?.querySelectorAll('[data-tool-preview]') || [];
-    const previewLabel = demo.querySelector('[data-preview-label]');
-    const previewTitle = demo.querySelector('[data-preview-title]');
-    const previewBody = demo.querySelector('[data-preview-body]');
-    const rail = demo.closest('.journey-stage')?.querySelectorAll('[data-flow-step]') || [];
-    const isKorean = demo.dataset.locale === 'ko';
-
-    const translationSamples = {
-      en: {
-        name: 'English', koName: '영어', title: 'Tool use begins with a clear contract.',
-        body: 'A model needs both a tool description and an explicit input shape before it can choose and call that tool reliably.'
-      },
-      ko: {
-        name: 'Korean', koName: '한국어', title: '도구 사용은 명확한 계약에서 시작됩니다.',
-        body: '모델이 도구를 안정적으로 선택하고 호출하려면 도구 설명과 명시적인 입력 형식이 모두 필요합니다.'
-      },
-      ja: {
-        name: 'Japanese', koName: '일본어', title: 'ツールの利用は明確な契約から始まります。',
-        body: 'モデルがツールを確実に選択して呼び出すには、ツールの説明と明示的な入力形式の両方が必要です。'
-      },
-      es: {
-        name: 'Spanish', koName: '스페인어', title: 'El uso de herramientas comienza con un contrato claro.',
-        body: 'Un modelo necesita la descripción de la herramienta y un formato de entrada explícito para elegirla y utilizarla de forma fiable.'
-      }
-    };
-    const toolPreviews = isKorean
-      ? {
-          recent: '최근 강의 미리보기: 마지막으로 읽던 도구 사용 강의로 돌아갑니다.',
-          bookmarks: '북마크 미리보기: 저장한 문단을 현재 강의 맥락에서 다시 엽니다.',
-          notes: '노트 미리보기: 현재 문단 옆에 개인 학습 메모를 표시합니다.',
-          reports: '용어 리포트 미리보기: 이번 강의의 핵심 용어를 한곳에 모읍니다.',
-          flashcards: '플래시카드 미리보기: 현재 강의의 핵심 개념으로 복습 카드를 만듭니다.',
-          pdf: 'PDF 내보내기 미리보기: 번역된 강의의 인쇄용 구성을 준비합니다.'
-        }
-      : {
-          recent: 'Recent lessons preview: return to the tool-use lesson where you stopped reading.',
-          bookmarks: 'Bookmarks preview: reopen a saved passage in its lesson context.',
-          notes: 'Notes preview: show your study note beside the current passage.',
-          reports: 'Term reports preview: collect the key terms from this lesson in one place.',
-          flashcards: 'Flashcards preview: turn the lesson’s key concepts into review cards.',
-          pdf: 'Export PDF preview: prepare a printable version of the translated lesson.'
-        };
-
-    const updateTranslationPreview = (code) => {
-      const sample = translationSamples[code] || translationSamples.en;
-      previewLabel.textContent = `${isKorean ? '데모 강의 발췌' : 'Demo lesson excerpt'} · ${isKorean ? sample.koName : sample.name}`;
-      previewTitle.textContent = sample.title;
-      previewBody.textContent = sample.body;
-      previewTitle.lang = code;
-      previewBody.lang = code;
-    };
-
-    const setRail = (step) => {
-      rail.forEach((button) => {
-        const active = button.dataset.flowStep === step;
-        button.classList.toggle('active', active);
-        button.setAttribute('aria-current', active ? 'step' : 'false');
-      });
-    };
-
-    const setSidebar = (open, moveFocus = false) => {
-      if (!open && toolsMenu) {
-        toolsMenu.hidden = true;
-        toolsToggle?.setAttribute('aria-expanded', 'false');
-      }
-      sidebar.hidden = !open;
-      sidebarToggle.setAttribute('aria-expanded', String(open));
-      demo.dataset.mode = open ? 'sidebar' : 'popup';
-      setRail(open ? 'sidebar' : 'popup');
-      if (moveFocus) (open ? sidebarClose : sidebarToggle).focus();
-    };
-
-    sidebarToggle.addEventListener('click', () => setSidebar(sidebar.hidden, true));
-    sidebarClose.addEventListener('click', () => setSidebar(false, true));
-    toolsToggle?.addEventListener('click', () => {
-      if (!toolsMenu) return;
-      const open = toolsMenu.hidden;
-      toolsMenu.hidden = !open;
-      toolsToggle.setAttribute('aria-expanded', String(open));
-    });
-
-    language.addEventListener('change', () => {
-      const label = language.options[language.selectedIndex].text;
-      updateTranslationPreview(language.value);
-      demo.dataset.mode = 'language';
-      setRail('language');
-      status.textContent = isKorean
-        ? `번역 언어를 ${label}로 설정했습니다. 현재 강의에 번역이 적용됩니다.`
-        : `Language set to ${label}. Translation applies on the current lesson.`;
-    });
-
-    autoTranslate.addEventListener('change', () => {
-      status.textContent = autoTranslate.checked
-        ? (isKorean ? '현재 강의의 자동 번역을 켰습니다.' : 'Automatic translation is enabled for this lesson.')
-        : (isKorean ? '현재 강의의 자동 번역을 일시 중지했습니다.' : 'Automatic translation is paused for this lesson.');
-    });
-
-    commentTranslate.addEventListener('change', () => {
-      status.textContent = commentTranslate.checked
-        ? (isKorean ? '현재 강의에서 댓글 번역을 켰습니다.' : 'Comment translation is enabled for this lesson.')
-        : (isKorean ? '현재 강의에서 댓글 번역을 껐습니다.' : 'Comment translation is disabled for this lesson.');
-    });
-
-    const showChatPreview = () => {
-      if (!chatInput.value.trim()) chatInput.value = demoQuestion.textContent.trim();
-      chatFeedback.textContent = isKorean
-        ? '질문 흐름 미리보기가 표시됐습니다. 외부로 전송된 내용은 없습니다.'
-        : 'The question-flow preview is shown. Nothing was sent outside this page.';
-    };
-    toolButtons.forEach((button) => button.addEventListener('click', () => {
-      toolButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
-      tutorMessage.textContent = toolPreviews[button.dataset.toolPreview];
-      chatFeedback.textContent = isKorean
-        ? '학습 도구 미리보기입니다. 이 데모에서는 데이터를 열거나 저장하지 않습니다.'
-        : 'Learning-tool preview. This demo does not open or store data.';
-      toolsMenu.hidden = true;
-      toolsToggle.setAttribute('aria-expanded', 'false');
-      toolsToggle.focus();
-    }));
-    demoQuestion.addEventListener('click', () => {
-      chatInput.value = demoQuestion.textContent.trim();
-      chatInput.focus();
-    });
-    chatSend.addEventListener('click', showChatPreview);
-    chatInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        showChatPreview();
-      }
-    });
-
-    rail.forEach((button) => button.addEventListener('click', () => {
-      const step = button.dataset.flowStep;
-      if (step === 'sidebar') {
-        setSidebar(true, true);
-      } else {
-        setSidebar(false);
-        demo.dataset.mode = step;
-        setRail(step);
-        if (step === 'language') language.focus();
-      }
-    }));
-
-    demo.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape') return;
-      if (!toolsMenu.hidden) {
-        toolsMenu.hidden = true;
-        toolsToggle.setAttribute('aria-expanded', 'false');
-        toolsToggle.focus();
-      } else if (!sidebar.hidden) {
-        setSidebar(false, true);
-      }
-    });
-
-    updateTranslationPreview(language.value);
-  });
+  import '../landing';
 </script>

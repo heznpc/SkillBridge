@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "使用流程",
+    "navContext": "保持上下文",
+    "navLanguages": "支持语言",
+    "install": "CWS — 旧版 v1.0.1",
+    "eyebrow": "从支持的课程中开始",
+    "lead": "SkillBridge在AI Academy原有界面中添加所需语言，保留导航、课程正文和学习工具。",
+    "versionNotice": "本页基于GitHub源码版v{version}，并非Chrome应用商店提交版本。商店仍提供旧版v1.0.1，新版将在开发完成后提交。目前美国地区无法访问商店条目，可通过GitHub手动安装。",
+    "validationNotice": "自动测试涵盖Academy导航和Tutor通信。登录后的提交结果页面及Puter真实往返通信，仍需在CWS发布前完成验证。",
+    "launch": "查看使用流程",
+    "flowTitle": "课程仍在原来的位置。",
+    "flowLead": "只改变语言。导航、专业术语、阅读位置和复习工具都保留在课程中。",
+    "stepOpen": "打开支持的课程",
+    "stepOpenBody": "像往常一样打开AI Academy，无需额外工作区或复制粘贴。",
+    "stepChoose": "在地球仪菜单中选择语言",
+    "stepChooseBody": "选择语言后，当前课程的可读文本会在原处切换。",
+    "stepStay": "需要帮助时也留在课程内",
+    "stepStayBody": "Tutor、闪卡和书签在课程旁打开，正在阅读的段落始终可见。",
+    "demoLabel": "实时切换演示",
+    "local": "浏览器内切换",
+    "contextEyebrow": "保留上下文",
+    "contextTitle": "翻译无需跳转到其他标签页。",
+    "contextBody": "课程列表、正文和复习工具都在同一流程中，无需中断阅读再寻找原来的位置。",
+    "contextNote": "Tutor和复习工具就在正在阅读的段落旁打开。",
+    "featureEyebrow": "所有功能集中一处",
+    "featureTitle": "从阅读到复习与反馈。",
+    "featureLead": "SkillBridge不仅翻译，还支持在课程中保存、回顾、导出和改进术语。",
+    "languageTitle": "以{count}种语言开始",
+    "languageLead": "Premium词典优先保护专业术语。其他支持的语言使用Google Translate并恢复受保护术语。",
+    "languageMore": "查看全部支持语言",
+    "finalTitle": "打开课程，用适合您的语言阅读。",
+    "finalBody": "无需账号即可开启翻译，需要时再使用学习工具。",
+    "source": "查看GitHub v{version}版本",
+    "footer": "独立社区项目，与Anthropic或Skilljar不存在隶属、赞助或认可关系。",
+    "privacy": "隐私政策",
+    "sourceLabel": "GitHub",
+    "license": "MIT许可证",
+    "flowAria": "产品使用流程",
+    "settingsAria": "SkillBridge扩展设置",
+    "flowTag": "保持学习流程",
+    "lessonAlt": "启用SkillBridge翻译的AI Academy课程",
+    "contextAlt": "显示SkillBridge控件的已翻译AI Academy课程",
+    "languageCount": "{count}种语言"
+  },
+  "titleLines": [
+    "改变语言，",
+    "不改变学习方式。"
+  ],
+  "featureItems": [
+    [
+      "整页翻译",
+      "在原处翻译课程标题、正文、导航、支持的评论和字幕。"
+    ],
+    [
+      "缓存支持离线阅读",
+      "网络断开时，已翻译的文本仍可从浏览器缓存中读取。"
+    ],
+    [
+      "本地学习工具",
+      "使用闪卡、书签、笔记、最近课程、进度、目录和PDF导出。"
+    ],
+    [
+      "翻译反馈",
+      "报告段落问题，审核修正，将其应用于精确匹配的文本或撤销修正。"
+    ],
+    [
+      "自动字幕与深色模式",
+      "翻译支持的课程字幕，并在深色界面中继续学习。"
+    ],
+    [
+      "考试保护",
+      "不修改答题选项，并在识别到受监考的考试时禁用扩展。"
+    ],
+    [
+      "智能检测与快捷键",
+      "检测浏览器语言和SPA课程切换，用键盘打开工具。"
+    ],
+    [
+      "准确的专业术语",
+      "Premium词典和受保护术语恢复机制保留品牌名与AI术语。"
+    ]
+  ],
+  "demo": {
+    "language": "翻译为",
+    "auto": "自动翻译本课",
+    "comments": "翻译评论",
+    "openSidebar": "打开SkillBridge侧边栏",
+    "learningTools": "学习工具",
+    "askPassage": "询问当前段落",
+    "recentLessons": "最近课程",
+    "bookmarks": "书签",
+    "notes": "笔记",
+    "reports": "术语报告",
+    "flashcards": "闪卡",
+    "exportPdf": "导出PDF",
+    "closeSidebar": "关闭侧边栏",
+    "tutorGreeting": "无需离开页面即可询问课程内容。",
+    "send": "发送",
+    "currentLesson": "已为本课启用翻译。",
+    "chatPreview": "交互预览。此演示不会发送消息。",
+    "chatReady": "已显示提问流程预览，没有向本页之外发送任何内容。",
+    "languageSet": "语言已设为{language}，翻译应用于当前课程。",
+    "autoOn": "已为本课开启自动翻译。",
+    "autoOff": "已暂停本课的自动翻译。",
+    "commentsOn": "已为本课开启评论翻译。",
+    "commentsOff": "已关闭本课的评论翻译。",
+    "toolDisclosure": "学习工具预览。此演示不会打开或保存数据。"
+  },
+  "meta": {
+    "title": "SkillBridge - 用您的语言学习AI课程",
+    "description": "用您的语言阅读支持的AI Academy课程，保留专业术语，配备本地学习工具和考试保护。"
+  },
+  "common": {
+    "home": "SkillBridge首页",
+    "navigation": "主导航",
+    "language": "语言",
+    "chooseLanguage": "选择此页面的语言",
+    "version": "版本说明",
+    "validation": "验证范围",
+    "localePrompt": "您的浏览器语言为{language}，是否用该语言浏览本页？",
+    "viewIn": "用{language}浏览",
+    "previewLabel": "演示课程节选 · {language}",
+    "productDescription": "AI课程翻译工具"
+  },
+  "tools": {
+    "recent": "最近课程预览：回到工具使用课程上次阅读的位置。",
+    "bookmarks": "书签预览：在原课程中重新打开已保存的段落。",
+    "notes": "笔记预览：在当前段落旁显示学习笔记。",
+    "reports": "术语报告预览：汇总本课的关键术语。",
+    "flashcards": "闪卡预览：根据本课的核心概念创建复习卡片。",
+    "pdf": "PDF导出预览：准备已翻译课程的打印版式。"
+  },
+  "sample": {
+    "title": "工具使用始于清晰的契约。",
+    "body": "模型需要工具说明和明确的输入格式，才能可靠地选择并调用工具。"
+  }
+}

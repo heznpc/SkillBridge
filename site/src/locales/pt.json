@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Como funciona",
+    "navContext": "No contexto",
+    "navLanguages": "Idiomas",
+    "install": "CWS — versão antiga v1.0.1",
+    "eyebrow": "Começa dentro de um curso compatível",
+    "lead": "O SkillBridge acrescenta o seu idioma ao ecrã original da AI Academy, junto da navegação, do texto e das ferramentas de estudo.",
+    "versionNotice": "Esta página apresenta o código GitHub v{version}, não uma submissão à Chrome Web Store. A loja ainda instala v1.0.1; a próxima publicação aguarda o fim do desenvolvimento. Nos EUA, está disponível a instalação manual pelo GitHub.",
+    "validationNotice": "Os testes automáticos abrangem a navegação da Academy e a comunicação do Tutor. O ecrã após submissão com sessão iniciada e a troca real com Puter ainda precisam de verificação antes da publicação na CWS.",
+    "launch": "Veja como funciona",
+    "flowTitle": "A aula fica no mesmo lugar.",
+    "flowLead": "Só muda o idioma. A navegação, os termos, a posição de leitura e a revisão continuam na aula.",
+    "stepOpen": "Abra uma aula compatível",
+    "stepOpenBody": "Abra a AI Academy como habitualmente, sem outro espaço de trabalho nem copiar e colar.",
+    "stepChoose": "Escolha um idioma no menu do globo",
+    "stepChooseBody": "O texto da aula muda no mesmo lugar assim que escolhe o idioma.",
+    "stepStay": "Obtenha ajuda dentro da aula",
+    "stepStayBody": "Tutor, cartões e marcadores abrem ao lado do curso. O parágrafo continua visível.",
+    "demoLabel": "Demonstração de mudança",
+    "local": "Mudança no navegador",
+    "contextEyebrow": "O contexto mantém-se",
+    "contextTitle": "Traduzir não o leva a outro separador.",
+    "contextBody": "A lista de cursos, o texto e a revisão ficam juntos, sem interromper a leitura para reencontrar o seu lugar.",
+    "contextNote": "Tutor e ferramentas de revisão abrem ao lado do parágrafo.",
+    "featureEyebrow": "Tudo num só lugar",
+    "featureTitle": "Da leitura à revisão e aos comentários.",
+    "featureLead": "O SkillBridge também permite guardar, reler, exportar e melhorar termos dentro do curso.",
+    "languageTitle": "Comece em {count} idiomas",
+    "languageLead": "Os dicionários Premium protegem os termos técnicos. Outros idiomas usam Google Translate com reposição dos termos protegidos.",
+    "languageMore": "Veja todos os idiomas",
+    "finalTitle": "Abra a aula. Leia no seu idioma.",
+    "finalBody": "Ative a tradução sem conta e use as ferramentas quando precisar.",
+    "source": "Ver versão v{version} no GitHub",
+    "footer": "Projeto comunitário independente, sem afiliação, patrocínio ou aprovação da Anthropic ou Skilljar.",
+    "privacy": "Privacidade",
+    "sourceLabel": "GitHub",
+    "license": "Licença MIT",
+    "flowAria": "Percurso do produto",
+    "settingsAria": "Definições da extensão SkillBridge",
+    "flowTag": "Continuidade da aula",
+    "lessonAlt": "Aula da AI Academy traduzida com SkillBridge",
+    "contextAlt": "Aula traduzida da AI Academy com controlos do SkillBridge",
+    "languageCount": "{count} idiomas"
+  },
+  "titleLines": [
+    "Mude o idioma,",
+    "não a forma de aprender."
+  ],
+  "featureItems": [
+    [
+      "Tradução da página inteira",
+      "Traduza títulos, texto, navegação, comentários e legendas compatíveis no próprio lugar."
+    ],
+    [
+      "Leitura offline a partir da cache",
+      "O texto já traduzido continua disponível na cache quando a ligação falha."
+    ],
+    [
+      "Ferramentas de estudo locais",
+      "Cartões, marcadores, notas, aulas recentes, progresso, índice e exportação PDF."
+    ],
+    [
+      "Comentários sobre traduções",
+      "Assinale um excerto, reveja a correção, aplique-a a uma correspondência exata ou anule-a."
+    ],
+    [
+      "Legendas e modo escuro",
+      "Traduza legendas compatíveis e estude com uma interface escura."
+    ],
+    [
+      "Proteção nas avaliações",
+      "As opções de resposta ficam intactas; exames vigiados reconhecidos desativam a extensão."
+    ],
+    [
+      "Deteção e atalhos",
+      "Detete o idioma e mudanças de aula SPA e abra ferramentas pelo teclado."
+    ],
+    [
+      "Terminologia precisa",
+      "Os dicionários Premium e a reposição de termos preservam marcas e vocabulário de IA."
+    ]
+  ],
+  "demo": {
+    "language": "Traduzir para",
+    "auto": "Traduzir esta aula automaticamente",
+    "comments": "Traduzir comentários",
+    "openSidebar": "Abrir barra lateral do SkillBridge",
+    "learningTools": "Ferramentas de estudo",
+    "askPassage": "Perguntar sobre este excerto",
+    "recentLessons": "Aulas recentes",
+    "bookmarks": "Marcadores",
+    "notes": "Notas",
+    "reports": "Relatórios de termos",
+    "flashcards": "Cartões de estudo",
+    "exportPdf": "Exportar PDF",
+    "closeSidebar": "Fechar barra lateral",
+    "tutorGreeting": "Faça perguntas sobre a aula sem sair da página.",
+    "send": "Enviar",
+    "currentLesson": "A tradução está ativada nesta aula.",
+    "chatPreview": "Pré-visualização interativa. Esta demonstração não envia mensagens.",
+    "chatReady": "O percurso das perguntas está visível. Nada foi enviado para fora da página.",
+    "languageSet": "Idioma definido como {language}. A tradução aplica-se a esta aula.",
+    "autoOn": "Tradução automática ativada.",
+    "autoOff": "Tradução automática em pausa.",
+    "commentsOn": "Tradução de comentários ativada.",
+    "commentsOff": "Tradução de comentários desativada.",
+    "toolDisclosure": "Pré-visualização das ferramentas. Não abre nem guarda dados."
+  },
+  "meta": {
+    "title": "SkillBridge - Cursos de IA no seu idioma",
+    "description": "Leia aulas compatíveis da AI Academy no seu idioma com terminologia cuidada, ferramentas locais e proteção nos exames."
+  },
+  "common": {
+    "home": "Início do SkillBridge",
+    "navigation": "Navegação principal",
+    "language": "Idioma",
+    "chooseLanguage": "Escolha o idioma desta página",
+    "version": "Informações da versão",
+    "validation": "Âmbito da verificação",
+    "localePrompt": "O seu navegador usa {language}. Quer ver esta página nesse idioma?",
+    "viewIn": "Ver em {language}",
+    "previewLabel": "Excerto da aula de demonstração · {language}",
+    "productDescription": "Tradutor de cursos de IA"
+  },
+  "tools": {
+    "recent": "Pré-visualização de aulas recentes: regresse ao ponto onde ficou na aula sobre ferramentas.",
+    "bookmarks": "Pré-visualização de marcadores: reabra um excerto guardado na aula original.",
+    "notes": "Pré-visualização de notas: mostre os seus apontamentos ao lado do excerto.",
+    "reports": "Pré-visualização de termos: reúna os termos principais da aula.",
+    "flashcards": "Pré-visualização de cartões: crie cartões com os conceitos principais.",
+    "pdf": "Pré-visualização de PDF: prepare a aula traduzida para impressão."
+  },
+  "sample": {
+    "title": "O uso de ferramentas começa com um contrato claro.",
+    "body": "Um modelo precisa de uma descrição da ferramenta e de um formato de entrada explícito para a escolher e chamar de forma fiável."
+  }
+}

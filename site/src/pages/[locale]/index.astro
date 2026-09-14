@@ -1,8 +1,7 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Landing from '../../components/Landing.astro';
-import { copy, locales, type Locale } from '../../i18n';
-import { buildInfo } from '../../data/build-info';
+import { getCopy, locales, type Locale } from '../../i18n';
 
 export function getStaticPaths() {
   return locales.filter((locale) => locale !== 'en').map((locale) => ({
@@ -12,8 +11,8 @@ export function getStaticPaths() {
 }
 
 const locale = Astro.props.locale as Locale;
-const languageLabel = buildInfo.supportedLanguages.find(({ code }) => code === locale)?.label ?? locale;
+const { meta } = getCopy(locale);
 ---
-<SiteLayout title={`SkillBridge · ${languageLabel}`} description={copy.en.description} locale={locale}>
+<SiteLayout title={meta.title} description={meta.description} locale={locale}>
   <Landing locale={locale} />
 </SiteLayout>

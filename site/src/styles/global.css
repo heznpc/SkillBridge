@@ -286,3 +286,42 @@ a:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visi
 .language-zone li { padding: 13px 0; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 13px; }.language-zone li a { display:block; }.language-zone li a:hover { color:var(--primary); }
 @media (max-width:900px) { .feature-header, .language-zone { grid-template-columns: 1fr; gap: 24px; } .feature-header > p { margin: 0; } .language-zone { gap: 45px; } }
 @media (max-width:620px) { .feature-zone { padding-block: 75px 65px; } .feature-header h2, .language-zone h2 { max-width: 11ch; font-size: clamp(2.25rem, 11vw, 3.2rem); } .feature-grid { grid-template-columns: 1fr; margin-top: 40px; } .feature-grid article:nth-child(odd), .feature-grid article:nth-child(even) { border-right: 0; padding: 20px 0; } .language-zone { padding-bottom: 75px; } .language-zone ul { grid-template-columns: repeat(2, 1fr); gap: 0 18px; } }
+
+/* Translated text can be longer, and connected scripts need natural spacing. */
+.flow-header { grid-template-columns: auto minmax(0,1fr) auto; gap: 20px; }
+.flow-nav { justify-content: center; flex-wrap: wrap; gap: 10px 20px; }
+.header-right { min-width: 0; }
+.locale-switch { font-family: var(--sans); }
+.locale-switch select { min-width: 0; max-width: 160px; padding: 8px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--ink); font: 12px var(--sans); }
+.locale-prompt[hidden] { display: none; }
+.locale-prompt { flex-wrap: wrap; }
+.locale-prompt button { height: auto; min-height: 32px; padding: 6px 12px; }
+.opening-copy h1, .journey-header h2, .context-copy h2, .finish-copy h2, .feature-header h2, .language-zone h2 { overflow-wrap: anywhere; }
+.opening-copy h1 span { white-space: normal; }
+.opening-meta, html[lang="ko"] .opening-meta { position: static; flex-direction: row; flex-wrap: wrap; margin-top: 24px; }
+.extension-demo, .feature-grid article > div { min-width: 0; }
+.extension-sidebar-head { align-items: center; }
+.extension-sidebar-head strong { min-width: 0; line-height: 1.2; }
+.extension-sidebar-head button { flex-shrink: 0; }
+.journey-rail button, .extension-tools-menu button { text-align: start; }
+.extension-tools-menu { max-width: calc(100% - 16px); }
+.extension-sidebar { right: auto; inset-inline-end: 0; border-radius: 0; }
+.extension-tools-menu { left: auto; inset-inline-start: 8px; }
+html[dir="rtl"] .journey-rail { border-right: 0; border-inline-end: 1px solid var(--line); }
+html[dir="rtl"] .extension-popup { border-left: 0; border-inline-start: 1px solid var(--line); }
+html[dir="rtl"] .opening-copy .version-notice { border-left: 0; border-inline-start: 3px solid var(--primary); }
+html[dir="rtl"] .version-notice strong, html[dir="rtl"] .validation-boundary b { margin-right: 0; margin-inline-end: 8px; }
+html[dir="rtl"] .journey-notes article + article { border-left: 0; border-inline-start: 1px solid var(--line); }
+html[dir="rtl"] .feature-grid article:nth-child(odd) { border-right: 0; border-inline-end: 1px solid var(--line); padding-right: 0; padding-inline-end: 30px; }
+html[dir="rtl"] .feature-grid article:nth-child(even) { padding-left: 0; padding-inline-start: 30px; }
+html:is([lang="ar"],[lang="he"],[lang="hi"],[lang="bn"],[lang="th"]) :is(h1,h2,h3,.mark,.section-kicker,.translation-preview small,.extension-field>span) { letter-spacing: normal; }
+html:is([lang="ar"],[lang="he"],[lang="hi"],[lang="bn"],[lang="th"]) :is(h1,h2,h3) { line-height: 1.3; }
+@media (max-width: 900px) { html[dir="rtl"] .journey-rail { border-inline-end: 0; } }
+@media (max-width: 620px) {
+  .flow-header { grid-template-columns: auto minmax(0,1fr); gap: 12px; }
+  .locale-switch > span { display: none; }
+  .locale-switch select { max-width: 145px; }
+  .opening-copy h1, .journey-header h2, .context-copy h2, .finish-copy h2, .feature-header h2, .language-zone h2 { max-width: 100%; }
+  html[dir="rtl"] .extension-popup, html[dir="rtl"] .journey-notes article + article { border-inline-start: 0; }
+  html[dir="rtl"] .feature-grid article:nth-child(odd), html[dir="rtl"] .feature-grid article:nth-child(even) { border-inline-end: 0; padding-inline: 0; }
+}

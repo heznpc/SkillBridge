@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Cara penggunaan",
+    "navContext": "Dalam konteks",
+    "navLanguages": "Bahasa",
+    "install": "CWS — versi lama v1.0.1",
+    "eyebrow": "Bermula dalam kursus yang disokong",
+    "lead": "SkillBridge menambah bahasa anda pada skrin asal AI Academy, bersama navigasi, teks dan alat pembelajaran.",
+    "versionNotice": "Halaman ini memaparkan kod GitHub v{version}, bukan penyerahan Chrome Web Store. Kedai masih memasang v1.0.1; keluaran seterusnya menunggu pembangunan selesai. Di AS, pemasangan manual melalui GitHub tersedia.",
+    "validationNotice": "Ujian automatik meliputi navigasi Academy dan komunikasi Tutor. Skrin selepas penyerahan dengan log masuk serta komunikasi sebenar Puter masih perlu disahkan sebelum penerbitan CWS.",
+    "launch": "Lihat cara penggunaan",
+    "flowTitle": "Pelajaran kekal di tempatnya.",
+    "flowLead": "Hanya bahasa berubah. Navigasi, istilah, kedudukan bacaan dan ulang kaji kekal dalam pelajaran.",
+    "stepOpen": "Buka pelajaran yang disokong",
+    "stepOpenBody": "Buka AI Academy seperti biasa, tanpa ruang kerja lain atau salin dan tampal.",
+    "stepChoose": "Pilih bahasa daripada menu glob",
+    "stepChooseBody": "Teks pelajaran berubah di tempat yang sama apabila bahasa dipilih.",
+    "stepStay": "Dapatkan bantuan dalam pelajaran",
+    "stepStayBody": "Tutor, kad imbas dan penanda buku dibuka di sebelah kursus. Perenggan kekal kelihatan.",
+    "demoLabel": "Demo pertukaran bahasa",
+    "local": "Tukar dalam pelayar",
+    "contextEyebrow": "Konteks dikekalkan",
+    "contextTitle": "Terjemahan tidak membawa anda ke tab lain.",
+    "contextBody": "Senarai kursus, teks dan ulang kaji kekal bersama tanpa menghentikan bacaan untuk mencari tempat asal.",
+    "contextNote": "Tutor dan alat ulang kaji dibuka di sebelah perenggan.",
+    "featureEyebrow": "Semuanya di satu tempat",
+    "featureTitle": "Daripada membaca hingga ulang kaji dan maklum balas.",
+    "featureLead": "SkillBridge turut membolehkan anda menyimpan, membaca semula, mengeksport dan memperbaik istilah dalam kursus.",
+    "languageTitle": "Mulakan dalam {count} bahasa",
+    "languageLead": "Kamus Premium melindungi istilah teknikal. Bahasa lain menggunakan Google Translate dengan pemulihan istilah dilindungi.",
+    "languageMore": "Lihat semua bahasa",
+    "finalTitle": "Buka pelajaran. Baca dalam bahasa anda.",
+    "finalBody": "Aktifkan terjemahan tanpa akaun dan gunakan alat pembelajaran apabila perlu.",
+    "source": "Lihat keluaran v{version} di GitHub",
+    "footer": "Projek komuniti bebas, tanpa hubungan, tajaan atau pengesahan daripada Anthropic atau Skilljar.",
+    "privacy": "Privasi",
+    "sourceLabel": "GitHub",
+    "license": "Lesen MIT",
+    "flowAria": "Aliran produk",
+    "settingsAria": "Tetapan sambungan SkillBridge",
+    "flowTag": "Aliran pelajaran dikekalkan",
+    "lessonAlt": "Pelajaran AI Academy diterjemahkan dengan SkillBridge",
+    "contextAlt": "Pelajaran AI Academy terjemahan dengan kawalan SkillBridge",
+    "languageCount": "{count} bahasa"
+  },
+  "titleLines": [
+    "Tukar bahasa,",
+    "kekalkan cara anda belajar."
+  ],
+  "featureItems": [
+    [
+      "Terjemahan seluruh halaman",
+      "Terjemah tajuk, teks, navigasi, komen dan sari kata yang disokong di tempat asal."
+    ],
+    [
+      "Bacaan luar talian daripada cache",
+      "Teks yang telah diterjemah masih boleh dibaca daripada cache apabila sambungan terputus."
+    ],
+    [
+      "Alat pembelajaran setempat",
+      "Kad imbas, penanda buku, nota, pelajaran terkini, kemajuan, isi kandungan dan eksport PDF."
+    ],
+    [
+      "Maklum balas terjemahan",
+      "Laporkan petikan, semak pembetulan, gunakan pada padanan tepat atau buat asal."
+    ],
+    [
+      "Sari kata dan mod gelap",
+      "Terjemah sari kata yang disokong dan belajar dalam paparan gelap."
+    ],
+    [
+      "Perlindungan penilaian",
+      "Pilihan jawapan tidak diubah; peperiksaan berpengawas yang dikenal pasti menyahaktifkan sambungan."
+    ],
+    [
+      "Pengesanan dan pintasan",
+      "Kesan bahasa pelayar dan pertukaran pelajaran SPA, kemudian buka alat dengan papan kekunci."
+    ],
+    [
+      "Istilah yang tepat",
+      "Kamus Premium dan pemulihan istilah mengekalkan jenama serta kosa kata AI."
+    ]
+  ],
+  "demo": {
+    "language": "Terjemah kepada",
+    "auto": "Terjemah pelajaran ini secara automatik",
+    "comments": "Terjemah komen",
+    "openSidebar": "Buka bar sisi SkillBridge",
+    "learningTools": "Alat pembelajaran",
+    "askPassage": "Tanya tentang petikan ini",
+    "recentLessons": "Pelajaran terkini",
+    "bookmarks": "Penanda buku",
+    "notes": "Nota",
+    "reports": "Laporan istilah",
+    "flashcards": "Kad imbas",
+    "exportPdf": "Eksport PDF",
+    "closeSidebar": "Tutup bar sisi",
+    "tutorGreeting": "Tanya tentang pelajaran tanpa meninggalkan halaman.",
+    "send": "Hantar",
+    "currentLesson": "Terjemahan diaktifkan untuk pelajaran ini.",
+    "chatPreview": "Pratonton interaktif. Demo ini tidak menghantar mesej.",
+    "chatReady": "Aliran soalan dipaparkan. Tiada apa-apa dihantar ke luar halaman.",
+    "languageSet": "Bahasa ditetapkan kepada {language}. Terjemahan digunakan pada pelajaran ini.",
+    "autoOn": "Terjemahan automatik diaktifkan.",
+    "autoOff": "Terjemahan automatik dijeda.",
+    "commentsOn": "Terjemahan komen diaktifkan.",
+    "commentsOff": "Terjemahan komen dinyahaktifkan.",
+    "toolDisclosure": "Pratonton alat pembelajaran. Tidak membuka atau menyimpan data."
+  },
+  "meta": {
+    "title": "SkillBridge - Kursus AI dalam bahasa anda",
+    "description": "Baca pelajaran AI Academy yang disokong dalam bahasa anda dengan istilah terpilih, alat setempat dan perlindungan peperiksaan."
+  },
+  "common": {
+    "home": "Laman utama SkillBridge",
+    "navigation": "Navigasi utama",
+    "language": "Bahasa",
+    "chooseLanguage": "Pilih bahasa halaman ini",
+    "version": "Maklumat versi",
+    "validation": "Skop pengesahan",
+    "localePrompt": "Pelayar anda menggunakan {language}. Lihat halaman ini dalam bahasa tersebut?",
+    "viewIn": "Lihat dalam {language}",
+    "previewLabel": "Petikan pelajaran demo · {language}",
+    "productDescription": "Penterjemah kursus AI"
+  },
+  "tools": {
+    "recent": "Pratonton pelajaran terkini: kembali ke kedudukan terakhir dalam pelajaran penggunaan alat.",
+    "bookmarks": "Pratonton penanda buku: buka semula petikan tersimpan dalam pelajaran asal.",
+    "notes": "Pratonton nota: paparkan nota di sebelah petikan.",
+    "reports": "Pratonton istilah: kumpulkan istilah utama pelajaran.",
+    "flashcards": "Pratonton kad imbas: bina kad daripada konsep utama.",
+    "pdf": "Pratonton PDF: sediakan pelajaran terjemahan untuk dicetak."
+  },
+  "sample": {
+    "title": "Penggunaan alat bermula dengan kontrak yang jelas.",
+    "body": "Model memerlukan penerangan alat dan format input yang jelas untuk memilih serta memanggil alat dengan andal."
+  }
+}
