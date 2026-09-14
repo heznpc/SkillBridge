@@ -60,6 +60,10 @@ const ui = locale === 'ko'
       lessonAlt: 'AI Academy lesson with SkillBridge translation enabled', contextAlt: 'A translated AI Academy lesson with SkillBridge controls',
     };
 
+const titleLines = locale === 'ko'
+  ? ['강의를 떠나지 않고,', '필요한 언어로 읽으세요.']
+  : ['Change the language,', 'not the way you learn.'];
+
 const featureItems = locale === 'ko'
   ? [
       ['전체 페이지 번역', '강의 제목, 본문, 목록, 탐색 메뉴와 지원되는 댓글·자막을 강의 안에서 번역합니다.'],
@@ -101,19 +105,25 @@ const demoText = locale === 'ko'
     <a href="#languages">{ui.navLanguages}</a>
   </nav>
   <div class="header-right">
-    <nav class="locale-toggle" aria-label="Language">
-      <a class:list={[{ current: locale === 'en' }]} href={localePath('en', base)} hreflang="en">EN</a>
-      <a class:list={[{ current: locale === 'ko' }]} href={localePath('ko', base)} hreflang="ko">한국어</a>
-    </nav>
+    <div class="locale-switch" aria-label="Language switch">
+      <span>EN</span>
+      <button type="button" role="switch" aria-checked={locale === 'ko'} data-locale-toggle aria-label={locale === 'ko' ? 'Switch to English' : '한국어로 전환'}><i></i></button>
+      <span>한국어</span>
+    </div>
     <a class="header-install" href={storeUrl}>{ui.install}</a>
   </div>
 </header>
+
+<aside class="locale-prompt shell" data-locale-prompt hidden>
+  <p data-locale-prompt-text></p>
+  <button type="button" role="switch" aria-checked="false" data-locale-prompt-toggle><i></i><span>{locale === 'ko' ? '한국어로 보기' : '한국어로 보기'}</span></button>
+</aside>
 
 <main>
   <section class="opening shell" aria-labelledby="opening-title">
     <div class="opening-index"><span>01</span><i></i><small>{ui.eyebrow}</small></div>
     <div class="opening-copy">
-      <h1 id="opening-title">{ui.title}</h1>
+      <h1 id="opening-title">{titleLines[0]}<br /><span>{titleLines[1]}</span></h1>
       <p>{ui.lead}</p>
       <p class="version-notice"><strong>{locale === 'ko' ? '버전 안내' : 'Version notice'}</strong> {ui.versionNotice}<span class="validation-boundary"><b>{locale === 'ko' ? '검증 경계' : 'Validation boundary'}</b> {ui.validationNotice}</span></p>
       <a class="anchor-link" href="#flow"><span>↓</span>{ui.launch}</a>
@@ -142,7 +152,7 @@ const demoText = locale === 'ko'
       </figure>
       <aside class="extension-popup" aria-label={ui.settingsAria}>
         <div class="extension-popup-head"><img src={`${base}images/icon128.png`} alt="" width="26" height="26" /><div><strong>SkillBridge</strong><small>AI Course Translator</small></div></div>
-        <label class="extension-field"><span>{demoText.language}</span><select data-popup-language><option value="en">{locale === 'ko' ? '영어' : 'English'}</option><option value="ko" selected={locale === 'ko'}>{locale === 'ko' ? '한국어' : 'Korean'}</option><option value="ja">{locale === 'ko' ? '일본어' : 'Japanese'}</option><option value="es">{locale === 'ko' ? '스페인어' : 'Spanish'}</option></select></label>
+        <label class="extension-field"><span>{demoText.language}</span><select data-popup-language>{buildInfo.supportedLanguages.map(({ code, label }) => <option value={code} selected={code === (locale === 'ko' ? 'ko' : 'en')}>{locale === 'ko' ? label : (code === 'en' ? 'English' : label)}</option>)}</select></label>
         <label class="extension-toggle"><input type="checkbox" data-auto-translate checked /><span>{demoText.auto}</span></label>
         <label class="extension-toggle"><input type="checkbox" data-comment-translate /><span>{demoText.comments}</span></label>
         <button class="extension-sidebar-button" type="button" data-sidebar-toggle aria-controls={`demo-sidebar-${locale}`} aria-expanded="false">{demoText.openSidebar}</button>
@@ -180,6 +190,28 @@ const demoText = locale === 'ko'
 <footer class="flow-footer shell"><a class="mark" href={localePath('en', base)}><img src={`${base}images/icon128.png`} alt="" width="28" height="28" /><span>SkillBridge</span></a><p>{ui.footer}</p><nav><a href={privacyUrl}>{ui.privacy}</a><a href="https://github.com/heznpc/skillBridge">{ui.sourceLabel}</a><a href="https://github.com/heznpc/skillBridge/blob/main/LICENSE">{ui.license}</a></nav></footer>
 
 <script>
+  const currentLocale = document.documentElement.lang === 'ko' ? 'ko' : 'en';
+  const localeTarget = currentLocale === 'ko' ? 'en' : 'ko';
+  const localeHref = localeTarget === 'ko' ? `${window.location.origin}${window.location.pathname.replace(/\/?$/, '/').replace(/\/ko\/$/, '/') }ko/` : `${window.location.origin}${window.location.pathname.replace(/\/ko\/$/, '/').replace(/\/$/, '/')}/`;
+  const browserLocale = (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  const prompt = document.querySelector('[data-locale-prompt]');
+  const promptText = document.querySelector('[data-locale-prompt-text]');
+  const promptToggle = document.querySelector('[data-locale-prompt-toggle]');
+  const localeToggle = document.querySelector('[data-locale-toggle]');
+  const switchLocale = () => { window.location.href = localeHref; };
+  localeToggle?.addEventListener('click', switchLocale);
+  promptToggle?.addEventListener('click', switchLocale);
+  if (browserLocale !== currentLocale && !sessionStorage.getItem('skillbridge-locale-prompt-dismissed')) {
+    if (promptText) promptText.textContent = browserLocale === 'ko' ? '브라우저 언어가 한국어입니다. 한국어 랜딩 페이지로 볼까요?' : 'Your browser is set to English. View the English landing page?';
+    if (promptToggle) {
+      promptToggle.setAttribute('aria-checked', browserLocale === 'ko' ? 'true' : 'false');
+      const label = promptToggle.querySelector('span');
+      if (label) label.textContent = browserLocale === 'ko' ? '한국어로 보기' : '영어로 보기';
+    }
+    prompt?.removeAttribute('hidden');
+    sessionStorage.setItem('skillbridge-locale-prompt-dismissed', '1');
+  }
+
   document.querySelectorAll('[data-extension-demo]').forEach((demo) => {
     const sidebar = demo.querySelector('[data-extension-sidebar]');
     const sidebarToggle = demo.querySelector('[data-sidebar-toggle]');
