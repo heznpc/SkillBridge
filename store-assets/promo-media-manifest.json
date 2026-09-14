@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "product": "SkillBridge",
-  "version": "4.0.0",
+  "version": "4.2.0",
   "status": "release-candidate",
   "publicIdentity": "Heznpc",
   "source": {
     "path": "store-assets/demo.webm",
-    "sha256": "4c8cbb7864c16834d767ba35a8295bf514e0b6920d7f15da8ef18f854431d402",
+    "sha256": "ff878a5e9eb983a6314c721a46b77000ee876270007afe9312d3759b5b9af111",
     "runtime": "dist/bundled",
     "captureEnvironment": "neutral deterministic fixture; not the live Skilljar UI"
   },
-  "claimGuard": "Do not claim the release is live until the CWS listing shows v4.0.0.",
+  "claimGuard": "Do not claim the release is live until the CWS listing shows v4.2.0.",
   "supportedClaims": [
     "Translates supported AI-course lessons into 32 interface languages.",
     "Provides local learning tools including progress and flashcards.",
@@ -21,45 +21,45 @@
   "thumbnails": [
     {
       "path": "store-assets/promo-video-thumbnail-1280x720.png",
-      "sha256": "7710243b96a6d5165e8f204dedfbf79fce0ec5341ec8ee9a5a5373de64f1f4cd",
+      "sha256": "8fef0c2f779a3c57ccb25d9918f79e4eeaa375803c1946c6882f08c618534e42",
       "codec": "png",
       "width": 1280,
       "height": 720,
       "fps": "25/1",
       "durationSeconds": 0,
-      "bytes": 465110
+      "bytes": 468613
     },
     {
       "path": "store-assets/promo-short-thumbnail-1080x1920.png",
-      "sha256": "a39bd5ea41bb59cc793da4995626051d8e4e63a6ef194c1cb469558dc3a485ef",
+      "sha256": "587dff31cc910490517e47c22ad919a9180fdb539fca7400e8c54f935f8128da",
       "codec": "png",
       "width": 1080,
       "height": 1920,
       "fps": "25/1",
       "durationSeconds": 0,
-      "bytes": 803001
+      "bytes": 802591
     }
   ],
   "assets": [
     {
-      "path": "store-assets/skillbridge-v4.0.0-demo-landscape.mp4",
-      "sha256": "6ba9daacb50d0f1632a32b894dede9a91a6b7fc00eb91bae2b831c066e38280c",
+      "path": "store-assets/skillbridge-v4.2.0-demo-landscape.mp4",
+      "sha256": "49c11cb13e9826e06475a36b27bde763e66e8d11a47e9d07f55c1a00c1316941",
       "codec": "h264",
       "width": 1280,
       "height": 720,
       "fps": "25/1",
-      "durationSeconds": 20.76,
-      "bytes": 562257
+      "durationSeconds": 12.12,
+      "bytes": 632837
     },
     {
-      "path": "store-assets/skillbridge-v4.0.0-demo-short.mp4",
-      "sha256": "6f2d874f5672d515741c574fa486a0a2cf8559614076e33e19593eb5ada4f0fa",
+      "path": "store-assets/skillbridge-v4.2.0-demo-short.mp4",
+      "sha256": "67d9ef42041f4e9b132911ad4f8b0c2983ff3adb544adb26b6e7e8e438b5d582",
       "codec": "h264",
       "width": 1080,
       "height": 1920,
       "fps": "25/1",
-      "durationSeconds": 20.76,
-      "bytes": 601907
+      "durationSeconds": 12.12,
+      "bytes": 644226
     }
   ]
 }
