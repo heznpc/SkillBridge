@@ -114,7 +114,7 @@ const demoText = locale === 'ko'
   </div>
 </header>
 
-<aside class="locale-prompt shell" data-locale-prompt hidden>
+<aside class="locale-prompt shell" data-locale-prompt data-site-base={base} hidden>
   <p data-locale-prompt-text></p>
   <button type="button" role="switch" aria-checked="false" data-locale-prompt-toggle><i></i><span>{locale === 'ko' ? '한국어로 보기' : '한국어로 보기'}</span></button>
 </aside>
@@ -181,7 +181,7 @@ const demoText = locale === 'ko'
 
   <section class="language-zone shell" id="languages" aria-labelledby="languages-title">
     <div><p class="section-kicker">05 / {ui.languageMore}</p><h2 id="languages-title">{ui.languageTitle}</h2><p>{ui.languageLead}</p></div>
-    <ul>{buildInfo.supportedLanguages.filter(({ code }) => code !== 'en').map(({ label }) => <li>{label}</li>)}</ul>
+    <ul>{buildInfo.supportedLanguages.filter(({ code }) => code !== 'en').map(({ code, label }) => <li><a href={localePath(code as Locale, base)} hreflang={code}>{label}</a></li>)}</ul>
   </section>
 
   <section class="finish shell"><div class="finish-line"><span>06</span><i></i><small>{ui.flowTag}</small></div><div class="finish-copy"><h2>{ui.finalTitle}</h2><p>{ui.finalBody}</p></div><div class="finish-actions"><a class="install-button" href={storeUrl}>{ui.install}</a><a class="source-link" href={releaseUrl}>{ui.source}</a></div></section>
@@ -190,23 +190,29 @@ const demoText = locale === 'ko'
 <footer class="flow-footer shell"><a class="mark" href={localePath('en', base)}><img src={`${base}images/icon128.png`} alt="" width="28" height="28" /><span>SkillBridge</span></a><p>{ui.footer}</p><nav><a href={privacyUrl}>{ui.privacy}</a><a href="https://github.com/heznpc/skillBridge">{ui.sourceLabel}</a><a href="https://github.com/heznpc/skillBridge/blob/main/LICENSE">{ui.license}</a></nav></footer>
 
 <script>
-  const currentLocale = document.documentElement.lang === 'ko' ? 'ko' : 'en';
+  const currentLocale = document.documentElement.lang || 'en';
   const localeTarget = currentLocale === 'ko' ? 'en' : 'ko';
-  const localeHref = localeTarget === 'ko' ? `${window.location.origin}${window.location.pathname.replace(/\/?$/, '/').replace(/\/ko\/$/, '/') }ko/` : `${window.location.origin}${window.location.pathname.replace(/\/ko\/$/, '/').replace(/\/$/, '/')}/`;
-  const browserLocale = (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  const siteBase = document.querySelector('[data-site-base]')?.getAttribute('data-site-base') || '/SkillBridge/';
+  const localeHref = `${window.location.origin}${siteBase}${localeTarget === 'en' ? '' : `${localeTarget}/`}`;
+  const browserLanguage = (navigator.language || 'en').toLowerCase();
+  const browserLocale = browserLanguage.startsWith('ko') ? 'ko' : browserLanguage.startsWith('ja') ? 'ja' : browserLanguage.startsWith('zh-tw') ? 'zh-TW' : browserLanguage.startsWith('zh') ? 'zh-CN' : browserLanguage.split('-')[0];
+  const supportedLocales = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'es', 'fr', 'it', 'nl', 'de', 'pt-BR', 'ru', 'vi', 'id', 'pt', 'pl', 'uk', 'cs', 'sv', 'da', 'fi', 'no', 'tr', 'ar', 'hi', 'th', 'ms', 'tl', 'bn', 'he', 'ro', 'hu', 'el'];
+  const detectedLocale = supportedLocales.find((code) => code.toLowerCase() === browserLocale.toLowerCase()) || 'en';
   const prompt = document.querySelector('[data-locale-prompt]');
   const promptText = document.querySelector('[data-locale-prompt-text]');
   const promptToggle = document.querySelector('[data-locale-prompt-toggle]');
   const localeToggle = document.querySelector('[data-locale-toggle]');
   const switchLocale = () => { window.location.href = localeHref; };
+  const switchToDetectedLocale = () => { window.location.href = `${window.location.origin}${siteBase}${detectedLocale === 'en' ? '' : `${detectedLocale}/`}`; };
   localeToggle?.addEventListener('click', switchLocale);
-  promptToggle?.addEventListener('click', switchLocale);
-  if (browserLocale !== currentLocale && !sessionStorage.getItem('skillbridge-locale-prompt-dismissed')) {
-    if (promptText) promptText.textContent = browserLocale === 'ko' ? '브라우저 언어가 한국어입니다. 한국어 랜딩 페이지로 볼까요?' : 'Your browser is set to English. View the English landing page?';
+  promptToggle?.addEventListener('click', switchToDetectedLocale);
+  if (detectedLocale !== currentLocale && !sessionStorage.getItem('skillbridge-locale-prompt-dismissed')) {
+    const detectedLabel = new Intl.DisplayNames([navigator.language || 'en'], { type: 'language' }).of(detectedLocale) || detectedLocale;
+    if (promptText) promptText.textContent = currentLocale === 'ko' ? `브라우저 언어가 ${detectedLabel}입니다. 해당 언어로 볼까요?` : `Your browser is set to ${detectedLabel}. View this landing page in that language?`;
     if (promptToggle) {
-      promptToggle.setAttribute('aria-checked', browserLocale === 'ko' ? 'true' : 'false');
+      promptToggle.setAttribute('aria-checked', detectedLocale !== 'en' ? 'true' : 'false');
       const label = promptToggle.querySelector('span');
-      if (label) label.textContent = browserLocale === 'ko' ? '한국어로 보기' : '영어로 보기';
+      if (label) label.textContent = currentLocale === 'ko' ? `${detectedLabel}로 보기` : `View in ${detectedLabel}`;
     }
     prompt?.removeAttribute('hidden');
     sessionStorage.setItem('skillbridge-locale-prompt-dismissed', '1');
