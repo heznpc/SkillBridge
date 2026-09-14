@@ -6,7 +6,7 @@
 
 > **Source checkpoint:** <!-- VERSION_START -->v4.2.0<!-- VERSION_END --> — GitHub source release. The Chrome Web Store still serves legacy v1.0.1; publication of the current source build is paused.
 
-[Landing page](https://heznpc.github.io/skillBridge/) · [Install](#install) · [Report a bug](https://github.com/heznpc/skillbridge/issues)
+[Landing page](https://heznpc.github.io/SkillBridge/) · [Install](#install) · [Report a bug](https://github.com/heznpc/skillbridge/issues)
 
 [![CI](https://github.com/heznpc/skillbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/heznpc/skillbridge/actions/workflows/ci.yml) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) [![Chrome MV3](https://img.shields.io/badge/Chrome-Extension_MV3-blue.svg)](https://developer.chrome.com/docs/extensions/)
 
