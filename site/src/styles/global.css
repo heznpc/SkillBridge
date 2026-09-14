@@ -283,6 +283,6 @@ a:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visi
 .language-zone h2 { max-width: 10ch; }
 .language-zone > div > p:last-child { max-width: 30rem; margin-top: 22px; }
 .language-zone ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 22px; align-content: start; margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
-.language-zone li { padding: 13px 0; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 13px; }
+.language-zone li { padding: 13px 0; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 13px; }.language-zone li a { display:block; }.language-zone li a:hover { color:var(--primary); }
 @media (max-width:900px) { .feature-header, .language-zone { grid-template-columns: 1fr; gap: 24px; } .feature-header > p { margin: 0; } .language-zone { gap: 45px; } }
 @media (max-width:620px) { .feature-zone { padding-block: 75px 65px; } .feature-header h2, .language-zone h2 { max-width: 11ch; font-size: clamp(2.25rem, 11vw, 3.2rem); } .feature-grid { grid-template-columns: 1fr; margin-top: 40px; } .feature-grid article:nth-child(odd), .feature-grid article:nth-child(even) { border-right: 0; padding: 20px 0; } .language-zone { padding-bottom: 75px; } .language-zone ul { grid-template-columns: repeat(2, 1fr); gap: 0 18px; } }

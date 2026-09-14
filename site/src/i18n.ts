@@ -1,5 +1,6 @@
-export const locales = ['en', 'ko'] as const;
+export const locales = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'es', 'fr', 'it', 'nl', 'de', 'pt-BR', 'ru', 'vi', 'id', 'pt', 'pl', 'uk', 'cs', 'sv', 'da', 'fi', 'no', 'tr', 'ar', 'hi', 'th', 'ms', 'tl', 'bn', 'he', 'ro', 'hu', 'el'] as const;
 export type Locale = (typeof locales)[number];
+export type LandingCopyLocale = 'en' | 'ko';
 
 export type Copy = {
   title: string;
@@ -14,7 +15,7 @@ export type Copy = {
   footer: { disclaimer: string; privacy: string; source: string; license: string };
 };
 
-export const copy: Record<Locale, Copy> = {
+export const copy: Record<LandingCopyLocale, Copy> = {
   en: {
     title: 'SkillBridge - AI courses in your language',
     description: 'Read supported AI Academy lessons in your language with curated terminology, local study tools, and exam safeguards.',
