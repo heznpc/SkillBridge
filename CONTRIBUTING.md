@@ -319,7 +319,7 @@ scanned CWS upload artifact.
 
 > **Where does the landing page live?**
 > The public landing page at
-> [https://heznpc.github.io/skillBridge/](https://heznpc.github.io/skillBridge/)
+> [https://heznpc.github.io/SkillBridge/](https://heznpc.github.io/SkillBridge/)
 > is served by **GitHub Pages from this repo** (`main` branch → `/docs` folder).
 > Its source is `site/src/**`, built into `docs/` by `npm run docs` — which keeps
 > the version / language-count / QA-table markers in sync with the code, so don't
