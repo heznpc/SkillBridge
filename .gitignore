@@ -63,3 +63,6 @@ snapshots/*/sources/
 docs/TELEMETRY_DESIGN.md
 *session*.json
 scratch/
+
+# Isolated evidence candidates; never publish without digest-bound review.
+store-assets/evidence/

@@ -42,16 +42,13 @@ technical terminology intact.
   server (e.g. Ollama) and tutor text never leaves your machine. Or turn the
   tutor off and use translation only.
 
-## Claim evidence
+## Current capture evidence
 
-| Claim | Repository proof | Visual proof |
-|---|---|---|
-| 32 languages | `_locales/`, `README.md` generated language count | `02-language-select.png` |
-| Lesson translation | `manifest.json`, `src/content/` | `01-translate.png` |
-| Local learning tools | `src/content/dashboard.js`, `src/content/chat-flashcards.js` | `04-flashcards.png` |
-| Exam-safe answers | `src/content/content.js`, `tests/e2e/exam-mode.spec.js` | `05-exam-safe.png` |
-| AI Tutor ships in CWS | `src/shared/build-config.js` (gateway pinned on), `src/bridge/puter.js`, `tests/build-bundle.test.js` | `03-sidebar-tutor.png`, `promo-media-manifest.json` source record |
-| Optional on-device engine | `src/background/background.js` (`sb-local-chat` port), `src/popup/popup.js` engine selector, `tests/local-engine.test.js` | popup engine selector |
+Use the current take-a-repo candidate and its claim/check report. Translation
+and restore, Japanese body/UI, Tutor interaction, record persistence, flashcard
+grading and exam protection are exercised on neutral fixtures. This does not
+verify live Academy, real Tutor response quality or every supported language.
+See [the capture contract](../docs/development/capture-contract.md).
 
 ## Archived pre-launch copy — do not use
 
@@ -88,36 +85,18 @@ Before that proof exists, retain the release-candidate wording above.
 
 ## Asset map
 
-### Chrome Web Store
+### Current review assets
 
-- `01-translate.png` through `05-exam-safe.png` — five 1280×800 product screenshots.
-- `promo-tile-440x280.png` — CWS small promo tile.
-- `demo.webm` — deterministic fixture capture using the actual CWS bundle.
+`npm run promo:build` creates one isolated evidence candidate. The hero clip shows
+lesson → translation → paragraph question → saved learning records. Translation,
+Japanese UI, Tutor, persistence, review and exam protection have separate clips.
+Screenshots, the existing promo template and listing copy are included in review.
 
-### Social and press
+Raw WebM and final H.264 MP4 hashes live in `runs/<id>/run.json`. Videos visibly
+state fixture/frozen translation/Tutor stub use. The former title-card composite,
+vertical derivative and `promo-media-manifest.json` are historical, not current
+release evidence. No footage is publicly deployed until the user reviews it.
 
-- `promo-social-landscape-1200x675.png` — LinkedIn/X landscape card.
-- `promo-social-square-1080x1080.png` — square feed card.
-- `promo-social-portrait-1080x1350.png` — portrait feed card.
-- `promo-video-thumbnail-1280x720.png` — landscape video thumbnail/title card.
-- `promo-short-thumbnail-1080x1920.png` — Shorts/Reels thumbnail/title card.
-- `skillbridge-v4.0.0-demo-landscape.mp4` — landscape demo.
-- `skillbridge-v4.0.0-demo-short.mp4` — vertical short.
-- `promo-media-manifest.json` — source hash, output hashes, dimensions, durations,
-  and allowed claims.
-
-Run `npm run promo:build` to rebuild the full set from the current production
-bundle. Videos are local publishing artifacts and remain ignored by Git; their
-hashes are committed in the media manifest.
-
-## Video structure
-
-1. Release-candidate title card.
-2. The actual bundled extension running against a neutral deterministic fixture:
-   translate a lesson, ask the in-page Tutor, then show flashcards.
-3. Return to the title card. The extension UI and Tutor rendering path are the
-   real bundle; the external Puter/Claude response is replaced with a fixed
-   streaming stub so the footage is login-free and reproducible.
-
-The videos are silent by design; the visual captions and title cards carry the
-message without a narration or music-license dependency.
+After approval, `npm run capture:apply` connects exact reviewed files to the
+existing landing image and store paths. `capture:verify-assets` checks their
+receipt; `release:preflight` also requires the matching current approved candidate.

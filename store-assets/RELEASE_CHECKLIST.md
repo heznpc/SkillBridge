@@ -177,22 +177,19 @@ not by itself invalidate them.
 Don't hand-capture. `npm run capture:store` drives the **built bundle** with
 Playwright and regenerates the full CWS set into `store-assets/` — or run it
 with **zero local setup**: Actions → "Capture store assets" → Run workflow →
-download the `store-assets` artifact:
+download the `skillbridge-evidence-candidate` artifact. It contains isolated raw
+screenshots/videos, final H.264 clips, listing copy, the promo tile and a complete
+verification report. Configure scenarios in `take-a-repo.config.js` and
+`scripts/capture/`; listing text stays in `store-assets/STORE_LISTING.md`.
 
-- `01-translate.png` … `05-exam-safe.png` (1280×800) — translated lesson,
-  language picker, in-page Tutor, flashcards, exam-safe answers
-- `promo-tile-440x280.png` — small promo tile
-- `demo.webm` — demo screencast (CWS takes a YouTube link, not a file — upload it and paste the URL)
-- `description.md` — copy/paste Title / Summary / Description / What's new
+Run `npm run capture:review`, review the actual fixture disclosures and media,
+and approve the complete candidate. `npm run capture:apply` copies exactly those
+bytes to the landing/store paths. `release:preflight` checks both the current
+approval and the export receipt; historical promo manifests are not accepted.
+`release:verify` creates a fresh candidate and therefore stops at this review gate;
+after approval/application, rerun `release:preflight` for upload readiness.
 
-Edit which states are captured in `store.config.js`, and the listing copy in
-`store-assets/STORE_LISTING.md`. The run doubles as a real-bundle smoke test (a
-screenshot only appears if that feature rendered). Captures are login-free and
-deterministic — a frozen Korean translation map, no Puter/AI readiness step,
-neutral "Academy" fixtures (no Anthropic logo), and a composited
-"unofficial / not affiliated" disclaimer band
-on every shot. (`assets/screenshots/*` README/marketing images are separate and
-still hand-made.)
+See [the scenario and truthfulness contract](../docs/development/capture-contract.md).
 
 ### 3. Upload to CWS dev console
 

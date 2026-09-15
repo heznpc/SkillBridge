@@ -1,5 +1,5 @@
 {
-  "_comment": "Frozen Korean translations that SEED the store-capture run, layered on top of the E2E GT_KO map. Authentic-quality strings, frozen for byte-for-byte reproducibility (the spec's 'freeze해 시드'). Regenerate from live Google Translate with `npm run capture:store -- --freeze`. Only the styled store fixtures' extra strings live here; the shared lesson/quiz body strings come from tests/e2e/helpers/network-stubs.js GT_KO.",
+  "_comment": "Frozen Korean fixture translations, merged with the E2E map. These are demo inputs, not a live Google Translate verification.",
   "Building with the Claude API": "Claude API로 개발하기",
   "Getting started": "시작하기",
   "Messages and roles": "메시지와 역할",
