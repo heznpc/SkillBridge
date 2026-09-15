@@ -57,7 +57,7 @@
     "check:window": "node scripts/check-window-surface.js",
     "landing:dev": "astro dev --root site",
     "landing:build": "astro build --root site && node scripts/publish-landing.cjs",
-    "landing:verify": "astro build --root site",
+    "landing:verify": "astro build --root site && tsc --noEmit -p site/tsconfig.json",
     "docs:metadata": "node scripts/generate-docs.js"
   },
   "jest": {

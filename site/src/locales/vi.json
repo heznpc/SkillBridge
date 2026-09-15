@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Cách sử dụng",
+    "navContext": "Trong ngữ cảnh",
+    "navLanguages": "Ngôn ngữ",
+    "install": "CWS — bản cũ v1.0.1",
+    "eyebrow": "Bắt đầu ngay trong khóa học được hỗ trợ",
+    "lead": "SkillBridge thêm ngôn ngữ bạn cần vào màn hình AI Academy gốc, giữ nguyên điều hướng, bài học và công cụ học tập.",
+    "versionNotice": "Trang này giới thiệu mã nguồn GitHub v{version}, không phải bản gửi lên Chrome Web Store. Cửa hàng vẫn cài v1.0.1; bản mới chờ hoàn tất phát triển. Tại Hoa Kỳ, có thể cài thủ công từ GitHub.",
+    "validationNotice": "Kiểm thử tự động bao gồm điều hướng Academy và giao tiếp Tutor. Màn hình sau khi nộp bài có đăng nhập và trao đổi thực tế với Puter vẫn cần kiểm tra trước khi phát hành trên CWS.",
+    "launch": "Xem cách sử dụng",
+    "flowTitle": "Bài học vẫn ở nguyên chỗ.",
+    "flowLead": "Chỉ ngôn ngữ thay đổi. Điều hướng, thuật ngữ, vị trí đọc và công cụ ôn tập vẫn trong bài học.",
+    "stepOpen": "Mở bài học được hỗ trợ",
+    "stepOpenBody": "Mở AI Academy như thường lệ, không cần không gian làm việc khác hay sao chép và dán.",
+    "stepChoose": "Chọn ngôn ngữ trong menu quả địa cầu",
+    "stepChooseBody": "Văn bản bài học thay đổi tại chỗ ngay khi bạn chọn ngôn ngữ.",
+    "stepStay": "Nhận trợ giúp ngay trong bài học",
+    "stepStayBody": "Tutor, thẻ ghi nhớ và dấu trang mở cạnh khóa học. Đoạn đang đọc vẫn hiển thị.",
+    "demoLabel": "Bản demo chuyển ngôn ngữ",
+    "local": "Chuyển trong trình duyệt",
+    "contextEyebrow": "Giữ nguyên ngữ cảnh",
+    "contextTitle": "Dịch không đưa bạn sang tab khác.",
+    "contextBody": "Danh sách khóa học, nội dung và công cụ ôn tập ở cùng một nơi, không cần ngừng đọc để tìm lại vị trí.",
+    "contextNote": "Tutor và công cụ ôn tập mở ngay cạnh đoạn đang đọc.",
+    "featureEyebrow": "Tất cả ở một nơi",
+    "featureTitle": "Từ đọc đến ôn tập và góp ý.",
+    "featureLead": "SkillBridge còn cho phép lưu, đọc lại, xuất và cải thiện thuật ngữ ngay trong khóa học.",
+    "languageTitle": "Bắt đầu với {count} ngôn ngữ",
+    "languageLead": "Từ điển Premium bảo vệ thuật ngữ kỹ thuật. Các ngôn ngữ khác dùng Google Translate và khôi phục thuật ngữ được bảo vệ.",
+    "languageMore": "Xem tất cả ngôn ngữ",
+    "finalTitle": "Mở bài học. Đọc bằng ngôn ngữ của bạn.",
+    "finalBody": "Bật dịch không cần tài khoản và dùng công cụ học tập khi cần.",
+    "source": "Xem bản v{version} trên GitHub",
+    "footer": "Dự án cộng đồng độc lập, không liên kết, được tài trợ hay được xác nhận bởi Anthropic hoặc Skilljar.",
+    "privacy": "Quyền riêng tư",
+    "sourceLabel": "GitHub",
+    "license": "Giấy phép MIT",
+    "flowAria": "Quy trình sử dụng sản phẩm",
+    "settingsAria": "Cài đặt tiện ích SkillBridge",
+    "flowTag": "Giữ mạch bài học",
+    "lessonAlt": "Bài học AI Academy được dịch bằng SkillBridge",
+    "contextAlt": "Bài học AI Academy đã dịch với các nút điều khiển SkillBridge",
+    "languageCount": "{count} ngôn ngữ"
+  },
+  "titleLines": [
+    "Đổi ngôn ngữ,",
+    "giữ cách bạn học."
+  ],
+  "featureItems": [
+    [
+      "Dịch toàn trang",
+      "Dịch tiêu đề, nội dung, điều hướng, bình luận và phụ đề được hỗ trợ ngay tại chỗ."
+    ],
+    [
+      "Đọc ngoại tuyến từ bộ nhớ đệm",
+      "Văn bản đã dịch vẫn đọc được từ bộ nhớ đệm trình duyệt khi mất mạng."
+    ],
+    [
+      "Công cụ học tập cục bộ",
+      "Thẻ ghi nhớ, dấu trang, ghi chú, bài học gần đây, tiến độ, mục lục và xuất PDF."
+    ],
+    [
+      "Góp ý bản dịch",
+      "Báo lỗi đoạn văn, xem bản sửa, áp dụng cho văn bản khớp chính xác hoặc hoàn tác."
+    ],
+    [
+      "Phụ đề và chế độ tối",
+      "Dịch phụ đề được hỗ trợ và học với giao diện tối."
+    ],
+    [
+      "Bảo vệ khi kiểm tra",
+      "Không đổi lựa chọn trả lời; tiện ích tắt khi nhận diện bài thi có giám sát."
+    ],
+    [
+      "Phát hiện và phím tắt",
+      "Nhận diện ngôn ngữ trình duyệt, chuyển bài SPA và mở công cụ bằng bàn phím."
+    ],
+    [
+      "Thuật ngữ chính xác",
+      "Từ điển Premium và khôi phục thuật ngữ giữ nguyên thương hiệu và từ vựng AI."
+    ]
+  ],
+  "demo": {
+    "language": "Dịch sang",
+    "auto": "Tự động dịch bài này",
+    "comments": "Dịch bình luận",
+    "openSidebar": "Mở thanh bên SkillBridge",
+    "learningTools": "Công cụ học tập",
+    "askPassage": "Hỏi về đoạn này",
+    "recentLessons": "Bài học gần đây",
+    "bookmarks": "Dấu trang",
+    "notes": "Ghi chú",
+    "reports": "Báo cáo thuật ngữ",
+    "flashcards": "Thẻ ghi nhớ",
+    "exportPdf": "Xuất PDF",
+    "closeSidebar": "Đóng thanh bên",
+    "tutorGreeting": "Hỏi về bài học mà không rời trang.",
+    "send": "Gửi",
+    "currentLesson": "Đã bật dịch cho bài học này.",
+    "chatPreview": "Xem trước tương tác. Bản demo không gửi tin nhắn.",
+    "chatReady": "Đã hiển thị quy trình đặt câu hỏi. Không gửi gì ra ngoài trang này.",
+    "languageSet": "Đã chọn {language}. Bản dịch áp dụng cho bài học hiện tại.",
+    "autoOn": "Đã bật dịch tự động.",
+    "autoOff": "Đã tạm dừng dịch tự động.",
+    "commentsOn": "Đã bật dịch bình luận.",
+    "commentsOff": "Đã tắt dịch bình luận.",
+    "toolDisclosure": "Xem trước công cụ. Không mở hoặc lưu dữ liệu."
+  },
+  "meta": {
+    "title": "SkillBridge - Khóa học AI bằng ngôn ngữ của bạn",
+    "description": "Đọc bài học AI Academy được hỗ trợ bằng ngôn ngữ của bạn với thuật ngữ chọn lọc, công cụ cục bộ và bảo vệ khi thi."
+  },
+  "common": {
+    "home": "Trang chủ SkillBridge",
+    "navigation": "Điều hướng chính",
+    "language": "Ngôn ngữ",
+    "chooseLanguage": "Chọn ngôn ngữ cho trang này",
+    "version": "Thông tin phiên bản",
+    "validation": "Phạm vi kiểm chứng",
+    "localePrompt": "Trình duyệt của bạn dùng {language}. Xem trang này bằng ngôn ngữ đó?",
+    "viewIn": "Xem bằng {language}",
+    "previewLabel": "Trích đoạn bài học demo · {language}",
+    "productDescription": "Trình dịch khóa học AI"
+  },
+  "tools": {
+    "recent": "Xem trước bài gần đây: quay lại vị trí đã dừng trong bài sử dụng công cụ.",
+    "bookmarks": "Xem trước dấu trang: mở đoạn đã lưu trong bài học gốc.",
+    "notes": "Xem trước ghi chú: hiển thị ghi chú cạnh đoạn hiện tại.",
+    "reports": "Xem trước thuật ngữ: tập hợp các thuật ngữ chính của bài học.",
+    "flashcards": "Xem trước thẻ: tạo thẻ từ các khái niệm chính.",
+    "pdf": "Xem trước PDF: chuẩn bị bản in của bài học đã dịch."
+  },
+  "sample": {
+    "title": "Sử dụng công cụ bắt đầu từ một hợp đồng rõ ràng.",
+    "body": "Mô hình cần mô tả công cụ và định dạng đầu vào rõ ràng để chọn và gọi công cụ một cách đáng tin cậy."
+  }
+}

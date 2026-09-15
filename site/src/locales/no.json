@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Slik fungerer det",
+    "navContext": "I kontekst",
+    "navLanguages": "Språk",
+    "install": "CWS — eldre versjon v1.0.1",
+    "eyebrow": "Start i et støttet kurs",
+    "lead": "SkillBridge legger til språket ditt i den opprinnelige AI Academy-visningen, med navigasjon, leksjonstekst og læringsverktøy samlet.",
+    "versionNotice": "Siden viser GitHub-koden v{version}, ikke en innsending til Chrome Web Store. Butikken installerer fortsatt v1.0.1; neste publisering venter til utviklingen er ferdig. I USA er manuell installasjon fra GitHub tilgjengelig.",
+    "validationNotice": "Automatiske tester dekker Academy-navigasjon og Tutor-kommunikasjon. Innlogget visning etter innsending og ekte kommunikasjon med Puter må fortsatt kontrolleres før CWS-publisering.",
+    "launch": "Se hvordan det fungerer",
+    "flowTitle": "Leksjonen blir på sin plass.",
+    "flowLead": "Bare språket endres. Navigasjon, faguttrykk, leseposisjon og repetisjon blir i leksjonen.",
+    "stepOpen": "Åpne en støttet leksjon",
+    "stepOpenBody": "Åpne AI Academy som vanlig, uten ekstra arbeidsområde eller kopiering og innliming.",
+    "stepChoose": "Velg språk i globusmenyen",
+    "stepChooseBody": "Leksjonsteksten endres på stedet når du velger språk.",
+    "stepStay": "Få hjelp i leksjonen",
+    "stepStayBody": "Tutor, øvingskort og bokmerker åpnes ved siden av kurset. Avsnittet er fortsatt synlig.",
+    "demoLabel": "Interaktiv språkdemonstrasjon",
+    "local": "Bytt i nettleseren",
+    "contextEyebrow": "Konteksten beholdes",
+    "contextTitle": "Oversettelsen sender deg ikke til en annen fane.",
+    "contextBody": "Kursliste, tekst og repetisjon er samlet, så du slipper å avbryte lesingen for å finne tilbake.",
+    "contextNote": "Tutor og repetisjonsverktøy åpnes ved siden av avsnittet.",
+    "featureEyebrow": "Alt på ett sted",
+    "featureTitle": "Fra lesing til repetisjon og tilbakemelding.",
+    "featureLead": "SkillBridge lar deg også lagre, lese om igjen, eksportere og forbedre uttrykk i kurset.",
+    "languageTitle": "Start på {count} språk",
+    "languageLead": "Premium-ordbøker beskytter faguttrykk. Andre språk bruker Google Translate med gjenoppretting av beskyttede uttrykk.",
+    "languageMore": "Se alle språk",
+    "finalTitle": "Åpne leksjonen. Les på ditt språk.",
+    "finalBody": "Slå på oversettelse uten konto, og bruk læringsverktøy ved behov.",
+    "source": "Se versjon v{version} på GitHub",
+    "footer": "Uavhengig fellesskapsprosjekt uten tilknytning, sponsing eller godkjenning fra Anthropic eller Skilljar.",
+    "privacy": "Personvern",
+    "sourceLabel": "GitHub",
+    "license": "MIT-lisens",
+    "flowAria": "Produktflyt",
+    "settingsAria": "Innstillinger for SkillBridge-utvidelsen",
+    "flowTag": "Leksjonsflyten beholdes",
+    "lessonAlt": "AI Academy-leksjon oversatt med SkillBridge",
+    "contextAlt": "Oversatt AI Academy-leksjon med SkillBridge-kontroller",
+    "languageCount": "{count} språk"
+  },
+  "titleLines": [
+    "Bytt språk,",
+    "behold måten du lærer på."
+  ],
+  "featureItems": [
+    [
+      "Oversett hele siden",
+      "Oversett overskrifter, tekst, navigasjon og støttede kommentarer og undertekster på stedet."
+    ],
+    [
+      "Les frakoblet fra hurtigbufferen",
+      "Tidligere oversatt tekst kan leses fra nettleserens hurtigbuffer når forbindelsen brytes."
+    ],
+    [
+      "Lokale læringsverktøy",
+      "Øvingskort, bokmerker, notater, nylige leksjoner, fremdrift, innholdsfortegnelse og PDF-eksport."
+    ],
+    [
+      "Tilbakemelding på oversettelser",
+      "Rapporter et avsnitt, vurder rettelsen, bruk den på et nøyaktig treff eller angre."
+    ],
+    [
+      "Undertekster og mørk modus",
+      "Oversett støttede undertekster og studer i en mørk visning."
+    ],
+    [
+      "Beskyttelse ved prøver",
+      "Svaralternativer endres ikke; gjenkjente prøver under tilsyn deaktiverer utvidelsen."
+    ],
+    [
+      "Gjenkjenning og hurtigtaster",
+      "Gjenkjenn nettleserspråk og SPA-leksjonsbytter, og åpne verktøy med tastaturet."
+    ],
+    [
+      "Presis terminologi",
+      "Premium-ordbøker og gjenoppretting bevarer merkenavn og AI-faguttrykk."
+    ]
+  ],
+  "demo": {
+    "language": "Oversett til",
+    "auto": "Oversett leksjonen automatisk",
+    "comments": "Oversett kommentarer",
+    "openSidebar": "Åpne SkillBridge-sidepanelet",
+    "learningTools": "Læringsverktøy",
+    "askPassage": "Spør om dette avsnittet",
+    "recentLessons": "Nylige leksjoner",
+    "bookmarks": "Bokmerker",
+    "notes": "Notater",
+    "reports": "Termrapporter",
+    "flashcards": "Øvingskort",
+    "exportPdf": "Eksporter PDF",
+    "closeSidebar": "Lukk sidepanelet",
+    "tutorGreeting": "Still spørsmål om leksjonen uten å forlate siden.",
+    "send": "Send",
+    "currentLesson": "Oversettelse er aktivert for leksjonen.",
+    "chatPreview": "Interaktiv forhåndsvisning. Demoen sender ingen meldinger.",
+    "chatReady": "Spørsmålsflyten vises. Ingenting er sendt utenfor siden.",
+    "languageSet": "Språket er satt til {language}. Oversettelsen gjelder denne leksjonen.",
+    "autoOn": "Automatisk oversettelse aktivert.",
+    "autoOff": "Automatisk oversettelse satt på pause.",
+    "commentsOn": "Kommentaroversettelse aktivert.",
+    "commentsOff": "Kommentaroversettelse deaktivert.",
+    "toolDisclosure": "Forhåndsvisning av verktøy. Ingen data åpnes eller lagres."
+  },
+  "meta": {
+    "title": "SkillBridge - AI-kurs på ditt språk",
+    "description": "Les støttede AI Academy-leksjoner på ditt språk med utvalgte faguttrykk, lokale verktøy og prøvebeskyttelse."
+  },
+  "common": {
+    "home": "SkillBridge-hjemmeside",
+    "navigation": "Hovednavigasjon",
+    "language": "Språk",
+    "chooseLanguage": "Velg språk for denne siden",
+    "version": "Versjonsinformasjon",
+    "validation": "Omfang av kontroll",
+    "localePrompt": "Nettleseren din bruker {language}. Vil du se siden på dette språket?",
+    "viewIn": "Vis på {language}",
+    "previewLabel": "Utdrag fra demoleksjonen · {language}",
+    "productDescription": "Oversetter for AI-kurs"
+  },
+  "tools": {
+    "recent": "Forhåndsvisning av nylige leksjoner: gå tilbake til leseposisjonen i leksjonen om verktøy.",
+    "bookmarks": "Bokmerkevisning: åpne et lagret avsnitt i leksjonen.",
+    "notes": "Notatvisning: vis notatene ved siden av avsnittet.",
+    "reports": "Termvisning: samle leksjonens viktigste uttrykk.",
+    "flashcards": "Kortvisning: lag øvingskort fra hovedbegrepene.",
+    "pdf": "PDF-visning: klargjør den oversatte leksjonen for utskrift."
+  },
+  "sample": {
+    "title": "Bruk av verktøy begynner med en tydelig kontrakt.",
+    "body": "En modell trenger en verktøybeskrivelse og et eksplisitt inndataformat for å velge og kalle verktøyet pålitelig."
+  }
+}

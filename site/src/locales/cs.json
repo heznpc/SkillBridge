@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Jak to funguje",
+    "navContext": "V kontextu",
+    "navLanguages": "Jazyky",
+    "install": "CWS — starší verze v1.0.1",
+    "eyebrow": "Začněte přímo v podporovaném kurzu",
+    "lead": "SkillBridge přidá váš jazyk do původní obrazovky AI Academy a zachová navigaci, text i učební nástroje.",
+    "versionNotice": "Tato stránka představuje zdrojový kód GitHub v{version}, nikoli podání do Chrome Web Store. Obchod stále instaluje v1.0.1; další vydání čeká na dokončení vývoje. V USA je dostupná ruční instalace z GitHub.",
+    "validationNotice": "Automatické testy pokrývají navigaci Academy a komunikaci Tutor. Přihlášená obrazovka po odeslání a skutečná komunikace s Puter ještě vyžadují ověření před vydáním v CWS.",
+    "launch": "Podívat se na postup",
+    "flowTitle": "Lekce zůstává na místě.",
+    "flowLead": "Mění se jen jazyk. Navigace, termíny, místo čtení i opakování zůstávají v lekci.",
+    "stepOpen": "Otevřete podporovanou lekci",
+    "stepOpenBody": "Otevřete AI Academy jako obvykle, bez dalšího pracovního prostoru či kopírování.",
+    "stepChoose": "Vyberte jazyk v nabídce glóbu",
+    "stepChooseBody": "Text lekce se po výběru jazyka změní přímo na místě.",
+    "stepStay": "Získejte pomoc přímo v lekci",
+    "stepStayBody": "Tutor, kartičky a záložky se otevřou vedle kurzu. Odstavec zůstane viditelný.",
+    "demoLabel": "Ukázka změny jazyka",
+    "local": "Přepnutí v prohlížeči",
+    "contextEyebrow": "Kontext zůstává",
+    "contextTitle": "Překlad vás nepřesune na jinou kartu.",
+    "contextBody": "Seznam kurzů, text a opakování zůstávají spolu. Nemusíte přerušovat čtení a hledat své místo.",
+    "contextNote": "Tutor a nástroje pro opakování se otevírají vedle odstavce.",
+    "featureEyebrow": "Vše na jednom místě",
+    "featureTitle": "Od čtení po opakování a zpětnou vazbu.",
+    "featureLead": "SkillBridge umožňuje v kurzu také ukládat, znovu číst, exportovat a vylepšovat termíny.",
+    "languageTitle": "Začněte ve {count} jazycích",
+    "languageLead": "Slovníky Premium chrání odborné termíny. Ostatní jazyky používají Google Translate s obnovou chráněných termínů.",
+    "languageMore": "Zobrazit všechny jazyky",
+    "finalTitle": "Otevřete lekci. Čtěte ve svém jazyce.",
+    "finalBody": "Zapněte překlad bez účtu a nástroje používejte podle potřeby.",
+    "source": "Zobrazit vydání v{version} na GitHub",
+    "footer": "Nezávislý komunitní projekt bez propojení, sponzorství nebo schválení společností Anthropic či Skilljar.",
+    "privacy": "Soukromí",
+    "sourceLabel": "GitHub",
+    "license": "Licence MIT",
+    "flowAria": "Postup použití",
+    "settingsAria": "Nastavení rozšíření SkillBridge",
+    "flowTag": "Průběh lekce zachován",
+    "lessonAlt": "Lekce AI Academy přeložená pomocí SkillBridge",
+    "contextAlt": "Přeložená lekce AI Academy s ovládáním SkillBridge",
+    "languageCount": "{count} jazyků"
+  },
+  "titleLines": [
+    "Změňte jazyk,",
+    "ne způsob učení."
+  ],
+  "featureItems": [
+    [
+      "Překlad celé stránky",
+      "Překládejte nadpisy, text, navigaci, podporované komentáře a titulky na místě."
+    ],
+    [
+      "Čtení offline z mezipaměti",
+      "Dříve přeložený text zůstává v mezipaměti čitelný i při výpadku připojení."
+    ],
+    [
+      "Místní učební nástroje",
+      "Kartičky, záložky, poznámky, nedávné lekce, postup, obsah a export PDF."
+    ],
+    [
+      "Zpětná vazba k překladu",
+      "Nahlaste úryvek, ověřte opravu, použijte ji na přesnou shodu nebo vraťte změnu."
+    ],
+    [
+      "Titulky a tmavý režim",
+      "Překládejte podporované titulky a učte se v tmavém rozhraní."
+    ],
+    [
+      "Ochrana při hodnocení",
+      "Možnosti odpovědí se nemění; rozpoznané zkoušky pod dohledem rozšíření vypnou."
+    ],
+    [
+      "Rozpoznávání a zkratky",
+      "Rozpoznejte jazyk a přechody lekcí SPA, otevírejte nástroje klávesnicí."
+    ],
+    [
+      "Přesná terminologie",
+      "Slovníky Premium a obnova termínů zachovávají značky a slovník AI."
+    ]
+  ],
+  "demo": {
+    "language": "Přeložit do",
+    "auto": "Automaticky překládat lekci",
+    "comments": "Překládat komentáře",
+    "openSidebar": "Otevřít postranní panel SkillBridge",
+    "learningTools": "Učební nástroje",
+    "askPassage": "Zeptat se na tento úryvek",
+    "recentLessons": "Nedávné lekce",
+    "bookmarks": "Záložky",
+    "notes": "Poznámky",
+    "reports": "Přehledy termínů",
+    "flashcards": "Kartičky",
+    "exportPdf": "Exportovat PDF",
+    "closeSidebar": "Zavřít postranní panel",
+    "tutorGreeting": "Ptejte se na lekci bez opuštění stránky.",
+    "send": "Odeslat",
+    "currentLesson": "Překlad této lekce je zapnutý.",
+    "chatPreview": "Interaktivní náhled. Ukázka neposílá zprávy.",
+    "chatReady": "Zobrazen postup dotazování. Nic nebylo odesláno mimo stránku.",
+    "languageSet": "Jazyk nastaven na {language}. Překlad platí pro tuto lekci.",
+    "autoOn": "Automatický překlad zapnut.",
+    "autoOff": "Automatický překlad pozastaven.",
+    "commentsOn": "Překlad komentářů zapnut.",
+    "commentsOff": "Překlad komentářů vypnut.",
+    "toolDisclosure": "Náhled nástrojů. Neotevírá ani neukládá data."
+  },
+  "meta": {
+    "title": "SkillBridge - Kurzy AI ve vašem jazyce",
+    "description": "Čtěte podporované lekce AI Academy ve svém jazyce s vybranou terminologií, místními nástroji a ochranou při zkouškách."
+  },
+  "common": {
+    "home": "Úvodní stránka SkillBridge",
+    "navigation": "Hlavní navigace",
+    "language": "Jazyk",
+    "chooseLanguage": "Vyberte jazyk této stránky",
+    "version": "Informace o verzi",
+    "validation": "Rozsah ověření",
+    "localePrompt": "Váš prohlížeč používá {language}. Zobrazit stránku v tomto jazyce?",
+    "viewIn": "Zobrazit v jazyce {language}",
+    "previewLabel": "Úryvek ukázkové lekce · {language}",
+    "productDescription": "Překladač kurzů AI"
+  },
+  "tools": {
+    "recent": "Náhled nedávných lekcí: vraťte se na místo čtení lekce o nástrojích.",
+    "bookmarks": "Náhled záložek: otevřete uložený úryvek v původní lekci.",
+    "notes": "Náhled poznámek: zobrazte poznámky vedle úryvku.",
+    "reports": "Náhled termínů: shromážděte klíčové termíny lekce.",
+    "flashcards": "Náhled kartiček: vytvořte kartičky z hlavních pojmů.",
+    "pdf": "Náhled PDF: připravte přeloženou lekci k tisku."
+  },
+  "sample": {
+    "title": "Použití nástrojů začíná jasným kontraktem.",
+    "body": "Model potřebuje popis nástroje a explicitní formát vstupu, aby jej mohl spolehlivě vybrat a zavolat."
+  }
+}

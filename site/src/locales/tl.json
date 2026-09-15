@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Paano gamitin",
+    "navContext": "Sa konteksto",
+    "navLanguages": "Mga wika",
+    "install": "CWS — lumang bersyon v1.0.1",
+    "eyebrow": "Nagsisimula sa loob ng suportadong kurso",
+    "lead": "Idinaragdag ng SkillBridge ang iyong wika sa orihinal na screen ng AI Academy, kasama ang nabigasyon, aralin, at mga kagamitan sa pag-aaral.",
+    "versionNotice": "Ipinapakita ng pahinang ito ang GitHub source v{version}, hindi isang pagsusumite sa Chrome Web Store. v1.0.1 pa rin ang ini-install ng tindahan; hinihintay ng susunod na paglalathala ang pagtatapos ng pagbuo. Sa US, puwedeng manu-manong mag-install mula sa GitHub.",
+    "validationNotice": "Sakop ng awtomatikong pagsusuri ang nabigasyon ng Academy at komunikasyon ng Tutor. Kailangan pang tiyakin bago ilathala sa CWS ang screen pagkatapos magsumite habang naka-sign in at ang tunay na komunikasyon sa Puter.",
+    "launch": "Tingnan kung paano",
+    "flowTitle": "Nananatili ang aralin sa lugar nito.",
+    "flowLead": "Wika lang ang nagbabago. Nananatili sa aralin ang nabigasyon, mga termino, puwesto sa pagbasa, at mga kagamitan sa pagbabalik-aral.",
+    "stepOpen": "Magbukas ng suportadong aralin",
+    "stepOpenBody": "Buksan ang AI Academy gaya ng dati, nang walang ibang workspace o pagkopya at pag-paste.",
+    "stepChoose": "Pumili ng wika sa menu ng globo",
+    "stepChooseBody": "Nagbabago ang teksto ng aralin sa mismong lugar kapag pumili ka ng wika.",
+    "stepStay": "Humingi ng tulong sa loob ng aralin",
+    "stepStayBody": "Bumubukas ang Tutor, mga kard, at bookmark sa tabi ng kurso. Nakikita pa rin ang talatang binabasa.",
+    "demoLabel": "Demo ng pagpapalit ng wika",
+    "local": "Pagpalit sa browser",
+    "contextEyebrow": "Nananatili ang konteksto",
+    "contextTitle": "Hindi ka dinadala ng pagsasalin sa ibang tab.",
+    "contextBody": "Magkakasama ang listahan ng kurso, teksto, at pagbabalik-aral. Hindi mo kailangang tumigil sa pagbasa para hanapin ang puwesto mo.",
+    "contextNote": "Bumubukas ang Tutor at mga kagamitan sa pagbabalik-aral sa tabi ng talata.",
+    "featureEyebrow": "Lahat sa isang lugar",
+    "featureTitle": "Mula pagbasa hanggang pagbalik-aral at puna.",
+    "featureLead": "Tumutulong din ang SkillBridge sa pag-save, muling pagbasa, pag-export, at pagbuti ng mga termino sa kurso.",
+    "languageTitle": "Magsimula sa {count} wika",
+    "languageLead": "Pinoprotektahan ng mga diksyunaryong Premium ang teknikal na termino. Gumagamit ang ibang wika ng Google Translate at pagpapanumbalik ng protektadong termino.",
+    "languageMore": "Tingnan ang lahat ng wika",
+    "finalTitle": "Buksan ang aralin. Basahin sa iyong wika.",
+    "finalBody": "I-on ang pagsasalin nang walang account at gamitin ang mga kagamitan kapag kailangan.",
+    "source": "Tingnan ang bersyong v{version} sa GitHub",
+    "footer": "Malayang proyekto ng komunidad, na hindi kaanib, itinataguyod, o inaprubahan ng Anthropic o Skilljar.",
+    "privacy": "Pagkapribado",
+    "sourceLabel": "GitHub",
+    "license": "Lisensiyang MIT",
+    "flowAria": "Daloy ng paggamit",
+    "settingsAria": "Mga setting ng SkillBridge extension",
+    "flowTag": "Nananatili ang daloy ng aralin",
+    "lessonAlt": "Aralin sa AI Academy na isinalin gamit ang SkillBridge",
+    "contextAlt": "Isinaling aralin sa AI Academy na may mga kontrol ng SkillBridge",
+    "languageCount": "{count} wika"
+  },
+  "titleLines": [
+    "Palitan ang wika,",
+    "hindi ang paraan ng pagkatuto."
+  ],
+  "featureItems": [
+    [
+      "Pagsasalin ng buong pahina",
+      "Isalin sa mismong lugar ang pamagat, teksto, nabigasyon, suportadong komento, at subtitle."
+    ],
+    [
+      "Pagbasa offline mula sa cache",
+      "Mababasa pa rin mula sa cache ng browser ang naisaling teksto kapag nawala ang koneksyon."
+    ],
+    [
+      "Mga lokal na kagamitan sa pag-aaral",
+      "Mga kard, bookmark, tala, kamakailang aralin, progreso, talaan ng nilalaman, at PDF export."
+    ],
+    [
+      "Puna sa pagsasalin",
+      "Iulat ang sipi, suriin ang pagwawasto, ilapat sa eksaktong tugma, o bawiin."
+    ],
+    [
+      "Mga subtitle at madilim na mode",
+      "Isalin ang suportadong subtitle at mag-aral sa madilim na interface."
+    ],
+    [
+      "Proteksiyon sa pagsusulit",
+      "Hindi binabago ang mga pagpipiliang sagot; pinapatay ang extension sa natukoy na binabantayang pagsusulit."
+    ],
+    [
+      "Pagtukoy at mga shortcut",
+      "Tukuyin ang wika ng browser at pagbabago ng SPA na aralin, at buksan ang mga kagamitan sa keyboard."
+    ],
+    [
+      "Tumpak na mga termino",
+      "Pinapanatili ng mga diksyunaryong Premium at pagpapanumbalik ng termino ang tatak at bokabularyo ng AI."
+    ]
+  ],
+  "demo": {
+    "language": "Isalin sa",
+    "auto": "Awtomatikong isalin ang aralin",
+    "comments": "Isalin ang mga komento",
+    "openSidebar": "Buksan ang sidebar ng SkillBridge",
+    "learningTools": "Mga kagamitan sa pag-aaral",
+    "askPassage": "Magtanong tungkol sa siping ito",
+    "recentLessons": "Mga kamakailang aralin",
+    "bookmarks": "Mga bookmark",
+    "notes": "Mga tala",
+    "reports": "Mga ulat ng termino",
+    "flashcards": "Mga kard sa pag-aaral",
+    "exportPdf": "I-export ang PDF",
+    "closeSidebar": "Isara ang sidebar",
+    "tutorGreeting": "Magtanong tungkol sa aralin nang hindi umaalis sa pahina.",
+    "send": "Ipadala",
+    "currentLesson": "Naka-on ang pagsasalin para sa araling ito.",
+    "chatPreview": "Interaktibong paunang tingin. Hindi nagpapadala ng mensahe ang demo.",
+    "chatReady": "Ipinapakita ang daloy ng tanong. Walang ipinadala sa labas ng pahina.",
+    "languageSet": "Nakatakda ang wika sa {language}. Nalalapat ang pagsasalin sa araling ito.",
+    "autoOn": "Naka-on ang awtomatikong pagsasalin.",
+    "autoOff": "Nakapause ang awtomatikong pagsasalin.",
+    "commentsOn": "Naka-on ang pagsasalin ng komento.",
+    "commentsOff": "Naka-off ang pagsasalin ng komento.",
+    "toolDisclosure": "Paunang tingin sa mga kagamitan. Hindi nagbubukas o nagse-save ng datos."
+  },
+  "meta": {
+    "title": "SkillBridge - Mga kurso sa AI sa iyong wika",
+    "description": "Basahin ang suportadong aralin ng AI Academy sa iyong wika, na may piniling termino, lokal na kagamitan, at proteksiyon sa pagsusulit."
+  },
+  "common": {
+    "home": "Pangunahing pahina ng SkillBridge",
+    "navigation": "Pangunahing nabigasyon",
+    "language": "Wika",
+    "chooseLanguage": "Piliin ang wika ng pahinang ito",
+    "version": "Impormasyon ng bersyon",
+    "validation": "Saklaw ng pagpapatunay",
+    "localePrompt": "Gumagamit ng {language} ang browser mo. Tingnan ang pahinang ito sa wikang iyon?",
+    "viewIn": "Tingnan sa {language}",
+    "previewLabel": "Sipi ng demonstrasyong aralin · {language}",
+    "productDescription": "Tagasalin ng kursong AI"
+  },
+  "tools": {
+    "recent": "Paunang tingin sa kamakailang aralin: bumalik sa puwesto mo sa aralin tungkol sa paggamit ng mga tool.",
+    "bookmarks": "Paunang tingin sa bookmark: buksan ang naka-save na sipi sa orihinal na aralin.",
+    "notes": "Paunang tingin sa tala: ipakita ang mga tala sa tabi ng sipi.",
+    "reports": "Paunang tingin sa termino: tipunin ang mahahalagang termino ng aralin.",
+    "flashcards": "Paunang tingin sa kard: gumawa ng mga kard mula sa mga pangunahing konsepto.",
+    "pdf": "Paunang tingin sa PDF: ihanda ang isinaling aralin para sa pag-print."
+  },
+  "sample": {
+    "title": "Nagsisimula ang paggamit ng mga tool sa malinaw na kontrata.",
+    "body": "Kailangan ng modelo ang paglalarawan ng tool at tahasang format ng input upang mapili at matawag ito nang maaasahan."
+  }
+}

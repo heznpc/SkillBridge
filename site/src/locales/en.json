@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "The flow",
+    "navContext": "In context",
+    "navLanguages": "Languages",
+    "install": "CWS — legacy v1.0.1",
+    "eyebrow": "It starts inside a supported course",
+    "lead": "SkillBridge adds the language you need to the original AI Academy screen, where navigation, lesson text, and study tools already live.",
+    "versionNotice": "This page reflects the GitHub v{version} source release. It is not a Chrome Web Store submission; the store still installs legacy v1.0.1. The next CWS version and dashboard upload remain deferred until code development is complete. The listing is currently unavailable in the United States, where GitHub manual installation is the available path.",
+    "validationNotice": "Automated browser fixtures cover Academy routing and the Tutor transport, but this release does not claim an authenticated post-submit Academy capture or a final signed-in Puter round trip. Both remain final CWS gates.",
+    "launch": "See the flow",
+    "flowTitle": "The lesson stays where it is.",
+    "flowLead": "Only the language changes. Navigation, protected terminology, your place in the course, and review tools remain in the lesson context.",
+    "stepOpen": "Open a supported lesson",
+    "stepOpenBody": "Start in AI Academy as usual. There is no second workspace and no copy-paste translation loop.",
+    "stepChoose": "Choose a language from the globe menu",
+    "stepChooseBody": "The readable text on the current lesson changes in place as soon as you choose a language.",
+    "stepStay": "Stay in the lesson when you need help",
+    "stepStayBody": "Tutor, flashcards, and bookmarks open beside the course. The paragraph you were reading remains visible.",
+    "demoLabel": "Live switch demo",
+    "local": "In-browser switch",
+    "contextEyebrow": "Context remains",
+    "contextTitle": "Translation does not send you to another tab.",
+    "contextBody": "The course list, lesson body, and review tools stay in one path, so you do not have to stop reading to find your way back.",
+    "contextNote": "Tutor and review tools open beside the paragraph you are reading.",
+    "featureEyebrow": "Everything in one place",
+    "featureTitle": "From first read to review and feedback.",
+    "featureLead": "SkillBridge keeps more than translation in the course workspace: save, revisit, export, and improve the terms you encounter.",
+    "languageTitle": "Start in {count} languages",
+    "languageLead": "Premium dictionaries protect technical terms first. Other supported languages use Google Translate with protected-term restoration.",
+    "languageMore": "See all supported languages",
+    "finalTitle": "Open the lesson. Read it in the language that works for you.",
+    "finalBody": "Turn translation on without an account, then use study tools only when you need them.",
+    "source": "View GitHub release v{version}",
+    "footer": "Independent community project. Not affiliated with, sponsored by, or endorsed by Anthropic or Skilljar.",
+    "privacy": "Privacy",
+    "sourceLabel": "GitHub",
+    "license": "MIT license",
+    "flowAria": "Product flow",
+    "settingsAria": "SkillBridge extension settings",
+    "flowTag": "Lesson flow retained",
+    "lessonAlt": "AI Academy lesson with SkillBridge translation enabled",
+    "contextAlt": "A translated AI Academy lesson with SkillBridge controls",
+    "languageCount": "{count} languages"
+  },
+  "titleLines": [
+    "Change the language,",
+    "not the way you learn."
+  ],
+  "featureItems": [
+    [
+      "Full-page translation",
+      "Translate lesson headings, body copy, navigation, supported comments, and subtitles in place."
+    ],
+    [
+      "Warm-cache offline fallback",
+      "Previously translated text remains readable from the browser cache when a connection drops."
+    ],
+    [
+      "Local learning tools",
+      "Use flashcards, bookmarks, notes, recent lessons, progress, outlines, and PDF export."
+    ],
+    [
+      "Translation feedback",
+      "Report a passage, review a correction, apply it to an exact match, or roll it back."
+    ],
+    [
+      "Auto-subtitles and dark mode",
+      "Translate supported course subtitles and keep studying in a darker lesson view."
+    ],
+    [
+      "Assessment safety",
+      "Answer choices stay untouched, and recognized proctored exams disable the extension."
+    ],
+    [
+      "Smart detection and shortcuts",
+      "Detect browser language and SPA lesson changes, then open tools from the keyboard."
+    ],
+    [
+      "Precise terminology",
+      "Premium dictionaries and protected-term restoration keep brand and AI vocabulary intact."
+    ]
+  ],
+  "demo": {
+    "language": "Translate to",
+    "auto": "Auto-translate this lesson",
+    "comments": "Translate comments",
+    "openSidebar": "Open SkillBridge sidebar",
+    "learningTools": "Learning tools",
+    "askPassage": "Ask about this passage",
+    "recentLessons": "Recent lessons",
+    "bookmarks": "Bookmarks",
+    "notes": "Notes",
+    "reports": "Term reports",
+    "flashcards": "Flashcards",
+    "exportPdf": "Export PDF",
+    "closeSidebar": "Close sidebar",
+    "tutorGreeting": "Ask about the lesson without leaving the page.",
+    "send": "Send",
+    "currentLesson": "Translation is enabled for this lesson.",
+    "chatPreview": "Interactive preview. This demo does not send messages.",
+    "chatReady": "The question-flow preview is shown. Nothing was sent outside this page.",
+    "languageSet": "Language set to {language}. Translation applies on the current lesson.",
+    "autoOn": "Automatic translation is enabled for this lesson.",
+    "autoOff": "Automatic translation is paused for this lesson.",
+    "commentsOn": "Comment translation is enabled for this lesson.",
+    "commentsOff": "Comment translation is disabled for this lesson.",
+    "toolDisclosure": "Learning-tool preview. This demo does not open or store data."
+  },
+  "meta": {
+    "title": "SkillBridge - AI courses in your language",
+    "description": "Read supported AI Academy lessons in your language with curated terminology, local study tools, and exam safeguards."
+  },
+  "common": {
+    "home": "SkillBridge home",
+    "navigation": "Primary navigation",
+    "language": "Language",
+    "chooseLanguage": "Choose landing page language",
+    "version": "Version notice",
+    "validation": "Validation boundary",
+    "localePrompt": "Your browser is set to {language}. View this landing page in that language?",
+    "viewIn": "View in {language}",
+    "previewLabel": "Demo lesson excerpt · {language}",
+    "productDescription": "AI Course Translator"
+  },
+  "tools": {
+    "recent": "Recent lessons preview: return to the tool-use lesson where you stopped reading.",
+    "bookmarks": "Bookmarks preview: reopen a saved passage in its lesson context.",
+    "notes": "Notes preview: show your study note beside the current passage.",
+    "reports": "Term reports preview: collect the key terms from this lesson in one place.",
+    "flashcards": "Flashcards preview: turn the lesson’s key concepts into review cards.",
+    "pdf": "Export PDF preview: prepare a printable version of the translated lesson."
+  },
+  "sample": {
+    "title": "Tool use begins with a clear contract.",
+    "body": "A model needs both a tool description and an explicit input shape before it can choose and call that tool reliably."
+  }
+}

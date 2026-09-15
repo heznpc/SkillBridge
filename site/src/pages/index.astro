@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 import Landing from '../components/Landing.astro';
-import { copy } from '../i18n';
+import { getCopy } from '../i18n';
+const { meta } = getCopy('en');
 ---
-<SiteLayout title={copy.en.title} description={copy.en.description} locale="en"><Landing locale="en" /></SiteLayout>
+<SiteLayout title={meta.title} description={meta.description} locale="en"><Landing locale="en" /></SiteLayout>

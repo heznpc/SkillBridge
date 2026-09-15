@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "使い方",
+    "navContext": "学習の文脈",
+    "navLanguages": "対応言語",
+    "install": "CWS — 旧版 v1.0.1",
+    "eyebrow": "対応する講座の中で使えます",
+    "lead": "SkillBridgeはAI Academyの元の画面に翻訳を追加します。目次、本文、学習ツールをそのまま使えます。",
+    "versionNotice": "このページはGitHubのソース版v{version}に基づきます。Chromeウェブストアの申請ではなく、ストアでは旧版v1.0.1がインストールされます。次版の申請は開発完了後です。米国ではストア掲載が利用できないため、GitHubから手動でインストールしてください。",
+    "validationNotice": "自動テストはAcademyの画面遷移とTutor通信を対象としています。ログイン後の提出画面とPuterとの実通信は、CWS公開前の最終検証として残っています。",
+    "launch": "使い方を見る",
+    "flowTitle": "レッスンは同じ場所に。",
+    "flowLead": "言語だけが変わります。目次、専門用語、読んでいた位置、復習ツールはレッスン内に残ります。",
+    "stepOpen": "対応するレッスンを開く",
+    "stepOpenBody": "いつもどおりAI Academyを開きます。別の作業画面やコピー＆ペーストは不要です。",
+    "stepChoose": "地球儀メニューで言語を選ぶ",
+    "stepChooseBody": "言語を選ぶと、現在のレッスンのテキストがその場で切り替わります。",
+    "stepStay": "困ったときもレッスン内で",
+    "stepStayBody": "Tutor、暗記カード、ブックマークが隣に開き、読んでいた段落を見失いません。",
+    "demoLabel": "言語切り替えデモ",
+    "local": "ブラウザー内で切り替え",
+    "contextEyebrow": "文脈を保つ",
+    "contextTitle": "翻訳のために別のタブへ移動する必要はありません。",
+    "contextBody": "講座一覧、本文、復習ツールを同じ画面で使えるので、読むのを中断して戻る場所を探す必要がありません。",
+    "contextNote": "Tutorと復習ツールは読んでいる段落の隣に開きます。",
+    "featureEyebrow": "すべてを一か所に",
+    "featureTitle": "読むところから復習・フィードバックまで。",
+    "featureLead": "SkillBridgeなら翻訳に加え、保存、再確認、書き出し、用語の改善も講座内で行えます。",
+    "languageTitle": "{count}言語で始めよう",
+    "languageLead": "Premium辞書は専門用語を優先して保護します。その他の対応言語ではGoogle Translateと保護用語の復元を使用します。",
+    "languageMore": "対応言語をすべて見る",
+    "finalTitle": "レッスンを開いて、わかる言語で読みましょう。",
+    "finalBody": "アカウントなしで翻訳を開始し、必要なときに学習ツールを使えます。",
+    "source": "GitHubのv{version}リリースを見る",
+    "footer": "独立したコミュニティプロジェクトです。AnthropicおよびSkilljarとは提携・後援・承認関係にありません。",
+    "privacy": "プライバシー",
+    "sourceLabel": "GitHub",
+    "license": "MITライセンス",
+    "flowAria": "製品の使い方",
+    "settingsAria": "SkillBridge拡張機能の設定",
+    "flowTag": "学習の流れを維持",
+    "lessonAlt": "SkillBridgeで翻訳したAI Academyのレッスン",
+    "contextAlt": "SkillBridgeの操作パネルを表示した翻訳済みAI Academyレッスン",
+    "languageCount": "{count}言語"
+  },
+  "titleLines": [
+    "言語を変えても、",
+    "学び方はそのまま。"
+  ],
+  "featureItems": [
+    [
+      "ページ全体の翻訳",
+      "見出し、本文、目次、対応するコメントや字幕をその場で翻訳します。"
+    ],
+    [
+      "キャッシュでオフライン閲覧",
+      "接続が切れても、翻訳済みの文章をブラウザーのキャッシュから読めます。"
+    ],
+    [
+      "ローカル学習ツール",
+      "暗記カード、ブックマーク、ノート、履歴、進捗、目次、PDF出力が使えます。"
+    ],
+    [
+      "翻訳フィードバック",
+      "文章を報告し、修正案を確認して一致する箇所に適用したり、元に戻したりできます。"
+    ],
+    [
+      "自動字幕とダークモード",
+      "対応する講座の字幕を翻訳し、暗い画面でも学習できます。"
+    ],
+    [
+      "試験時の安全対策",
+      "解答の選択肢は翻訳せず、認識された監督付き試験では拡張機能を無効にします。"
+    ],
+    [
+      "自動検出とショートカット",
+      "ブラウザーの言語とSPAのレッスン移動を検出し、キーボードでツールを開けます。"
+    ],
+    [
+      "正確な専門用語",
+      "Premium辞書と保護用語の復元で、ブランド名やAI用語を保ちます。"
+    ]
+  ],
+  "demo": {
+    "language": "翻訳先",
+    "auto": "このレッスンを自動翻訳",
+    "comments": "コメントも翻訳",
+    "openSidebar": "SkillBridgeサイドバーを開く",
+    "learningTools": "学習ツール",
+    "askPassage": "この段落について質問",
+    "recentLessons": "最近のレッスン",
+    "bookmarks": "ブックマーク",
+    "notes": "ノート",
+    "reports": "用語レポート",
+    "flashcards": "暗記カード",
+    "exportPdf": "PDF出力",
+    "closeSidebar": "サイドバーを閉じる",
+    "tutorGreeting": "ページを離れずにレッスンについて質問できます。",
+    "send": "送信",
+    "currentLesson": "このレッスンの翻訳は有効です。",
+    "chatPreview": "操作体験用のプレビューです。このデモはメッセージを送信しません。",
+    "chatReady": "質問の流れを表示しました。このページ外には何も送信していません。",
+    "languageSet": "翻訳言語を{language}に設定しました。現在のレッスンに適用されます。",
+    "autoOn": "このレッスンの自動翻訳を有効にしました。",
+    "autoOff": "このレッスンの自動翻訳を一時停止しました。",
+    "commentsOn": "このレッスンのコメント翻訳を有効にしました。",
+    "commentsOff": "このレッスンのコメント翻訳を無効にしました。",
+    "toolDisclosure": "学習ツールのプレビューです。データを開いたり保存したりしません。"
+  },
+  "meta": {
+    "title": "SkillBridge - AI講座を自分の言語で",
+    "description": "専門用語、ローカル学習ツール、試験対策を備えたSkillBridgeで、対応するAI Academyのレッスンを自分の言語で読めます。"
+  },
+  "common": {
+    "home": "SkillBridgeホーム",
+    "navigation": "メインメニュー",
+    "language": "言語",
+    "chooseLanguage": "ランディングページの言語を選択",
+    "version": "バージョン情報",
+    "validation": "検証の範囲",
+    "localePrompt": "ブラウザーの言語は{language}です。この言語で表示しますか？",
+    "viewIn": "{language}で表示",
+    "previewLabel": "デモレッスンの抜粋 · {language}",
+    "productDescription": "AI講座翻訳ツール"
+  },
+  "tools": {
+    "recent": "最近のレッスンのプレビュー：ツール使用のレッスンを読んでいた位置から再開します。",
+    "bookmarks": "ブックマークのプレビュー：保存した段落を元のレッスン内で開きます。",
+    "notes": "ノートのプレビュー：現在の段落の隣に学習メモを表示します。",
+    "reports": "用語レポートのプレビュー：レッスンの重要用語をまとめます。",
+    "flashcards": "暗記カードのプレビュー：レッスンの重要概念で復習カードを作ります。",
+    "pdf": "PDF出力のプレビュー：翻訳済みレッスンの印刷用レイアウトを準備します。"
+  },
+  "sample": {
+    "title": "ツールの利用は明確な契約から始まります。",
+    "body": "モデルがツールを確実に選択して呼び出すには、ツールの説明と明示的な入力形式の両方が必要です。"
+  }
+}

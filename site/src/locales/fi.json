@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Näin se toimii",
+    "navContext": "Asiayhteydessä",
+    "navLanguages": "Kielet",
+    "install": "CWS — vanha versio v1.0.1",
+    "eyebrow": "Aloita tuetun kurssin sisällä",
+    "lead": "SkillBridge lisää kielesi AI Academyn alkuperäiseen näkymään. Navigointi, oppitunnin teksti ja opiskelutyökalut pysyvät yhdessä.",
+    "versionNotice": "Sivu esittelee GitHub-lähdekoodin v{version}, ei Chrome Web Storeen lähetettyä versiota. Kauppa asentaa yhä version v1.0.1; seuraava julkaisu odottaa kehityksen valmistumista. Yhdysvalloissa on saatavilla käsinasennus GitHubista.",
+    "validationNotice": "Automaattitestit kattavat Academy-navigoinnin ja Tutor-viestinnän. Kirjautuneen käyttäjän lähetyksen jälkeinen näkymä ja todellinen Puter-yhteys on vielä tarkistettava ennen CWS-julkaisua.",
+    "launch": "Katso käyttötapa",
+    "flowTitle": "Oppitunti pysyy paikallaan.",
+    "flowLead": "Vain kieli vaihtuu. Navigointi, termit, lukukohta ja kertaus pysyvät oppitunnissa.",
+    "stepOpen": "Avaa tuettu oppitunti",
+    "stepOpenBody": "Avaa AI Academy tavalliseen tapaan ilman erillistä työtilaa tai kopiointia ja liittämistä.",
+    "stepChoose": "Valitse kieli maapallovalikosta",
+    "stepChooseBody": "Oppitunnin teksti vaihtuu paikallaan, kun valitset kielen.",
+    "stepStay": "Saa apua oppitunnin sisällä",
+    "stepStayBody": "Tutor, muistikortit ja kirjanmerkit avautuvat kurssin viereen. Lukemasi kappale näkyy edelleen.",
+    "demoLabel": "Kielenvaihdon demo",
+    "local": "Vaihto selaimessa",
+    "contextEyebrow": "Asiayhteys säilyy",
+    "contextTitle": "Käännös ei siirrä toiselle välilehdelle.",
+    "contextBody": "Kurssilista, teksti ja kertaus pysyvät yhdessä. Lukemista ei tarvitse keskeyttää oman paikan löytämiseksi.",
+    "contextNote": "Tutor ja kertaustyökalut avautuvat kappaleen viereen.",
+    "featureEyebrow": "Kaikki samassa paikassa",
+    "featureTitle": "Lukemisesta kertaukseen ja palautteeseen.",
+    "featureLead": "SkillBridge auttaa myös tallentamaan, palaamaan tekstiin, viemään sisältöä ja parantamaan termejä kurssissa.",
+    "languageTitle": "Aloita {count} kielellä",
+    "languageLead": "Premium-sanakirjat suojaavat tekniset termit. Muut kielet käyttävät Google Translatea ja suojattujen termien palautusta.",
+    "languageMore": "Näytä kaikki kielet",
+    "finalTitle": "Avaa oppitunti. Lue omalla kielelläsi.",
+    "finalBody": "Ota käännös käyttöön ilman tiliä ja käytä opiskelutyökaluja tarvittaessa.",
+    "source": "Näytä GitHub-julkaisu v{version}",
+    "footer": "Riippumaton yhteisöprojekti, jolla ei ole sidosta Anthropic- tai Skilljar-yhtiöön eikä niiden sponsorointia tai hyväksyntää.",
+    "privacy": "Tietosuoja",
+    "sourceLabel": "GitHub",
+    "license": "MIT-lisenssi",
+    "flowAria": "Tuotteen käyttö",
+    "settingsAria": "SkillBridge-laajennuksen asetukset",
+    "flowTag": "Oppitunnin kulku säilyy",
+    "lessonAlt": "AI Academy -oppitunti SkillBridge-käännöksellä",
+    "contextAlt": "Käännetty AI Academy -oppitunti ja SkillBridge-ohjaimet",
+    "languageCount": "{count} kieltä"
+  },
+  "titleLines": [
+    "Vaihda kieltä,",
+    "säilytä tapasi oppia."
+  ],
+  "featureItems": [
+    [
+      "Koko sivun käännös",
+      "Käännä otsikot, teksti, navigointi sekä tuetut kommentit ja tekstitykset paikallaan."
+    ],
+    [
+      "Lue offline-tilassa välimuistista",
+      "Aiemmin käännetty teksti on luettavissa selaimen välimuistista yhteyden katketessa."
+    ],
+    [
+      "Paikalliset opiskelutyökalut",
+      "Muistikortit, kirjanmerkit, muistiinpanot, viime oppitunnit, edistyminen, sisällysluettelo ja PDF-vienti."
+    ],
+    [
+      "Käännöspalaute",
+      "Ilmoita tekstikohta, tarkista korjaus, käytä sitä täsmälliseen osumaan tai peru se."
+    ],
+    [
+      "Tekstitykset ja tumma tila",
+      "Käännä tuetut tekstitykset ja opiskele tummassa näkymässä."
+    ],
+    [
+      "Arviointien suojaus",
+      "Vastausvaihtoehdot säilyvät ennallaan; tunnistetut valvotut kokeet poistavat laajennuksen käytöstä."
+    ],
+    [
+      "Tunnistus ja pikanäppäimet",
+      "Tunnista selaimen kieli ja SPA-oppituntien vaihdot sekä avaa työkalut näppäimistöllä."
+    ],
+    [
+      "Täsmällinen terminologia",
+      "Premium-sanakirjat ja termien palautus säilyttävät brändit ja tekoälysanaston."
+    ]
+  ],
+  "demo": {
+    "language": "Käännä kielelle",
+    "auto": "Käännä oppitunti automaattisesti",
+    "comments": "Käännä kommentit",
+    "openSidebar": "Avaa SkillBridge-sivupaneeli",
+    "learningTools": "Opiskelutyökalut",
+    "askPassage": "Kysy tästä tekstikohdasta",
+    "recentLessons": "Viimeisimmät oppitunnit",
+    "bookmarks": "Kirjanmerkit",
+    "notes": "Muistiinpanot",
+    "reports": "Termiraportit",
+    "flashcards": "Muistikortit",
+    "exportPdf": "Vie PDF",
+    "closeSidebar": "Sulje sivupaneeli",
+    "tutorGreeting": "Kysy oppitunnista poistumatta sivulta.",
+    "send": "Lähetä",
+    "currentLesson": "Tämän oppitunnin käännös on käytössä.",
+    "chatPreview": "Vuorovaikutteinen esikatselu. Demo ei lähetä viestejä.",
+    "chatReady": "Kysymysten kulku näytetään. Mitään ei lähetetty sivun ulkopuolelle.",
+    "languageSet": "Kieleksi asetettu {language}. Käännös koskee tätä oppituntia.",
+    "autoOn": "Automaattinen käännös käytössä.",
+    "autoOff": "Automaattinen käännös keskeytetty.",
+    "commentsOn": "Kommenttien käännös käytössä.",
+    "commentsOff": "Kommenttien käännös poistettu käytöstä.",
+    "toolDisclosure": "Työkalujen esikatselu. Tietoja ei avata eikä tallenneta."
+  },
+  "meta": {
+    "title": "SkillBridge - Tekoälykurssit omalla kielelläsi",
+    "description": "Lue tuetut AI Academy -oppitunnit omalla kielelläsi, huolitelluilla termeillä, paikallisilla työkaluilla ja koesuojauksella."
+  },
+  "common": {
+    "home": "SkillBridge-etusivu",
+    "navigation": "Päänavigointi",
+    "language": "Kieli",
+    "chooseLanguage": "Valitse tämän sivun kieli",
+    "version": "Versiotiedot",
+    "validation": "Tarkistuksen laajuus",
+    "localePrompt": "Selaimesi käyttää kieltä {language}. Näytetäänkö sivu sillä kielellä?",
+    "viewIn": "Näytä kielellä {language}",
+    "previewLabel": "Katkelma demo-oppitunnista · {language}",
+    "productDescription": "Tekoälykurssien kääntäjä"
+  },
+  "tools": {
+    "recent": "Viime oppituntien esikatselu: palaa työkalujen käyttöä käsittelevän oppitunnin lukukohtaan.",
+    "bookmarks": "Kirjanmerkkien esikatselu: avaa tallennettu tekstikohta omassa oppitunnissaan.",
+    "notes": "Muistiinpanojen esikatselu: näytä muistiinpanot tekstin vieressä.",
+    "reports": "Termien esikatselu: kokoa oppitunnin avaintermit.",
+    "flashcards": "Muistikorttien esikatselu: luo kortteja keskeisistä käsitteistä.",
+    "pdf": "PDF-esikatselu: valmistele käännetty oppitunti tulostettavaksi."
+  },
+  "sample": {
+    "title": "Työkalujen käyttö alkaa selkeästä sopimuksesta.",
+    "body": "Malli tarvitsee työkalun kuvauksen ja täsmällisen syötemuodon voidakseen valita ja kutsua työkalua luotettavasti."
+  }
+}

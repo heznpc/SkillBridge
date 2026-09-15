@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "So funktioniert’s",
+    "navContext": "Im Kontext",
+    "navLanguages": "Sprachen",
+    "install": "CWS — alte Version v1.0.1",
+    "eyebrow": "Direkt im unterstützten Kurs",
+    "lead": "SkillBridge ergänzt die ursprüngliche AI-Academy-Oberfläche um Ihre Sprache. Navigation, Lektion und Lernwerkzeuge bleiben zusammen.",
+    "versionNotice": "Diese Seite zeigt den GitHub-Quellstand v{version}, keine Chrome-Web-Store-Einreichung. Der Store installiert weiterhin v1.0.1; die nächste Veröffentlichung folgt nach Abschluss der Entwicklung. In den USA ist derzeit die manuelle Installation über GitHub verfügbar.",
+    "validationNotice": "Automatisierte Tests prüfen Academy-Navigation und Tutor-Kommunikation. Die Ansicht nach einer angemeldeten Abgabe und der echte Puter-Austausch sind vor der CWS-Veröffentlichung noch zu prüfen.",
+    "launch": "Ablauf ansehen",
+    "flowTitle": "Die Lektion bleibt an ihrem Platz.",
+    "flowLead": "Nur die Sprache ändert sich. Navigation, Fachbegriffe, Leseposition und Wiederholung bleiben in der Lektion.",
+    "stepOpen": "Unterstützte Lektion öffnen",
+    "stepOpenBody": "Öffnen Sie AI Academy wie gewohnt, ohne weiteren Arbeitsbereich oder Kopieren und Einfügen.",
+    "stepChoose": "Sprache im Globusmenü wählen",
+    "stepChooseBody": "Nach der Sprachwahl ändert sich der lesbare Lektionstext direkt an Ort und Stelle.",
+    "stepStay": "Hilfe direkt in der Lektion",
+    "stepStayBody": "Tutor, Lernkarten und Lesezeichen öffnen sich neben dem Kurs. Ihr Absatz bleibt sichtbar.",
+    "demoLabel": "Interaktive Sprachdemo",
+    "local": "Wechsel im Browser",
+    "contextEyebrow": "Der Kontext bleibt",
+    "contextTitle": "Übersetzen führt nicht in einen anderen Tab.",
+    "contextBody": "Kursliste, Text und Wiederholungswerkzeuge bleiben zusammen. Sie müssen die Lektüre nicht unterbrechen, um zurückzufinden.",
+    "contextNote": "Tutor und Wiederholungswerkzeuge öffnen sich neben dem gelesenen Absatz.",
+    "featureEyebrow": "Alles an einem Ort",
+    "featureTitle": "Vom Lesen bis zu Wiederholung und Feedback.",
+    "featureLead": "SkillBridge ermöglicht im Kurs auch Speichern, Nachlesen, Exportieren und die Verbesserung von Begriffen.",
+    "languageTitle": "In {count} Sprachen starten",
+    "languageLead": "Premium-Wörterbücher schützen Fachbegriffe. Andere Sprachen nutzen Google Translate mit Wiederherstellung geschützter Begriffe.",
+    "languageMore": "Alle Sprachen ansehen",
+    "finalTitle": "Lektion öffnen. In Ihrer Sprache lesen.",
+    "finalBody": "Übersetzung ohne Konto einschalten und Lernwerkzeuge bei Bedarf nutzen.",
+    "source": "GitHub-Version v{version} ansehen",
+    "footer": "Unabhängiges Community-Projekt, weder mit Anthropic oder Skilljar verbunden noch von ihnen gesponsert oder empfohlen.",
+    "privacy": "Datenschutz",
+    "sourceLabel": "GitHub",
+    "license": "MIT-Lizenz",
+    "flowAria": "Produktablauf",
+    "settingsAria": "Einstellungen der SkillBridge-Erweiterung",
+    "flowTag": "Lernfluss bleibt erhalten",
+    "lessonAlt": "Mit SkillBridge übersetzte AI-Academy-Lektion",
+    "contextAlt": "Übersetzte AI-Academy-Lektion mit SkillBridge-Steuerelementen",
+    "languageCount": "{count} Sprachen"
+  },
+  "titleLines": [
+    "Ändern Sie die Sprache,",
+    "nicht Ihre Art zu lernen."
+  ],
+  "featureItems": [
+    [
+      "Ganze Seiten übersetzen",
+      "Übersetzt Überschriften, Text, Navigation sowie unterstützte Kommentare und Untertitel direkt vor Ort."
+    ],
+    [
+      "Offline aus dem Cache lesen",
+      "Bereits übersetzter Text bleibt bei Verbindungsabbrüchen im Browser-Cache lesbar."
+    ],
+    [
+      "Lokale Lernwerkzeuge",
+      "Lernkarten, Lesezeichen, Notizen, letzte Lektionen, Fortschritt, Inhaltsverzeichnis und PDF-Export."
+    ],
+    [
+      "Übersetzungsfeedback",
+      "Passage melden, Korrektur prüfen, auf genau passende Texte anwenden oder zurücknehmen."
+    ],
+    [
+      "Untertitel und Dunkelmodus",
+      "Unterstützte Untertitel übersetzen und mit dunkler Oberfläche lernen."
+    ],
+    [
+      "Prüfungsschutz",
+      "Antwortoptionen bleiben unverändert; erkannte beaufsichtigte Prüfungen deaktivieren die Erweiterung."
+    ],
+    [
+      "Erkennung und Tastenkürzel",
+      "Browsersprache und SPA-Lektionswechsel erkennen und Werkzeuge per Tastatur öffnen."
+    ],
+    [
+      "Präzise Fachbegriffe",
+      "Premium-Wörterbücher und Begriffswiederherstellung erhalten Marken und KI-Fachvokabular."
+    ]
+  ],
+  "demo": {
+    "language": "Übersetzen in",
+    "auto": "Diese Lektion automatisch übersetzen",
+    "comments": "Kommentare übersetzen",
+    "openSidebar": "SkillBridge-Seitenleiste öffnen",
+    "learningTools": "Lernwerkzeuge",
+    "askPassage": "Zu dieser Passage fragen",
+    "recentLessons": "Letzte Lektionen",
+    "bookmarks": "Lesezeichen",
+    "notes": "Notizen",
+    "reports": "Begriffsberichte",
+    "flashcards": "Lernkarten",
+    "exportPdf": "PDF exportieren",
+    "closeSidebar": "Seitenleiste schließen",
+    "tutorGreeting": "Fragen Sie zur Lektion, ohne die Seite zu verlassen.",
+    "send": "Senden",
+    "currentLesson": "Die Übersetzung ist für diese Lektion aktiv.",
+    "chatPreview": "Interaktive Vorschau. Diese Demo sendet keine Nachrichten.",
+    "chatReady": "Der Frageablauf wird angezeigt. Nichts wurde außerhalb dieser Seite gesendet.",
+    "languageSet": "Sprache auf {language} gesetzt. Die Übersetzung gilt für diese Lektion.",
+    "autoOn": "Automatische Übersetzung aktiviert.",
+    "autoOff": "Automatische Übersetzung pausiert.",
+    "commentsOn": "Kommentarübersetzung aktiviert.",
+    "commentsOff": "Kommentarübersetzung deaktiviert.",
+    "toolDisclosure": "Werkzeugvorschau. Es werden keine Daten geöffnet oder gespeichert."
+  },
+  "meta": {
+    "title": "SkillBridge - KI-Kurse in Ihrer Sprache",
+    "description": "Lesen Sie unterstützte AI-Academy-Lektionen in Ihrer Sprache, mit gepflegten Fachbegriffen, lokalen Lernwerkzeugen und Prüfungsschutz."
+  },
+  "common": {
+    "home": "SkillBridge-Startseite",
+    "navigation": "Hauptnavigation",
+    "language": "Sprache",
+    "chooseLanguage": "Sprache dieser Seite wählen",
+    "version": "Versionshinweis",
+    "validation": "Umfang der Prüfung",
+    "localePrompt": "Ihr Browser verwendet {language}. Diese Seite in dieser Sprache anzeigen?",
+    "viewIn": "In {language} anzeigen",
+    "previewLabel": "Auszug aus der Demo-Lektion · {language}",
+    "productDescription": "Übersetzer für KI-Kurse"
+  },
+  "tools": {
+    "recent": "Vorschau letzter Lektionen: Kehren Sie zur Leseposition in der Werkzeuglektion zurück.",
+    "bookmarks": "Lesezeichenvorschau: Öffnen Sie eine gespeicherte Passage in ihrer Lektion.",
+    "notes": "Notizenvorschau: Zeigen Sie Ihre Notizen neben der Passage.",
+    "reports": "Begriffsvorschau: Sammeln Sie die Schlüsselbegriffe der Lektion.",
+    "flashcards": "Lernkartenvorschau: Erstellen Sie Karten aus den wichtigsten Konzepten.",
+    "pdf": "PDF-Vorschau: Bereiten Sie die übersetzte Lektion zum Drucken vor."
+  },
+  "sample": {
+    "title": "Werkzeugnutzung beginnt mit einem klaren Vertrag.",
+    "body": "Ein Modell benötigt eine Werkzeugbeschreibung und ein eindeutiges Eingabeformat, um das Werkzeug zuverlässig auszuwählen und aufzurufen."
+  }
+}

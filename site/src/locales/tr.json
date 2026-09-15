@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Nasıl çalışır",
+    "navContext": "Bağlam içinde",
+    "navLanguages": "Diller",
+    "install": "CWS — eski sürüm v1.0.1",
+    "eyebrow": "Desteklenen bir kursun içinde başlar",
+    "lead": "SkillBridge, gezinme, ders metni ve çalışma araçlarıyla birlikte özgün AI Academy ekranına dilinizi ekler.",
+    "versionNotice": "Bu sayfa GitHub kaynak sürümü v{version} temel alınarak hazırlanmıştır; Chrome Web Store başvurusu değildir. Mağaza hâlâ v1.0.1 yükler; yeni yayın geliştirme bitene kadar bekler. ABD’de GitHub üzerinden elle kurulum kullanılabilir.",
+    "validationNotice": "Otomatik testler Academy gezinmesini ve Tutor iletişimini kapsar. Oturum açıkken gönderim sonrası ekran ve gerçek Puter iletişimi CWS yayını öncesinde hâlâ doğrulanmalıdır.",
+    "launch": "Nasıl çalıştığını görün",
+    "flowTitle": "Ders yerinde kalır.",
+    "flowLead": "Yalnızca dil değişir. Gezinme, terimler, okuma konumu ve tekrar araçları derste kalır.",
+    "stepOpen": "Desteklenen bir dersi açın",
+    "stepOpenBody": "AI Academy’yi her zamanki gibi açın; ayrı çalışma alanı ya da kopyala-yapıştır gerekmez.",
+    "stepChoose": "Küre menüsünden dil seçin",
+    "stepChooseBody": "Dil seçtiğinizde dersin okunabilir metni bulunduğu yerde değişir.",
+    "stepStay": "Dersin içindeyken yardım alın",
+    "stepStayBody": "Tutor, bilgi kartları ve yer imleri kursun yanında açılır. Okuduğunuz paragraf görünür kalır.",
+    "demoLabel": "Canlı dil değiştirme demosu",
+    "local": "Tarayıcı içinde geçiş",
+    "contextEyebrow": "Bağlam korunur",
+    "contextTitle": "Çeviri sizi başka sekmeye götürmez.",
+    "contextBody": "Kurs listesi, metin ve tekrar araçları bir arada kalır; yerinizi bulmak için okumayı bırakmanız gerekmez.",
+    "contextNote": "Tutor ve tekrar araçları paragrafın yanında açılır.",
+    "featureEyebrow": "Her şey tek yerde",
+    "featureTitle": "Okumadan tekrara ve geri bildirime.",
+    "featureLead": "SkillBridge, kursta kaydetme, yeniden okuma, dışa aktarma ve terimleri iyileştirme olanağı da sunar.",
+    "languageTitle": "{count} dilde başlayın",
+    "languageLead": "Premium sözlükler teknik terimleri korur. Diğer diller Google Translate ve korunan terimlerin geri yüklenmesini kullanır.",
+    "languageMore": "Tüm dilleri görün",
+    "finalTitle": "Dersi açın. Kendi dilinizde okuyun.",
+    "finalBody": "Hesap olmadan çeviriyi açın, çalışma araçlarını gerektiğinde kullanın.",
+    "source": "GitHub v{version} sürümünü görün",
+    "footer": "Anthropic veya Skilljar ile bağlantısı, sponsorluğu ya da onayı olmayan bağımsız topluluk projesi.",
+    "privacy": "Gizlilik",
+    "sourceLabel": "GitHub",
+    "license": "MIT lisansı",
+    "flowAria": "Ürün kullanım akışı",
+    "settingsAria": "SkillBridge uzantı ayarları",
+    "flowTag": "Ders akışı korunur",
+    "lessonAlt": "SkillBridge ile çevrilmiş AI Academy dersi",
+    "contextAlt": "SkillBridge denetimleriyle çevrilmiş AI Academy dersi",
+    "languageCount": "{count} dil"
+  },
+  "titleLines": [
+    "Dili değiştirin,",
+    "öğrenme şeklinizi değil."
+  ],
+  "featureItems": [
+    [
+      "Tam sayfa çevirisi",
+      "Başlıkları, metni, gezinmeyi, desteklenen yorum ve altyazıları yerinde çevirin."
+    ],
+    [
+      "Önbellekten çevrimdışı okuma",
+      "Bağlantı kesildiğinde önceden çevrilmiş metin tarayıcı önbelleğinden okunabilir."
+    ],
+    [
+      "Yerel çalışma araçları",
+      "Bilgi kartları, yer imleri, notlar, son dersler, ilerleme, içindekiler ve PDF dışa aktarımı."
+    ],
+    [
+      "Çeviri geri bildirimi",
+      "Bir bölümü bildirin, düzeltmeyi inceleyin, tam eşleşmeye uygulayın veya geri alın."
+    ],
+    [
+      "Altyazılar ve koyu mod",
+      "Desteklenen altyazıları çevirin ve koyu görünümde çalışın."
+    ],
+    [
+      "Sınav koruması",
+      "Yanıt seçenekleri değişmez; tanınan gözetimli sınavlarda uzantı devre dışı kalır."
+    ],
+    [
+      "Algılama ve kısayollar",
+      "Tarayıcı dilini ve SPA ders değişimlerini algılayın, araçları klavyeyle açın."
+    ],
+    [
+      "Doğru terminoloji",
+      "Premium sözlükler ve terim geri yükleme, marka ve yapay zekâ terimlerini korur."
+    ]
+  ],
+  "demo": {
+    "language": "Çeviri dili",
+    "auto": "Bu dersi otomatik çevir",
+    "comments": "Yorumları çevir",
+    "openSidebar": "SkillBridge yan panelini aç",
+    "learningTools": "Çalışma araçları",
+    "askPassage": "Bu bölüm hakkında sor",
+    "recentLessons": "Son dersler",
+    "bookmarks": "Yer imleri",
+    "notes": "Notlar",
+    "reports": "Terim raporları",
+    "flashcards": "Bilgi kartları",
+    "exportPdf": "PDF dışa aktar",
+    "closeSidebar": "Yan paneli kapat",
+    "tutorGreeting": "Sayfadan ayrılmadan ders hakkında soru sorun.",
+    "send": "Gönder",
+    "currentLesson": "Bu ders için çeviri açık.",
+    "chatPreview": "Etkileşimli önizleme. Bu demo mesaj göndermez.",
+    "chatReady": "Soru akışı gösteriliyor. Sayfa dışına hiçbir şey gönderilmedi.",
+    "languageSet": "Dil {language} olarak ayarlandı. Çeviri bu derse uygulanır.",
+    "autoOn": "Otomatik çeviri açıldı.",
+    "autoOff": "Otomatik çeviri duraklatıldı.",
+    "commentsOn": "Yorum çevirisi açıldı.",
+    "commentsOff": "Yorum çevirisi kapatıldı.",
+    "toolDisclosure": "Araç önizlemesi. Veri açmaz veya kaydetmez."
+  },
+  "meta": {
+    "title": "SkillBridge - Kendi dilinizde yapay zekâ kursları",
+    "description": "Desteklenen AI Academy derslerini özenli terminoloji, yerel araçlar ve sınav korumasıyla kendi dilinizde okuyun."
+  },
+  "common": {
+    "home": "SkillBridge ana sayfa",
+    "navigation": "Ana gezinme",
+    "language": "Dil",
+    "chooseLanguage": "Bu sayfanın dilini seçin",
+    "version": "Sürüm bilgisi",
+    "validation": "Doğrulama kapsamı",
+    "localePrompt": "Tarayıcınız {language} kullanıyor. Sayfayı bu dilde görmek ister misiniz?",
+    "viewIn": "{language} dilinde görüntüle",
+    "previewLabel": "Demo dersinden alıntı · {language}",
+    "productDescription": "Yapay zekâ kursu çevirmeni"
+  },
+  "tools": {
+    "recent": "Son dersler önizlemesi: araç kullanımı dersinde kaldığınız yere dönün.",
+    "bookmarks": "Yer imleri önizlemesi: kaydedilen bölümü dersinde yeniden açın.",
+    "notes": "Not önizlemesi: notlarınızı bölümün yanında gösterin.",
+    "reports": "Terim önizlemesi: dersin temel terimlerini bir araya getirin.",
+    "flashcards": "Bilgi kartı önizlemesi: temel kavramlardan kartlar oluşturun.",
+    "pdf": "PDF önizlemesi: çevrilmiş dersi yazdırmaya hazırlayın."
+  },
+  "sample": {
+    "title": "Araç kullanımı açık bir sözleşmeyle başlar.",
+    "body": "Bir modelin aracı güvenilir biçimde seçip çağırması için araç açıklaması ve açık bir girdi biçimi gerekir."
+  }
+}

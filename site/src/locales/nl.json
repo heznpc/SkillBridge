@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Werkwijze",
+    "navContext": "In context",
+    "navLanguages": "Talen",
+    "install": "CWS — oude versie v1.0.1",
+    "eyebrow": "Begin in een ondersteunde cursus",
+    "lead": "SkillBridge voegt je taal toe aan het oorspronkelijke AI Academy-scherm, met navigatie, lesinhoud en leerhulpmiddelen bij elkaar.",
+    "versionNotice": "Deze pagina beschrijft GitHub-bronversie v{version}, geen Chrome Web Store-inzending. De winkel installeert nog v1.0.1; de volgende publicatie wacht op afronding van de ontwikkeling. In de VS is handmatige installatie via GitHub beschikbaar.",
+    "validationNotice": "Automatische tests dekken Academy-navigatie en Tutor-communicatie. De aangemelde weergave na inzending en echt Puter-verkeer moeten vóór publicatie in CWS nog worden gecontroleerd.",
+    "launch": "Bekijk de werkwijze",
+    "flowTitle": "De les blijft op zijn plek.",
+    "flowLead": "Alleen de taal verandert. Navigatie, vaktermen, leespositie en herhaling blijven in de les.",
+    "stepOpen": "Open een ondersteunde les",
+    "stepOpenBody": "Open AI Academy zoals altijd, zonder extra werkruimte of kopiëren en plakken.",
+    "stepChoose": "Kies een taal in het wereldbolmenu",
+    "stepChooseBody": "De leesbare lestekst verandert op dezelfde plek zodra je een taal kiest.",
+    "stepStay": "Krijg hulp binnen de les",
+    "stepStayBody": "Tutor, leerkaarten en bladwijzers openen naast de cursus. Je alinea blijft zichtbaar.",
+    "demoLabel": "Interactieve taaldemo",
+    "local": "Wisselen in de browser",
+    "contextEyebrow": "Behoud de context",
+    "contextTitle": "Vertalen opent geen ander tabblad.",
+    "contextBody": "Cursuslijst, tekst en herhaling blijven samen. Je hoeft niet te stoppen met lezen om je plek terug te vinden.",
+    "contextNote": "Tutor en herhaalhulpmiddelen openen naast je alinea.",
+    "featureEyebrow": "Alles op één plek",
+    "featureTitle": "Van lezen tot herhalen en feedback.",
+    "featureLead": "Met SkillBridge kun je ook opslaan, teruglezen, exporteren en termen verbeteren binnen de cursus.",
+    "languageTitle": "Begin in {count} talen",
+    "languageLead": "Premium-woordenboeken beschermen vaktermen. Andere talen gebruiken Google Translate met herstel van beschermde termen.",
+    "languageMore": "Bekijk alle talen",
+    "finalTitle": "Open de les. Lees in jouw taal.",
+    "finalBody": "Zet vertaling aan zonder account en gebruik hulpmiddelen wanneer nodig.",
+    "source": "Bekijk GitHub-versie v{version}",
+    "footer": "Onafhankelijk gemeenschapsproject, zonder band met, sponsoring of goedkeuring van Anthropic of Skilljar.",
+    "privacy": "Privacy",
+    "sourceLabel": "GitHub",
+    "license": "MIT-licentie",
+    "flowAria": "Productwerkwijze",
+    "settingsAria": "Instellingen van SkillBridge",
+    "flowTag": "Lesverloop behouden",
+    "lessonAlt": "AI Academy-les vertaald met SkillBridge",
+    "contextAlt": "Vertaalde AI Academy-les met SkillBridge-bediening",
+    "languageCount": "{count} talen"
+  },
+  "titleLines": [
+    "Verander de taal,",
+    "niet hoe je leert."
+  ],
+  "featureItems": [
+    [
+      "Volledige paginavertaling",
+      "Vertaal titels, tekst, navigatie en ondersteunde reacties en ondertitels op hun plek."
+    ],
+    [
+      "Offline lezen uit de cache",
+      "Eerder vertaalde tekst blijft leesbaar uit de browsercache als de verbinding wegvalt."
+    ],
+    [
+      "Lokale leerhulpmiddelen",
+      "Leerkaarten, bladwijzers, notities, recente lessen, voortgang, inhoudsopgave en PDF-export."
+    ],
+    [
+      "Vertaalfeedback",
+      "Meld een passage, bekijk een correctie, pas deze toe op een exacte overeenkomst of draai terug."
+    ],
+    [
+      "Ondertitels en donkere modus",
+      "Vertaal ondersteunde ondertitels en leer in een donkere weergave."
+    ],
+    [
+      "Toetsbescherming",
+      "Antwoordopties blijven intact; herkende examens onder toezicht schakelen de extensie uit."
+    ],
+    [
+      "Detectie en sneltoetsen",
+      "Detecteer browsertaal en SPA-leswissels en open hulpmiddelen met het toetsenbord."
+    ],
+    [
+      "Precieze vaktermen",
+      "Premium-woordenboeken en termherstel behouden merknamen en AI-vocabulaire."
+    ]
+  ],
+  "demo": {
+    "language": "Vertalen naar",
+    "auto": "Deze les automatisch vertalen",
+    "comments": "Reacties vertalen",
+    "openSidebar": "SkillBridge-zijbalk openen",
+    "learningTools": "Leerhulpmiddelen",
+    "askPassage": "Vraag over deze passage",
+    "recentLessons": "Recente lessen",
+    "bookmarks": "Bladwijzers",
+    "notes": "Notities",
+    "reports": "Termrapporten",
+    "flashcards": "Leerkaarten",
+    "exportPdf": "PDF exporteren",
+    "closeSidebar": "Zijbalk sluiten",
+    "tutorGreeting": "Stel vragen over de les zonder de pagina te verlaten.",
+    "send": "Verzenden",
+    "currentLesson": "Vertaling staat aan voor deze les.",
+    "chatPreview": "Interactief voorbeeld. Deze demo verstuurt geen berichten.",
+    "chatReady": "Het vraagverloop wordt getoond. Er is niets buiten deze pagina verzonden.",
+    "languageSet": "Taal ingesteld op {language}. Vertaling geldt voor deze les.",
+    "autoOn": "Automatische vertaling ingeschakeld.",
+    "autoOff": "Automatische vertaling gepauzeerd.",
+    "commentsOn": "Vertaling van reacties ingeschakeld.",
+    "commentsOff": "Vertaling van reacties uitgeschakeld.",
+    "toolDisclosure": "Voorbeeld van leerhulpmiddelen. Opent of bewaart geen gegevens."
+  },
+  "meta": {
+    "title": "SkillBridge - AI-cursussen in jouw taal",
+    "description": "Lees ondersteunde AI Academy-lessen in jouw taal met verzorgde vaktermen, lokale leerhulpmiddelen en toetsbescherming."
+  },
+  "common": {
+    "home": "SkillBridge-startpagina",
+    "navigation": "Hoofdnavigatie",
+    "language": "Taal",
+    "chooseLanguage": "Kies de taal van deze pagina",
+    "version": "Versie-informatie",
+    "validation": "Reikwijdte van controle",
+    "localePrompt": "Je browser gebruikt {language}. Deze pagina in die taal bekijken?",
+    "viewIn": "Bekijken in {language}",
+    "previewLabel": "Fragment uit de demoles · {language}",
+    "productDescription": "Vertaler voor AI-cursussen"
+  },
+  "tools": {
+    "recent": "Recente-lessenvoorbeeld: ga terug naar je leespositie in de les over hulpmiddelen.",
+    "bookmarks": "Bladwijzervoorbeeld: heropen een bewaarde passage in de les.",
+    "notes": "Notitievoorbeeld: toon notities naast de passage.",
+    "reports": "Termvoorbeeld: verzamel de kernbegrippen van de les.",
+    "flashcards": "Leerkaartvoorbeeld: maak kaarten van de belangrijkste concepten.",
+    "pdf": "PDF-voorbeeld: maak de vertaalde les klaar om af te drukken."
+  },
+  "sample": {
+    "title": "Het gebruik van hulpmiddelen begint met een duidelijk contract.",
+    "body": "Een model heeft een beschrijving en een expliciet invoerformaat nodig om een hulpmiddel betrouwbaar te kiezen en aan te roepen."
+  }
+}

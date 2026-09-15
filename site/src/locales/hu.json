@@ -1,0 +1,138 @@
+{
+  "ui": {
+    "navFlow": "Működés",
+    "navContext": "Összefüggésben",
+    "navLanguages": "Nyelvek",
+    "install": "CWS — régi v1.0.1 verzió",
+    "eyebrow": "Egy támogatott kurzuson belül indul",
+    "lead": "A SkillBridge az AI Academy eredeti képernyőjéhez adja hozzá a nyelvét, a navigáció, a leckeszöveg és a tanulási eszközök mellett.",
+    "versionNotice": "Az oldal a GitHub v{version} forráskódját mutatja be, nem Chrome Web Store-beküldést. Az áruház még v1.0.1-et telepít; az új kiadás a fejlesztés végére vár. Az USA-ban a GitHubról történő kézi telepítés érhető el.",
+    "validationNotice": "Az automatikus tesztek az Academy navigációját és a Tutor kommunikációját fedik le. A bejelentkezett beküldés utáni képernyő és a valódi Puter-kapcsolat ellenőrzése még szükséges a CWS-kiadás előtt.",
+    "launch": "A működés megtekintése",
+    "flowTitle": "A lecke a helyén marad.",
+    "flowLead": "Csak a nyelv változik. A navigáció, a szakkifejezések, az olvasási hely és az ismétlés a leckében marad.",
+    "stepOpen": "Nyisson meg egy támogatott leckét",
+    "stepOpenBody": "Nyissa meg az AI Academyt a megszokott módon, külön munkatér és másolás nélkül.",
+    "stepChoose": "Válasszon nyelvet a földgömb menüből",
+    "stepChooseBody": "A leckeszöveg a nyelvválasztás után helyben változik meg.",
+    "stepStay": "Kérjen segítséget a leckén belül",
+    "stepStayBody": "A Tutor, a tanulókártyák és a könyvjelzők a kurzus mellett nyílnak meg. A bekezdés látható marad.",
+    "demoLabel": "Élő nyelvváltási bemutató",
+    "local": "Váltás a böngészőben",
+    "contextEyebrow": "Megmarad az összefüggés",
+    "contextTitle": "A fordítás nem viszi másik lapra.",
+    "contextBody": "A kurzuslista, a szöveg és az ismétlés együtt marad; nem kell megszakítania az olvasást, hogy visszataláljon.",
+    "contextNote": "A Tutor és az ismétlő eszközök a bekezdés mellett nyílnak meg.",
+    "featureEyebrow": "Minden egy helyen",
+    "featureTitle": "Az olvasástól az ismétlésig és visszajelzésig.",
+    "featureLead": "A SkillBridge mentést, újraolvasást, exportálást és a kifejezések javítását is lehetővé teszi a kurzuson belül.",
+    "languageTitle": "Kezdjen {count} nyelven",
+    "languageLead": "A Premium szótárak védik a szakkifejezéseket. Más nyelvek Google Translate-et és a védett kifejezések visszaállítását használják.",
+    "languageMore": "Összes nyelv megtekintése",
+    "finalTitle": "Nyissa meg a leckét. Olvassa a saját nyelvén.",
+    "finalBody": "Kapcsolja be a fordítást fiók nélkül, és használja az eszközöket szükség szerint.",
+    "source": "A GitHub v{version} kiadás megtekintése",
+    "footer": "Független közösségi projekt, az Anthropic vagy a Skilljar kapcsolata, támogatása vagy jóváhagyása nélkül.",
+    "privacy": "Adatvédelem",
+    "sourceLabel": "GitHub",
+    "license": "MIT-licenc",
+    "flowAria": "Termékhasználati folyamat",
+    "settingsAria": "A SkillBridge bővítmény beállításai",
+    "flowTag": "A lecke menete megmarad",
+    "lessonAlt": "SkillBridge-dzsel fordított AI Academy-lecke",
+    "contextAlt": "Fordított AI Academy-lecke SkillBridge-vezérlőkkel",
+    "languageCount": "{count} nyelv"
+  },
+  "titleLines": [
+    "A nyelvet változtassa meg,",
+    "ne a tanulás módját."
+  ],
+  "featureItems": [
+    [
+      "Teljes oldal fordítása",
+      "Címek, szöveg, navigáció, támogatott hozzászólások és feliratok fordítása helyben."
+    ],
+    [
+      "Offline olvasás a gyorsítótárból",
+      "A már lefordított szöveg kapcsolatkimaradáskor a böngésző gyorsítótárából olvasható."
+    ],
+    [
+      "Helyi tanulási eszközök",
+      "Tanulókártyák, könyvjelzők, jegyzetek, legutóbbi leckék, haladás, tartalomjegyzék és PDF-export."
+    ],
+    [
+      "Fordítási visszajelzés",
+      "Jelezzen egy részletet, ellenőrizze a javítást, alkalmazza pontos egyezésre vagy vonja vissza."
+    ],
+    [
+      "Feliratok és sötét mód",
+      "Fordítsa a támogatott feliratokat és tanuljon sötét felületen."
+    ],
+    [
+      "Vizsgavédelem",
+      "A válaszlehetőségek változatlanok; felismert felügyelt vizsgán a bővítmény kikapcsol."
+    ],
+    [
+      "Felismerés és gyorsbillentyűk",
+      "A böngésző nyelvének és SPA-leckeváltásnak felismerése, eszköznyitás billentyűzettel."
+    ],
+    [
+      "Pontos terminológia",
+      "A Premium szótárak és kifejezés-visszaállítás megőrzik a márkákat és az MI-szókincset."
+    ]
+  ],
+  "demo": {
+    "language": "Fordítás erre",
+    "auto": "A lecke automatikus fordítása",
+    "comments": "Hozzászólások fordítása",
+    "openSidebar": "SkillBridge-oldalsáv megnyitása",
+    "learningTools": "Tanulási eszközök",
+    "askPassage": "Kérdés erről a részletről",
+    "recentLessons": "Legutóbbi leckék",
+    "bookmarks": "Könyvjelzők",
+    "notes": "Jegyzetek",
+    "reports": "Kifejezésjelentések",
+    "flashcards": "Tanulókártyák",
+    "exportPdf": "PDF exportálása",
+    "closeSidebar": "Oldalsáv bezárása",
+    "tutorGreeting": "Kérdezzen a leckéről az oldal elhagyása nélkül.",
+    "send": "Küldés",
+    "currentLesson": "A lecke fordítása be van kapcsolva.",
+    "chatPreview": "Interaktív előnézet. A bemutató nem küld üzeneteket.",
+    "chatReady": "A kérdezés menete látható. Semmi nem lett elküldve az oldalon kívülre.",
+    "languageSet": "Beállított nyelv: {language}. A fordítás erre a leckére érvényes.",
+    "autoOn": "Automatikus fordítás bekapcsolva.",
+    "autoOff": "Automatikus fordítás szüneteltetve.",
+    "commentsOn": "Hozzászólások fordítása bekapcsolva.",
+    "commentsOff": "Hozzászólások fordítása kikapcsolva.",
+    "toolDisclosure": "Eszközelőnézet. Nem nyit meg és nem ment adatokat."
+  },
+  "meta": {
+    "title": "SkillBridge - MI-kurzusok a saját nyelvén",
+    "description": "Olvassa a támogatott AI Academy-leckéket a saját nyelvén, gondozott szakkifejezésekkel, helyi eszközökkel és vizsgavédelemmel."
+  },
+  "common": {
+    "home": "SkillBridge-kezdőlap",
+    "navigation": "Fő navigáció",
+    "language": "Nyelv",
+    "chooseLanguage": "Válassza ki az oldal nyelvét",
+    "version": "Verzióinformáció",
+    "validation": "Az ellenőrzés hatóköre",
+    "localePrompt": "A böngésző nyelve: {language}. Megnézi az oldalt ezen a nyelven?",
+    "viewIn": "Megtekintés ezen a nyelven: {language}",
+    "previewLabel": "Részlet a bemutató leckéből · {language}",
+    "productDescription": "MI-kurzusfordító"
+  },
+  "tools": {
+    "recent": "Legutóbbi leckék előnézete: térjen vissza az eszközhasználati lecke olvasási helyére.",
+    "bookmarks": "Könyvjelző-előnézet: nyisson meg egy mentett részletet a leckéjében.",
+    "notes": "Jegyzetelőnézet: jelenítse meg jegyzeteit a részlet mellett.",
+    "reports": "Kifejezéselőnézet: gyűjtse össze a lecke kulcskifejezéseit.",
+    "flashcards": "Kártyaelőnézet: készítsen kártyákat a fő fogalmakból.",
+    "pdf": "PDF-előnézet: készítse elő a fordított leckét nyomtatásra."
+  },
+  "sample": {
+    "title": "Az eszközhasználat egyértelmű szerződéssel kezdődik.",
+    "body": "A modellnek eszközleírásra és egyértelmű bemeneti formátumra van szüksége az eszköz megbízható kiválasztásához és meghívásához."
+  }
+}
