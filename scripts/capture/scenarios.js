@@ -144,11 +144,7 @@ const scenarios = {
     record('verification', 'quiz-answer-bytes-unchanged', { answers: answers.length, submitted: false });
   },
   proctored: async (a) => {
-    const detected = [];
-    a.page.on('console', (message) => {
-      if (message.text().includes('Certification exam page detected — extension disabled.'))
-        detected.push(message.text());
-    });
+    // Production builds remove console.info; observe the runtime kill-switch state.
     await a.page.goto(a.baseUrl + '/certification-exam', { waitUntil: 'networkidle' });
     await expect
       .poll(
@@ -159,7 +155,6 @@ const scenarios = {
         { timeout: 10000 },
       )
       .toBe(true);
-    await expect.poll(() => detected.length).toBeGreaterThan(0);
     await expect(a.page.locator('#skillbridge-fab')).not.toBeVisible();
     await expect(a.page.locator('#si18n-header-lang-select')).not.toBeVisible();
     record('verification', 'read-certification-disabled-state', {
