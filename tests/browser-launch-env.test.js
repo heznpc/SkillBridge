@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { createBrowserLaunchEnv } = require('../scripts/lib/browser-launch-env');
-const { resolveShotkitCli, runShotkit } = require('../scripts/run-shotkit');
+const { resolveTakeARepoCli, runTakeARepo } = require('../scripts/run-take-a-repo');
 const { scripts } = require('../package.json');
 
 describe('quiet browser launch environment', () => {
@@ -34,10 +34,10 @@ describe('quiet browser launch environment', () => {
   });
 });
 
-describe('Shotkit launcher', () => {
+describe('take-a-repo launcher', () => {
   test('package scripts expose quiet defaults and explicit headed opt-ins', () => {
-    expect(scripts['capture:store']).toBe('node scripts/run-shotkit.js');
-    expect(scripts['capture:store:headed']).toBe('node scripts/run-shotkit.js --headed');
+    expect(scripts['capture:store']).toBe('node scripts/run-take-a-repo.js');
+    expect(scripts['capture:store:headed']).toBe('node scripts/run-take-a-repo.js --headed');
     expect(scripts['test:e2e']).toBe('node scripts/run-e2e.js');
     expect(scripts['test:e2e:headed']).toBe('node scripts/run-e2e.js --headed');
     expect(scripts['test:e2e:first-user']).toBe('node scripts/run-e2e.js --first-user');
@@ -46,56 +46,56 @@ describe('Shotkit launcher', () => {
   });
 
   test('resolves the installed CLI', () => {
-    const packageEntry = require.resolve('@starter-series/shotkit');
+    const packageEntry = require.resolve('take-a-repo');
     const packageRoot = path.resolve(path.dirname(packageEntry), '..');
     const manifest = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
-    expect(resolveShotkitCli()).toBe(path.resolve(packageRoot, manifest.bin.shotkit));
-    expect(fs.existsSync(resolveShotkitCli())).toBe(true);
+    expect(resolveTakeARepoCli()).toBe(path.resolve(packageRoot, manifest.bin['take-a-repo']));
+    expect(fs.existsSync(resolveTakeARepoCli())).toBe(true);
   });
 
-  test('runs quietly by default and forwards Shotkit arguments', () => {
+  test('runs quietly by default and forwards take-a-repo arguments', () => {
     const spawn = jest.fn(() => ({ status: 0 }));
-    const status = runShotkit({
+    const status = runTakeARepo({
       argv: ['--scene', '01-translate', '--no-video'],
       baseEnv: { HEADED: '1', PWDEBUG: '1', KEEP: 'yes' },
       cwd: '/repo',
-      cliPath: '/repo/shotkit.js',
+      cliPath: '/repo/take-a-repo.js',
       spawn,
     });
 
     expect(status).toBe(0);
     expect(spawn).toHaveBeenCalledWith(
       process.execPath,
-      ['/repo/shotkit.js', '--scene', '01-translate', '--no-video'],
+      ['/repo/take-a-repo.js', '--scene', '01-translate', '--no-video'],
       {
         cwd: '/repo',
-        env: { HEADED: '0', PWDEBUG: '0', KEEP: 'yes' },
+        env: { HEADED: '1', TAKE_A_REPO_HEADED: '0', PWDEBUG: '0', KEEP: 'yes' },
         stdio: 'inherit',
       },
     );
   });
 
-  test('requires --headed to open the browser UI and does not pass it to Shotkit', () => {
+  test('requires --headed to open the browser UI and does not pass it to take-a-repo', () => {
     const spawn = jest.fn(() => ({ status: 3 }));
-    const status = runShotkit({
+    const status = runTakeARepo({
       argv: ['--headed', '--scene', '01-translate'],
       baseEnv: { PWDEBUG: '1' },
       cwd: path.sep,
-      cliPath: '/shotkit.js',
+      cliPath: '/take-a-repo.js',
       spawn,
     });
 
     expect(status).toBe(3);
-    expect(spawn.mock.calls[0][1]).toEqual(['/shotkit.js', '--scene', '01-translate']);
-    expect(spawn.mock.calls[0][2].env).toEqual({ HEADED: '1', PWDEBUG: '0' });
+    expect(spawn.mock.calls[0][1]).toEqual(['/take-a-repo.js', '--scene', '01-translate']);
+    expect(spawn.mock.calls[0][2].env).toEqual({ TAKE_A_REPO_HEADED: '1', PWDEBUG: '0' });
   });
 
   test('surfaces launcher errors and signals', () => {
-    const options = { argv: [], cliPath: '/shotkit.js' };
-    expect(() => runShotkit({ ...options, spawn: () => ({ error: new Error('spawn failed') }) })).toThrow(
+    const options = { argv: [], cliPath: '/take-a-repo.js' };
+    expect(() => runTakeARepo({ ...options, spawn: () => ({ error: new Error('spawn failed') }) })).toThrow(
       /spawn failed/,
     );
-    expect(() => runShotkit({ ...options, spawn: () => ({ signal: 'SIGTERM' }) })).toThrow(/SIGTERM/);
-    expect(runShotkit({ ...options, spawn: () => ({ status: null }) })).toBe(1);
+    expect(() => runTakeARepo({ ...options, spawn: () => ({ signal: 'SIGTERM' }) })).toThrow(/SIGTERM/);
+    expect(runTakeARepo({ ...options, spawn: () => ({ status: null }) })).toBe(1);
   });
 });

@@ -1,26 +1,7 @@
-name: Capture store assets
-
-# Regenerates the CWS listing assets (5 scenes + promo tile + demo webm +
-# description.md) from the BUILT bundle entirely in CI — no local browser
-# needed: Actions tab → "Capture store assets" → Run workflow → download the
-# `store-assets` artifact. shotkit runs build:bundle first and drives the
-# shipped bundle, so a green run doubles as a real-bundle smoke test.
+name: Capture verified product evidence
 
 on:
   workflow_dispatch:
-    inputs:
-      scene:
-        description: 'Only this scene/tile/demo (comma-separated; empty = all)'
-        required: false
-        default: ''
-      video:
-        description: 'Record the demo screencast (webm)'
-        type: boolean
-        default: true
-      headed:
-        description: 'Open Chromium under xvfb for visual capture debugging'
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -58,38 +39,19 @@ jobs:
             npx playwright install-deps chromium
           fi
 
-      - name: Install xvfb for headed capture
-        if: ${{ inputs.headed }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb
+      - name: Install video tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      # Inputs flow via env (never interpolated into the script) — workflow-
-      # injection-safe per GitHub's guidance.
-      - name: Capture
-        env:
-          SCENE: ${{ inputs.scene }}
-          VIDEO: ${{ inputs.video }}
-          HEADED: ${{ inputs.headed }}
-        run: |
-          ARGS=()
-          if [ -n "$SCENE" ]; then ARGS+=(--scene "$SCENE"); fi
-          if [ "$VIDEO" != "true" ]; then ARGS+=(--no-video); fi
-          if [ "$HEADED" = "true" ]; then
-            xvfb-run -a node scripts/run-shotkit.js --headed --json "${ARGS[@]}" | tee shotkit-result.json
-          else
-            node scripts/run-shotkit.js --json "${ARGS[@]}" | tee shotkit-result.json
-          fi
-          { echo "### shotkit assets"
-            node -e "const r=require('./shotkit-result.json'); console.log(r.produced.map(p=>'- \`'+p.split('/').pop()+'\`').join('\n'))"
-          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Capture current build and verify evidence
+        run: node scripts/run-take-a-repo.js --json | tee take-a-repo-result.json
 
-      - name: Upload assets
+      - name: Upload candidate and diagnostics
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: store-assets
+          name: skillbridge-evidence-candidate
+          include-hidden-files: true
           path: |
-            store-assets/*.png
-            store-assets/*.webm
-            store-assets/description.md
+            take-a-repo-result.json
+            store-assets/evidence/
           if-no-files-found: error

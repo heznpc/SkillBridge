@@ -1,0 +1,17 @@
+{
+  "This lesson covers prompt engineering fundamentals and how Claude processes user requests.": "このレッスンではプロンプトエンジニアリングの基礎と、Claude がユーザーのリクエストを処理する仕組みを学びます。",
+  "Anthropic builds AI tools for developers and researchers.": "Anthropic は開発者と研究者のために AI ツールを開発しています。",
+  "A prompt is the input you give to Claude. Better prompts produce better responses.": "プロンプトは Claude に与える入力です。適切なプロンプトは、より良い応答につながります。",
+  "Building with the Claude API": "Claude API を使った開発",
+  "Building with the Claude API / Lesson 2": "Claude API を使った開発 / レッスン 2",
+  "Getting started": "はじめに",
+  "Introduction to Claude": "Claude の紹介",
+  "Messages and roles": "メッセージとロール",
+  "Streaming responses": "ストリーミング応答",
+  "Tool use": "ツールの使用",
+  "Understand the Claude model family": "Claude モデルファミリーを理解する",
+  "Write effective prompts": "効果的なプロンプトを書く",
+  "Handle long context conversations": "長いコンテキストの会話を扱う",
+  "Key concepts": "重要な概念",
+  "Course overview": "コース概要"
+}
