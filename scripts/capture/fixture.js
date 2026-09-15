@@ -14,7 +14,7 @@ const FIXTURE_CSP =
 
 module.exports = {
   prepareExtension: () => makePatchedExtension(),
-  async setup({ context, flags }) {
+  async setup({ context }) {
     // Shared E2E network stubs; makePatchedExtension supplies the Tutor SDK stub.
     await registerStubs(context);
 
@@ -22,7 +22,6 @@ module.exports = {
     const frozen = { ...require('../../store-assets/fixtures/gt-frozen.ko.json') };
     delete frozen._comment;
     const MAP = { ...GT_KO, ...frozen };
-    const recorded = {};
     await context.route('https://translate.googleapis.com/**', async (route) => {
       const request = route.request();
       let q = new URL(request.url()).searchParams.get('q') || '';
@@ -33,18 +32,6 @@ module.exports = {
       const params = new URL(request.url()).searchParams;
       const lang = params.get('tl') || new URLSearchParams(request.postData() || '').get('tl');
       const norm = q.replace(/\s+/g, ' ').trim();
-      if (flags && flags.freeze) {
-        // Record mode: hit real GT, capture its output, fulfill with the real response.
-        const resp = await route.fetch();
-        const body = await resp.text();
-        try {
-          recorded[norm] = JSON.parse(body)[0][0][0];
-        } catch (_e) {
-          /* leave unrecorded on parse failure */
-        }
-        return route.fulfill({ response: resp });
-      }
-      if (flags && flags.liveGt) return route.continue(); // real Google Translate
       // Default: frozen map; unmapped strings fall back to the ORIGINAL text so
       // a forgotten string stays clean English instead of an [UNTRANSLATED]
       // marker. Routed through the shared stub translator so masked requests
@@ -66,16 +53,10 @@ module.exports = {
       });
     });
 
-    // Suppress first-run onboarding so it doesn't obscure scenes (scene 2 shows
-    // it explicitly). Pre-seeding storage before any navigation stops the timer.
+    // Preparation only: prevent first-run onboarding from covering the story.
     const sw = context.serviceWorkers()[0];
-    if (sw) {
-      try {
-        await sw.evaluate(() => chrome.storage.local.set({ welcomeShown: true }));
-      } catch (_e) {
-        /* SW not ready — the per-scene suppressOnboarding op covers it */
-      }
-    }
+    if (!sw) throw new Error('Capture requires the loaded extension service worker');
+    await sw.evaluate(() => chrome.storage.local.set({ welcomeShown: true }));
 
     // Serve the styled store fixtures (quiz path → quiz fixture, else lesson).
     const server = http.createServer((req, res) => {
@@ -91,9 +72,6 @@ module.exports = {
     return {
       env: { baseUrl },
       teardown: async () => {
-        if (flags && flags.freeze && Object.keys(recorded).length) {
-          fs.writeFileSync(path.join(FIXTURES, 'gt-frozen.ko.json'), JSON.stringify(recorded, null, 2) + '\n');
-        }
         await new Promise((r) => server.close(() => r()));
       },
     };

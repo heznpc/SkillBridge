@@ -2,6 +2,11 @@ const assert = require('node:assert/strict');
 const { expect } = require('@playwright/test');
 const { evalInContentWorld } = require('../../tests/e2e/helpers/extension');
 const LESSON = '/courses/claude-with-the-anthropic-api/lessons/introduction-to-claude';
+const ORIGINAL_PARAGRAPHS = [
+  'This lesson covers prompt engineering fundamentals and how Claude processes user requests.',
+  'Anthropic builds AI tools for developers and researchers.',
+  'A prompt is the input you give to Claude. Better prompts produce better responses.',
+];
 const NOTE = 'Review prompt context and preserve Claude terminology.';
 const events = [];
 function record(phase, action, detail = {}) {
@@ -27,7 +32,7 @@ async function open(args, route = LESSON) {
 async function korean(args) {
   await open(args);
   await language(args.page, 'en', args.demo);
-  await expect(args.page.locator('#p-1')).toContainText('This lesson covers');
+  await expect(args.page.locator('#lesson-main p')).toHaveText(ORIGINAL_PARAGRAPHS);
   await language(args.page, 'ko', args.demo);
   await expect(args.page.locator('#p-1')).toContainText(/[가-힣]/);
   await expect(args.page.locator('#p-1')).toContainText('Claude');
@@ -77,7 +82,8 @@ const scenarios = {
   translate: async (a) => {
     await korean(a);
     await language(a.page, 'en', a.demo);
-    await expect(a.page.locator('#p-1')).toContainText('This lesson covers');
+    await expect(a.page.locator('#lesson-main p')).toHaveText(ORIGINAL_PARAGRAPHS);
+    record('verification', 'exact-original-restored', { paragraphs: ORIGINAL_PARAGRAPHS });
     await language(a.page, 'ko', a.demo);
     await expect(a.page.locator('#p-1')).toContainText(/[가-힣]/);
   },
@@ -138,6 +144,11 @@ const scenarios = {
     record('verification', 'quiz-answer-bytes-unchanged', { answers: answers.length, submitted: false });
   },
   proctored: async (a) => {
+    const detected = [];
+    a.page.on('console', (message) => {
+      if (message.text().includes('Certification exam page detected — extension disabled.'))
+        detected.push(message.text());
+    });
     await a.page.goto(a.baseUrl + '/certification-exam', { waitUntil: 'networkidle' });
     await expect
       .poll(
@@ -148,6 +159,7 @@ const scenarios = {
         { timeout: 10000 },
       )
       .toBe(true);
+    await expect.poll(() => detected.length).toBeGreaterThan(0);
     await expect(a.page.locator('#skillbridge-fab')).not.toBeVisible();
     await expect(a.page.locator('#si18n-header-lang-select')).not.toBeVisible();
     record('verification', 'read-certification-disabled-state', {
