@@ -79,13 +79,6 @@ function assertFile(file, minBytes = 1) {
   if (size < minBytes) throw new Error(`Artifact is too small: ${file} (${size} bytes)`);
 }
 
-function sha256(file) {
-  return crypto
-    .createHash('sha256')
-    .update(fs.readFileSync(path.join(ROOT, file)))
-    .digest('hex');
-}
-
 function verifyPromoMedia() {
   const { evidenceState, verifyExportedEvidence } = require('take-a-repo');
   const state = evidenceState(path.join(ROOT, 'store-assets/evidence'));
