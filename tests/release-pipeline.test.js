@@ -163,10 +163,7 @@ describe('release pipeline orchestration', () => {
     );
     expect(npmScripts.at(-1)).toBe('test:e2e');
     expect(npmScripts).not.toContain('capture:store:headed');
-    expect(operations.runNode).toHaveBeenCalledWith(
-      'Regenerate promo video derivatives',
-      'scripts/build-promo-media.js',
-    );
+    expect(operations.runNode).not.toHaveBeenCalled();
     expect(operations.verifyArtifacts).toHaveBeenCalledTimes(1);
     expect(operations.verifyStoreDescriptionSync).not.toHaveBeenCalled();
   });

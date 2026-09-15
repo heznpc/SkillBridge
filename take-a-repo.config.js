@@ -14,6 +14,8 @@ module.exports = {
       'scripts',
       'tests/e2e/helpers',
       'store-assets/fixtures',
+      'store-assets/templates',
+      'store-assets/STORE_LISTING.md',
       'take-a-repo.config.js',
       'node_modules/take-a-repo/src',
       'node_modules/take-a-repo/package.json',

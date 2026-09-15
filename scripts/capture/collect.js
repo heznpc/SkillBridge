@@ -40,6 +40,19 @@ async function run() {
   const result = await capture(
     {
       outDir,
+      description: { from: 'store-assets/STORE_LISTING.md' },
+      promoTiles: [
+        {
+          name: 'promo-tile-440x280',
+          template: path.join(root, 'store-assets/templates/promo-tile.html'),
+          width: 440,
+          height: 280,
+          replacements: {
+            TAGLINE: 'Translate lessons, ask questions, and save study notes.',
+            DISCLAIMER: 'Fixture demo · fixed translation and Tutor reply · unofficial',
+          },
+        },
+      ],
       disclaimer: 'FIXTURE DEMO · frozen translation · Tutor stub · not live Academy',
       prepareExtension: async () => {
         const dir = fixture.prepareExtension();
@@ -111,6 +124,7 @@ async function run() {
     storyboard.storyboardLint.every((entry) => !entry.warnings?.length),
     'storyboard and runtime caption QA must pass',
   );
+  assets.push({ id: 'description', path: 'description.md', mediaType: 'text/markdown', role: 'artifact' });
   for (const id of ['storyboard', 'captions'])
     assets.push({ id, path: `${id}.json`, mediaType: 'application/json', role: 'check-result' });
   checks.push({

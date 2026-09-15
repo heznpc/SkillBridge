@@ -7,6 +7,8 @@ const result = exportApprovedEvidence({
   root,
   receipt: 'store-assets/capture-assets.json',
   mappings: [
+    { asset: 'skillbridge:description', destination: 'store-assets/description.md' },
+    { asset: 'skillbridge:promo-tile-440x280', destination: 'store-assets/promo-tile-440x280.png' },
     { asset: 'skillbridge:translate', destination: 'site/public/images/lesson-translated.png' },
     ...['translate', 'multilingual', 'tutor', 'records', 'review', 'exam', 'proctored'].map((id) => ({
       asset: `skillbridge:${id}`,
