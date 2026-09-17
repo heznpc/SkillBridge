@@ -5,7 +5,7 @@
     "sourceVersion": "4.2.0",
     "sourceLastUpdated": "2026-07-28",
     "generatedFrom": "src/data/de.json",
-    "termCount": 1026
+    "termCount": 1034
   },
   "protected": {
     "Claude Code": [
@@ -956,6 +956,14 @@
     "Who this is for": "Für wen dieser Kurs ist",
     "Recommended prerequisites": "Empfohlene Vorkenntnisse",
     "Course sections": "Kursabschnitte",
+    "Structure & Identity": "Struktur und Identität",
+    "Access": "Zugriff",
+    "Connectors": "Konnektoren",
+    "Governance": "Governance",
+    "Spend caps": "Ausgabenlimits",
+    "Visibility": "Transparenz",
+    "Adoption signals": "Einführungsindikatoren",
+    "Your rollout": "Ihr Einführungsplan",
     "Adapting AI concepts for the classroom": "KI-Konzepte für den Unterricht anpassen",
     "Teaching strategies for AI literacy": "Lehrstrategien für KI-Kompetenz",
     "Lesson planning with AI tools": "Unterrichtsplanung mit KI-Werkzeugen",

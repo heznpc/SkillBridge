@@ -5,7 +5,7 @@
     "sourceVersion": "4.2.0",
     "sourceLastUpdated": "2026-07-28",
     "generatedFrom": "src/data/zh-CN.json",
-    "termCount": 1026
+    "termCount": 1034
   },
   "protected": {
     "Claude Code": [
@@ -959,6 +959,14 @@
     "Who this is for": "适合人群",
     "Recommended prerequisites": "推荐的预备知识",
     "Course sections": "课程章节",
+    "Structure & Identity": "组织结构与身份管理",
+    "Access": "访问权限",
+    "Connectors": "连接器",
+    "Governance": "治理",
+    "Spend caps": "支出上限",
+    "Visibility": "可见性",
+    "Adoption signals": "采用情况指标",
+    "Your rollout": "组织部署计划",
     "Adapting AI concepts for the classroom": "将AI概念应用于课堂",
     "Teaching strategies for AI literacy": "AI素养的教学策略",
     "Lesson planning with AI tools": "利用AI工具进行课程规划",

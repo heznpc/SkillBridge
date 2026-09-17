@@ -5,7 +5,7 @@
     "sourceVersion": "4.2.0",
     "sourceLastUpdated": "2026-07-28",
     "generatedFrom": "src/data/ko.json",
-    "termCount": 1026
+    "termCount": 1034
   },
   "protected": {
     "Claude Code": [
@@ -986,6 +986,14 @@
     "Who this is for": "추천 대상",
     "Recommended prerequisites": "권장 선수 지식",
     "Course sections": "과정 구성",
+    "Structure & Identity": "조직 구조와 계정 관리",
+    "Access": "접근 권한",
+    "Connectors": "커넥터",
+    "Governance": "거버넌스",
+    "Spend caps": "지출 한도",
+    "Visibility": "가시성",
+    "Adoption signals": "도입 현황 지표",
+    "Your rollout": "조직 도입 계획",
     "Adapting AI concepts for the classroom": "교실에 맞는 AI 개념 적용",
     "Teaching strategies for AI literacy": "AI 리터러시를 위한 교수 전략",
     "Lesson planning with AI tools": "AI 도구를 활용한 수업 계획",

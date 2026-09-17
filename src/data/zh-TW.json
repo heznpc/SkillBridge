@@ -1207,5 +1207,15 @@
     "You passed!": "恭喜您，考試通過！",
     "You did not pass": "您未通過考試",
     "Question": "題目"
+  },
+  "claudeEnterprise": {
+    "Structure & Identity": "組織結構與身分管理",
+    "Access": "存取權限",
+    "Connectors": "連接器",
+    "Governance": "治理",
+    "Spend caps": "支出上限",
+    "Visibility": "可見性",
+    "Adoption signals": "採用情況指標",
+    "Your rollout": "組織部署計畫"
   }
 }

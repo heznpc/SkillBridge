@@ -5,7 +5,7 @@
     "sourceVersion": "4.2.0",
     "sourceLastUpdated": "2026-07-28",
     "generatedFrom": "src/data/fr.json",
-    "termCount": 1026
+    "termCount": 1034
   },
   "protected": {
     "Claude Code": [],
@@ -952,6 +952,14 @@
     "Who this is for": "À qui ce cours s’adresse",
     "Recommended prerequisites": "Prérequis recommandés",
     "Course sections": "Sections du cours",
+    "Structure & Identity": "Structure et identité",
+    "Access": "Accès",
+    "Connectors": "Connecteurs",
+    "Governance": "Gouvernance",
+    "Spend caps": "Plafonds de dépenses",
+    "Visibility": "Visibilité",
+    "Adoption signals": "Indicateurs d’adoption",
+    "Your rollout": "Votre plan de déploiement",
     "Adapting AI concepts for the classroom": "Adapter les concepts de l'IA à la salle de classe",
     "Teaching strategies for AI literacy": "Stratégies d'enseignement pour la littératie en IA",
     "Lesson planning with AI tools": "Planification de cours avec des outils IA",

@@ -1205,5 +1205,15 @@
     "You passed!": "Hai superato!",
     "You did not pass": "Non sei passato",
     "Question": "Domanda"
+  },
+  "claudeEnterprise": {
+    "Structure & Identity": "Struttura e identità",
+    "Access": "Accesso",
+    "Connectors": "Connettori",
+    "Governance": "Governance",
+    "Spend caps": "Limiti di spesa",
+    "Visibility": "Visibilità",
+    "Adoption signals": "Indicatori di adozione",
+    "Your rollout": "Il tuo piano di distribuzione"
   }
 }

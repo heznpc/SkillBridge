@@ -5,7 +5,7 @@
     "sourceVersion": "4.2.0",
     "sourceLastUpdated": "2026-07-28",
     "generatedFrom": "src/data/id.json",
-    "termCount": 1026
+    "termCount": 1034
   },
   "protected": {
     "Claude Code": [
@@ -952,6 +952,14 @@
     "Who this is for": "Untuk siapa kursus ini",
     "Recommended prerequisites": "Prasyarat yang disarankan",
     "Course sections": "Bagian kursus",
+    "Structure & Identity": "Struktur dan identitas",
+    "Access": "Akses",
+    "Connectors": "Konektor",
+    "Governance": "Tata kelola",
+    "Spend caps": "Batas pengeluaran",
+    "Visibility": "Visibilitas",
+    "Adoption signals": "Indikator adopsi",
+    "Your rollout": "Rencana penerapan Anda",
     "Adapting AI concepts for the classroom": "Menyesuaikan konsep AI untuk ruang kelas",
     "Teaching strategies for AI literacy": "Strategi pengajaran untuk literasi AI",
     "Lesson planning with AI tools": "Perencanaan pelajaran dengan alat AI",

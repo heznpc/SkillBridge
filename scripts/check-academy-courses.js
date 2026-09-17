@@ -30,6 +30,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const monitor = process.argv.includes('--monitor');
 
 const CATALOG_URL = process.env.SB_CATALOG_URL || 'https://anthropic.skilljar.com/';
 const STORE_LISTING_PATH =
@@ -165,6 +166,9 @@ async function main() {
   }
 
   const liveSlugs = parseSlugs(html);
+  if (liveSlugs.length === 0) {
+    throw new Error('Catalog contains no recognized course links; refusing to report a healthy monitor.');
+  }
   const knownSlugs = loadKnownSlugs();
   const storeListingCount = parseStoreListingCourseCount(loadStoreListingText());
 
@@ -178,6 +182,9 @@ async function main() {
       : storeListingCount !== liveSlugs.length
         ? { kind: 'mismatch', declared: storeListingCount, live: liveSlugs.length }
         : null;
+  if (monitor) {
+    fs.writeFileSync('academy-courses-drift.json', JSON.stringify({ unknown, storeListingIssue }));
+  }
   for (const slug of liveSlugs) {
     const tag = knownSlugs.has(slug) ? '[OK]      ' : '[NEW]     ';
     console.log(`  ${tag} ${slug}`);
@@ -208,7 +215,7 @@ async function main() {
     console.log('');
   }
 
-  if (process.env.CI) {
+  if (process.env.CI || monitor) {
     const report = ['### Academy catalog drift detected\n'];
     if (unknown.length > 0) {
       report.push(...unknown.map((s) => `- New slug: \`${s}\` → https://anthropic.skilljar.com/${s}`), '');
@@ -236,11 +243,17 @@ async function main() {
     fs.writeFileSync('academy-courses-report.txt', report.join('\n'));
   }
 
-  process.exit(1);
+  // A monitor reports actionable catalog changes through one tracked issue.
+  // The ordinary CLI remains a strict release check. Fetch/parser failures
+  // still fail both modes and must never be mistaken for expected drift.
+  if (!monitor) process.exit(1);
 }
 
 if (require.main === module) {
-  main();
+  main().catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
 }
 
 module.exports = { parseSlugs, parseStoreListingCourseCount, NON_COURSE_SLUGS };
