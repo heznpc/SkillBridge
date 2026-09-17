@@ -2840,6 +2840,8 @@ const FLASHCARD_COURSE_MAP = {
   'mcp-advanced': ['mcpAdvanced'],
   'model-context-protocol-advanced': ['mcpAdvanced'],
   'model-context-protocol-advanced-topics': ['mcpAdvanced'],
+  // Enterprise rollout terminology
+  'deploying-claude-enterprise-with-confidence': ['claudeEnterprise'],
   // Cloud deployment
   'amazon-bedrock': ['cloudDeployment'],
   'claude-in-amazon-bedrock': ['cloudDeployment'],

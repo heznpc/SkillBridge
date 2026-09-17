@@ -5,7 +5,7 @@
     "sourceVersion": "4.2.0",
     "sourceLastUpdated": "2026-07-28",
     "generatedFrom": "src/data/ja.json",
-    "termCount": 1026
+    "termCount": 1034
   },
   "protected": {
     "Claude Code": [
@@ -967,6 +967,14 @@
     "Who this is for": "対象者",
     "Recommended prerequisites": "推奨される前提知識",
     "Course sections": "コースセクション",
+    "Structure & Identity": "組織構造とID管理",
+    "Access": "アクセス権",
+    "Connectors": "コネクタ",
+    "Governance": "ガバナンス",
+    "Spend caps": "支出上限",
+    "Visibility": "可視性",
+    "Adoption signals": "導入状況の指標",
+    "Your rollout": "組織への導入計画",
     "Adapting AI concepts for the classroom": "教室に合わせたAI概念の適用",
     "Teaching strategies for AI literacy": "AIリテラシーのための教育戦略",
     "Lesson planning with AI tools": "AIツールを活用した授業計画",

@@ -68,19 +68,19 @@ Premium languages use curated dictionaries plus Google Translate; other supporte
 <!-- LOCALE_QA_START -->
 | Language | Code | Entries | Last curated | Last LLM audit | Native review |
 |---|---|---:|---|---|---|
-| 한국어 | `ko` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| 日本語 | `ja` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| 中文(简体) | `zh-CN` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| 中文(繁體) | `zh-TW` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Español | `es` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Français | `fr` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Italiano | `it` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Nederlands | `nl` | 1130 | 2026-09-01 | 2026-09-01 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Deutsch | `de` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Português (BR) | `pt-BR` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Русский | `ru` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Tiếng Việt | `vi` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
-| Bahasa Indonesia | `id` | 1130 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| 한국어 | `ko` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| 日本語 | `ja` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| 中文(简体) | `zh-CN` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| 中文(繁體) | `zh-TW` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Español | `es` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Français | `fr` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Italiano | `it` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Nederlands | `nl` | 1138 | 2026-09-01 | 2026-09-01 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Deutsch | `de` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Português (BR) | `pt-BR` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Русский | `ru` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Tiếng Việt | `vi` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
+| Bahasa Indonesia | `id` | 1138 | 2026-07-28 | 2026-07-28 | 🙋 [recruiting](https://github.com/heznpc/skillBridge/issues/202) |
 <!-- LOCALE_QA_END -->
 
 ## Privacy and limits

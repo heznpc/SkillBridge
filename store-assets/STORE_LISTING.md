@@ -68,7 +68,7 @@ Dark mode, right-to-left layout, keyboard shortcuts, responsive panels, language
 
 SUPPORTED COURSES
 
-Supported Skilljar courses and Claude Academy course routes are covered by the current compatibility map: all 23 currently-published courses/catalog entries on anthropic.skilljar.com, and course pages on academy.claude.com, Anthropic's own course platform. Public learning and certification-information pages can translate; recognized proctored exam routes remain disabled.
+Supported Skilljar courses and Claude Academy course routes are covered by the current compatibility map: all 24 currently-published courses/catalog entries on anthropic.skilljar.com, and course pages on academy.claude.com, Anthropic's own course platform. Public learning and certification-information pages can translate; recognized proctored exam routes remain disabled.
 
 ━━━━━━━━━━━━━━━━━━━
 

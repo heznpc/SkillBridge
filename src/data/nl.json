@@ -1246,5 +1246,15 @@
     "You passed!": "U bent geslaagd!",
     "You did not pass": "U bent niet geslaagd",
     "Question": "Vraag"
+  },
+  "claudeEnterprise": {
+    "Structure & Identity": "Structuur en identiteit",
+    "Access": "Toegang",
+    "Connectors": "Connectoren",
+    "Governance": "Governance",
+    "Spend caps": "Uitgavenlimieten",
+    "Visibility": "Inzicht",
+    "Adoption signals": "Adoptie-indicatoren",
+    "Your rollout": "Uw uitrolplan"
   }
 }

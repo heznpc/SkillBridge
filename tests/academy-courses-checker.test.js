@@ -207,4 +207,40 @@ describe('CLI behavior (against fixtures)', () => {
     expect(report).toMatch(/totally-new-course/);
     expect(report).toMatch(/48h terminology SLA/);
   });
+
+  test('monitor mode records expected drift without failing the scheduled run', () => {
+    const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'sb-academy-monitor-'));
+    const result = spawnSync(process.execPath, [SCRIPT, '--monitor'], {
+      env: {
+        ...process.env,
+        SB_CATALOG_HTML_FIXTURE: htmlOneUnknown,
+        SB_CONSTANTS_FIXTURE: constantsFile,
+        SB_STORE_LISTING_FIXTURE: storeCountTwo,
+      },
+      cwd,
+      encoding: 'utf8',
+    });
+    expect(result.status).toBe(0);
+    expect(JSON.parse(fs.readFileSync(path.join(cwd, 'academy-courses-drift.json'), 'utf8'))).toEqual({
+      unknown: ['totally-new-course'],
+      storeListingIssue: null,
+    });
+    expect(fs.readFileSync(path.join(cwd, 'academy-courses-report.txt'), 'utf8')).toContain('totally-new-course');
+  });
+
+  test.each(['<html>Sign in</html>', null])('monitor still fails when the catalog cannot be read: %s', (html) => {
+    const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'sb-academy-broken-'));
+    const result = spawnSync(process.execPath, [SCRIPT, '--monitor'], {
+      env: {
+        ...process.env,
+        SB_CATALOG_HTML_FIXTURE: html === null ? path.join(cwd, 'missing.html') : writeFixture('empty.html', html),
+        SB_CONSTANTS_FIXTURE: constantsFile,
+        SB_STORE_LISTING_FIXTURE: storeCountOne,
+      },
+      cwd,
+      encoding: 'utf8',
+    });
+    expect(result.status).toBe(1);
+    expect(fs.existsSync(path.join(cwd, 'academy-courses-drift.json'))).toBe(false);
+  });
 });

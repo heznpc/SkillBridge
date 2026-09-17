@@ -5,7 +5,7 @@
     "sourceVersion": "4.2.0",
     "sourceLastUpdated": "2026-07-28",
     "generatedFrom": "src/data/vi.json",
-    "termCount": 1026
+    "termCount": 1034
   },
   "protected": {
     "Claude Code": [],
@@ -953,6 +953,14 @@
     "Who this is for": "Dành cho ai",
     "Recommended prerequisites": "Kiến thức nền tảng được khuyến nghị",
     "Course sections": "Các phần của khóa học",
+    "Structure & Identity": "Cấu trúc và danh tính",
+    "Access": "Quyền truy cập",
+    "Connectors": "Trình kết nối",
+    "Governance": "Quản trị",
+    "Spend caps": "Giới hạn chi tiêu",
+    "Visibility": "Khả năng quan sát",
+    "Adoption signals": "Chỉ số áp dụng",
+    "Your rollout": "Kế hoạch triển khai của bạn",
     "Adapting AI concepts for the classroom": "Điều chỉnh khái niệm AI cho lớp học",
     "Teaching strategies for AI literacy": "Chiến lược giảng dạy về hiểu biết AI",
     "Lesson planning with AI tools": "Lập kế hoạch bài giảng với công cụ AI",

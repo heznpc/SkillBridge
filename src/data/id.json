@@ -1194,5 +1194,15 @@
     "You passed!": "Anda lulus!",
     "You did not pass": "Anda tidak lulus",
     "Question": "Pertanyaan"
+  },
+  "claudeEnterprise": {
+    "Structure & Identity": "Struktur dan identitas",
+    "Access": "Akses",
+    "Connectors": "Konektor",
+    "Governance": "Tata kelola",
+    "Spend caps": "Batas pengeluaran",
+    "Visibility": "Visibilitas",
+    "Adoption signals": "Indikator adopsi",
+    "Your rollout": "Rencana penerapan Anda"
   }
 }

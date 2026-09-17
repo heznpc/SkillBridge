@@ -1203,5 +1203,15 @@
     "You passed!": "Chúc mừng, bạn đã đạt!",
     "You did not pass": "Bạn chưa đạt",
     "Question": "Câu hỏi"
+  },
+  "claudeEnterprise": {
+    "Structure & Identity": "Cấu trúc và danh tính",
+    "Access": "Quyền truy cập",
+    "Connectors": "Trình kết nối",
+    "Governance": "Quản trị",
+    "Spend caps": "Giới hạn chi tiêu",
+    "Visibility": "Khả năng quan sát",
+    "Adoption signals": "Chỉ số áp dụng",
+    "Your rollout": "Kế hoạch triển khai của bạn"
   }
 }

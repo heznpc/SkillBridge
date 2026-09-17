@@ -5,7 +5,7 @@
     "sourceVersion": "4.2.0",
     "sourceLastUpdated": "2026-09-01",
     "generatedFrom": "src/data/nl.json",
-    "termCount": 1026
+    "termCount": 1034
   },
   "protected": {
     "Claude": [],
@@ -965,6 +965,14 @@
     "Who this is for": "Voor wie dit bedoeld is",
     "Recommended prerequisites": "Aanbevolen voorkennis",
     "Course sections": "Cursusonderdelen",
+    "Structure & Identity": "Structuur en identiteit",
+    "Access": "Toegang",
+    "Connectors": "Connectoren",
+    "Governance": "Governance",
+    "Spend caps": "Uitgavenlimieten",
+    "Visibility": "Inzicht",
+    "Adoption signals": "Adoptie-indicatoren",
+    "Your rollout": "Uw uitrolplan",
     "Adapting AI concepts for the classroom": "AI-concepten aanpassen aan de lespraktijk",
     "Teaching strategies for AI literacy": "Onderwijsstrategieën voor AI-geletterdheid",
     "Lesson planning with AI tools": "Lessen plannen met AI-tools",

@@ -1206,5 +1206,15 @@
     "You passed!": "Поздравляем, вы сдали!",
     "You did not pass": "Вы не сдали",
     "Question": "Вопрос"
+  },
+  "claudeEnterprise": {
+    "Structure & Identity": "Структура и управление идентификацией",
+    "Access": "Доступ",
+    "Connectors": "Коннекторы",
+    "Governance": "Управление",
+    "Spend caps": "Лимиты расходов",
+    "Visibility": "Наблюдаемость",
+    "Adoption signals": "Показатели внедрения",
+    "Your rollout": "Ваш план внедрения"
   }
 }

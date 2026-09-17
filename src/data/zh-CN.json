@@ -1207,5 +1207,15 @@
     "You passed!": "恭喜您，考试通过！",
     "You did not pass": "您未通过考试",
     "Question": "题目"
+  },
+  "claudeEnterprise": {
+    "Structure & Identity": "组织结构与身份管理",
+    "Access": "访问权限",
+    "Connectors": "连接器",
+    "Governance": "治理",
+    "Spend caps": "支出上限",
+    "Visibility": "可见性",
+    "Adoption signals": "采用情况指标",
+    "Your rollout": "组织部署计划"
   }
 }

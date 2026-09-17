@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "FLASHCARD_COURSE_MAP in src/lib/constants.js",
-    "courseCount": 17,
+    "courseCount": 18,
     "languages": [
       "de",
       "es",
@@ -112,6 +112,13 @@
         "certification-faq",
         "claude-certified-architect-foundations-certification",
         "claude-platform-101"
+      ]
+    },
+    {
+      "block": "claudeEnterprise",
+      "title": "Deploying Claude Enterprise with Confidence",
+      "slugs": [
+        "deploying-claude-enterprise-with-confidence"
       ]
     },
     {
