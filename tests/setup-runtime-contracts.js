@@ -3,3 +3,4 @@
 require('../src/lib/runtime-contracts');
 require('../src/lib/dictionary-store');
 require('../src/lib/engine-adapters');
+require('../src/lib/engine-matcher');

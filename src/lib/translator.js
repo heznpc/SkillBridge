@@ -61,6 +61,101 @@ class SkilljarTranslator {
     this._cloudAdapter = adapters.createCloudAdapter({
       stream: (prompt, targetLang, onChunk, options) => this._cloudChatStream(prompt, targetLang, onChunk, options),
     });
+    this.engines = new globalThis.SB_ENGINE_MATCHER.EngineRegistry();
+    this.engines.register(
+      {
+        id: 'google',
+        location: 'remote',
+        operations: { translation: { source: ['en'], target: Object.keys(this.supportedLanguages) } },
+      },
+      this._googleAdapter,
+    );
+    // The configured model determines AI language support. Unknown support
+    // stays visible and attemptable; it is not declared universal or excluded.
+    const operations = { explanation: {}, refinement: {} };
+    this.engines.register({ id: 'local', location: 'loopback', permission: true, operations }, this._localAdapter);
+    this.engines.register({ id: 'cloud', location: 'remote', operations }, this._cloudAdapter);
+  }
+
+  _baseEngineEnvironment() {
+    return {
+      online: typeof navigator === 'undefined' ? undefined : navigator.onLine,
+      memoryGB: typeof navigator === 'undefined' ? undefined : navigator.deviceMemory,
+      engines: { google: { available: true }, cloud: { allowed: this.aiEnabled } },
+    };
+  }
+
+  _engineSettingsRevision() {
+    return globalThis.SB_ENGINE_MATCHER.settingsRevision(chrome.storage?.onChanged);
+  }
+
+  /** Fresh request-owned evidence. No probing starts a model or sends page text. */
+  async getEngineMatches({ task, targetLang, sourceLang = 'en', selectedEngine = null } = {}) {
+    const request = Object.freeze({ task, sourceLang, targetLang, selectedEngine });
+    const generation = this._staticGeneration;
+    const revision = this.engines.revision;
+    const settingsRevision = this._engineSettingsRevision();
+    const environment = this._baseEngineEnvironment();
+    let timer;
+    const platform = async () => {
+      try {
+        return await Promise.race([
+          chrome.runtime.sendMessage({ type: 'GET_ENGINE_ENVIRONMENT', task }),
+          new Promise((resolve) => {
+            timer = setTimeout(() => resolve(null), 1500);
+          }),
+        ]);
+      } catch {
+        return null;
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+    const [reported, observations] = await Promise.all([platform(), this.engines.inspect(request)]);
+    for (const id of new Set([...Object.keys(reported?.engines || {}), ...Object.keys(observations)])) {
+      const allowed = environment.engines[id]?.allowed;
+      environment.engines[id] = {
+        ...environment.engines[id],
+        ...observations[id],
+        ...reported?.engines?.[id],
+      };
+      if (allowed === false || observations[id]?.allowed === false) environment.engines[id].allowed = false;
+    }
+    // Re-read volatile device state after asynchronous evidence collection.
+    environment.online = this._baseEngineEnvironment().online;
+    const stale =
+      generation !== this._staticGeneration ||
+      revision !== this.engines.revision ||
+      settingsRevision !== this._engineSettingsRevision();
+    return Object.freeze({ ...this.engines.match(request, environment), stale });
+  }
+
+  async _matchStreamEngine(engine, task, targetLang, signal) {
+    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+    const adapter = this.engines.get(engine);
+    if (!adapter?.stream) {
+      throw new Error(`${task === 'refinement' ? 'refineText' : task}: refusing an unrecognised engine "${engine}"`);
+    }
+    const generation = this._staticGeneration;
+    const settingsRevision = this._engineSettingsRevision();
+    const revision = this.engines.revision;
+    const assertCurrent = () => {
+      if (
+        signal?.aborted ||
+        generation !== this._staticGeneration ||
+        settingsRevision !== this._engineSettingsRevision() ||
+        revision !== this.engines.revision
+      ) {
+        throw new DOMException('Engine request changed', 'AbortError');
+      }
+    };
+    const match = await this.getEngineMatches({ task, targetLang, selectedEngine: engine });
+    assertCurrent();
+    if (match.stale) throw new DOMException('Engine request changed', 'AbortError');
+    if (!match.selected?.canAttempt) {
+      throw new Error(`Engine ${engine} cannot handle ${task}: ${match.selected?.reasons.join(', ') || 'unavailable'}`);
+    }
+    return { adapter, assertCurrent };
   }
 
   /**
@@ -570,6 +665,14 @@ class SkilljarTranslator {
    * @returns {Promise<string|null>} translated text, or null on failure
    */
   async googleTranslate(text, targetLang, options = {}) {
+    const match = this.engines.match(
+      { task: 'translation', sourceLang: 'en', targetLang, selectedEngine: 'google' },
+      this._baseEngineEnvironment(),
+    );
+    if (!match.selected?.canAttempt) {
+      if (match.selected?.reasons.includes('offline')) this._reportTranslationAvailability(false, 'single');
+      return null;
+    }
     return this._googleAdapter.translate(text, targetLang, options);
   }
 
@@ -581,6 +684,14 @@ class SkilljarTranslator {
    * @returns {Promise<string[]>} translated texts (originals on failure)
    */
   async googleTranslateBatch(texts, targetLang, options = {}) {
+    const match = this.engines.match(
+      { task: 'translation', sourceLang: 'en', targetLang, selectedEngine: 'google' },
+      this._baseEngineEnvironment(),
+    );
+    if (!match.selected?.canAttempt) {
+      if (match.selected?.reasons.includes('offline')) this._reportTranslationAvailability(false, 'batch');
+      return texts;
+    }
     return this._googleAdapter.translateBatch(texts, targetLang, options);
   }
 
@@ -666,6 +777,7 @@ class SkilljarTranslator {
   // resolves with the full text, honors opts.signal.
   async _localChatStream(prompt, onChunk, opts = {}) {
     const { sb_local_base, sb_local_model } = await chrome.storage.local.get(['sb_local_base', 'sb_local_model']);
+    opts.assertCurrent?.();
     return new Promise((resolve, reject) => {
       let port;
       try {
@@ -784,6 +896,7 @@ User: ${userMessage}`;
   async _cloudChatStream(prompt, targetLang, onChunk, opts = {}) {
     const model = opts.model || SKILLBRIDGE_MODELS.CLAUDE;
     if (!this.isReady || !this._cloudPort) await this._ensureCloudBroker();
+    opts.assertCurrent?.();
     if (!this.isReady || !this._cloudPort) throw new Error('Bridge not ready');
 
     return new Promise((resolve, reject) => {
@@ -872,6 +985,12 @@ User: ${userMessage}`;
       const sendStart = (allowReconnect) => {
         if (settled || opts.signal?.aborted) return;
         try {
+          opts.assertCurrent?.();
+        } catch (err) {
+          finish(reject, err);
+          return;
+        }
+        try {
           this._cloudPort.postMessage(request);
         } catch (err) {
           if (!allowReconnect) {
@@ -912,18 +1031,19 @@ User: ${userMessage}`;
    * to Puter on the strength of a typo.
    */
   async refineText(prompt, { engine, signal, targetLang = 'en' } = {}) {
-    if (engine !== 'cloud' && engine !== 'local') {
-      throw new Error(`refineText: refusing an unrecognised engine "${engine}"`);
-    }
-    if (engine === 'local') {
-      return this._localAdapter.stream({ prompt, onChunk: null, options: { signal, purpose: 'refinement' } });
-    }
+    const { adapter, assertCurrent } = await this._matchStreamEngine(engine, 'refinement', targetLang, signal);
+    assertCurrent();
     // Refinement is a copy-edit, not a conversation — see SKILLBRIDGE_MODELS.
-    return this._cloudAdapter.stream({
+    return adapter.stream({
       prompt,
       targetLang,
       onChunk: null,
-      options: { signal, model: SKILLBRIDGE_MODELS.REFINEMENT },
+      options: {
+        signal,
+        purpose: 'refinement',
+        assertCurrent,
+        ...(engine === 'cloud' ? { model: SKILLBRIDGE_MODELS.REFINEMENT } : {}),
+      },
     });
   }
 
@@ -943,9 +1063,11 @@ User: ${userMessage}`;
       // 'off' = no tutor.
       const engine = await this._getAiEngine();
       if (engine === 'off') throw new Error('AI tutor is turned off in settings.');
-      if (engine === 'local') return this._localAdapter.stream({ prompt, onChunk, options: opts });
-
-      return this._cloudAdapter.stream({ prompt, targetLang, onChunk, options: opts });
+      const { adapter, assertCurrent } = await this._matchStreamEngine(engine, 'explanation', targetLang, opts.signal);
+      // A slow permission/device check cannot revive an earlier selection.
+      if ((await this._getAiEngine()) !== engine) throw new DOMException('Engine selection changed', 'AbortError');
+      assertCurrent();
+      return adapter.stream({ prompt, targetLang, onChunk, options: { ...opts, assertCurrent } });
     } catch (err) {
       // Synchronous setup failures (most importantly `!this.isReady` — the Puter
       // bridge hasn't finished its handshake) must PROPAGATE, not resolve to a

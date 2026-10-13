@@ -219,6 +219,14 @@ describe('SkilljarTranslator', () => {
       ]);
     });
 
+    test('offline matching preserves the original fallback and availability notification without sending', async () => {
+      translator._baseEngineEnvironment = () => ({ online: false, engines: { google: { available: true } } });
+      const originals = ['Hello'];
+      await expect(translator.googleTranslateBatch(originals, 'fr')).resolves.toBe(originals);
+      expect(global.chrome.runtime.sendMessage).not.toHaveBeenCalled();
+      expect(events.map(({ type }) => type)).toEqual(['skillbridge:translationunavailable']);
+    });
+
     test('does not report transport failure when protected-term unmasking fails', async () => {
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       global.window._protectedTerms = {
@@ -908,15 +916,169 @@ describe('chatStream — engine preference is a privacy gate that fails closed',
   });
 });
 
+describe('engine matching at the dispatch boundary', () => {
+  let originalStorage;
+  let originalSendMessage;
+
+  beforeEach(() => {
+    originalStorage = global.chrome.storage;
+    originalSendMessage = global.chrome.runtime.sendMessage;
+    global.chrome.storage = { local: { get: jest.fn(async () => ({ sb_ai_engine: 'local' })) } };
+    global.chrome.runtime.sendMessage = jest.fn(async () => ({ engines: { local: { permission: 'granted' } } }));
+  });
+
+  afterEach(() => {
+    global.chrome.storage = originalStorage;
+    global.chrome.runtime.sendMessage = originalSendMessage;
+  });
+
+  test('local permission failure never falls back to cloud', async () => {
+    global.chrome.runtime.sendMessage.mockResolvedValue({ engines: { local: { permission: 'required' } } });
+    const t = new SkilljarTranslator();
+    t._localChatStream = jest.fn();
+    t._cloudChatStream = jest.fn();
+    await expect(t.chatStream('Explain', 'fr')).rejects.toThrow('permission-required');
+    expect(t._localChatStream).not.toHaveBeenCalled();
+    expect(t._cloudChatStream).not.toHaveBeenCalled();
+  });
+
+  test('unknown selections are refused rather than interpreted as cloud', async () => {
+    global.chrome.storage.local.get.mockResolvedValue({ sb_ai_engine: 'missing-provider' });
+    const t = new SkilljarTranslator();
+    t._cloudChatStream = jest.fn();
+    await expect(t.chatStream('Explain', 'ja')).rejects.toThrow('unrecognised engine');
+    expect(t._cloudChatStream).not.toHaveBeenCalled();
+  });
+
+  test('platform evidence cannot override the current host AI gate', async () => {
+    global.chrome.runtime.sendMessage.mockResolvedValue({ engines: { cloud: { allowed: true, available: true } } });
+    const t = new SkilljarTranslator({ aiEnabled: false });
+    const match = await t.getEngineMatches({ task: 'explanation', targetLang: 'de', selectedEngine: 'cloud' });
+    expect(match.selected.canAttempt).toBe(false);
+    expect(match.selected.reasons).toContain('policy-blocked');
+  });
+
+  test.each(['language', 'selection', 'abort', 'model', 'consent'])(
+    'a %s change during environment inspection prevents stream dispatch',
+    async (change) => {
+      let release;
+      let requested;
+      let changed;
+      global.chrome.storage.onChanged = {
+        addListener: (listener) => {
+          changed = listener;
+        },
+      };
+      const inspecting = new Promise((resolve) => {
+        requested = resolve;
+      });
+      global.chrome.runtime.sendMessage.mockImplementation(() => {
+        requested();
+        return new Promise((resolve) => {
+          release = resolve;
+        });
+      });
+      const t = new SkilljarTranslator();
+      const controller = new AbortController();
+      t._localChatStream = jest.fn();
+      t._cloudChatStream = jest.fn();
+      const pending = t.chatStream('Explain', 'fr', '', null, { signal: controller.signal });
+      const assertion = expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+      await inspecting;
+      if (change === 'language') t.invalidateStaticTranslations('ja');
+      if (change === 'selection') global.chrome.storage.local.get.mockResolvedValue({ sb_ai_engine: 'off' });
+      if (change === 'abort') controller.abort();
+      if (change === 'model') changed({ sb_local_model: {} }, 'local');
+      if (change === 'consent') changed({ sb_refine_consent: {} }, 'local');
+      release({ engines: { local: { permission: 'granted' } } });
+      await assertion;
+      expect(t._localChatStream).not.toHaveBeenCalled();
+      expect(t._cloudChatStream).not.toHaveBeenCalled();
+    },
+  );
+
+  test('an independently registered adapter uses the same matching and stream path', async () => {
+    global.chrome.storage.local.get.mockResolvedValue({ sb_ai_engine: 'custom-device' });
+    const t = new SkilljarTranslator();
+    const stream = jest.fn(async () => 'Réponse');
+    t.engines.register(
+      {
+        id: 'custom-device',
+        location: 'device',
+        operations: { explanation: { source: ['en'], target: ['fr'] } },
+      },
+      { inspect: async () => ({ available: true }), stream },
+    );
+    await expect(t.chatStream('Explain', 'fr')).resolves.toBe('Réponse');
+    expect(stream).toHaveBeenCalledWith(expect.objectContaining({ targetLang: 'fr' }));
+    await expect(t.chatStream('Explain', 'de')).rejects.toThrow('target-unsupported');
+    expect(stream).toHaveBeenCalledTimes(1);
+  });
+
+  test('a language change during local configuration loading prevents opening the Port', async () => {
+    const t = new SkilljarTranslator();
+    const { assertCurrent } = await t._matchStreamEngine('local', 'explanation', 'fr');
+    const originalConnect = global.chrome.runtime.connect;
+    let release;
+    global.chrome.storage.local.get.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+    global.chrome.runtime.connect = jest.fn();
+    try {
+      const pending = t._localChatStream('Keep this local', null, { assertCurrent });
+      t.invalidateStaticTranslations('ja');
+      release({});
+      await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+      expect(global.chrome.runtime.connect).not.toHaveBeenCalled();
+    } finally {
+      global.chrome.runtime.connect = originalConnect;
+    }
+  });
+
+  test('a language change during cloud recovery prevents posting the prompt', async () => {
+    const t = new SkilljarTranslator();
+    const { assertCurrent } = await t._matchStreamEngine('cloud', 'explanation', 'fr');
+    let release;
+    const postMessage = jest.fn();
+    t._ensureCloudBroker = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          release = () => {
+            t.isReady = true;
+            t._cloudPort = { postMessage };
+            resolve();
+          };
+        }),
+    );
+    const pending = t._cloudChatStream('Keep this pending', 'fr', null, { assertCurrent });
+    t.invalidateStaticTranslations('ja');
+    release();
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    expect(postMessage).not.toHaveBeenCalled();
+  });
+});
+
 describe('local Tutor stream — real Port lifecycle', () => {
   let originalConnect;
+  let originalSendMessage;
 
   function makePort() {
     const messageListeners = [];
     const disconnectListeners = [];
+    let started;
+    const ready = new Promise((resolve) => {
+      started = resolve;
+    });
     const port = {
+      ready,
       posted: [],
-      postMessage: jest.fn((message) => port.posted.push(message)),
+      postMessage: jest.fn((message) => {
+        port.posted.push(message);
+        started();
+      }),
       disconnect: jest.fn(() => disconnectListeners.forEach((listener) => listener())),
       onMessage: { addListener: (listener) => messageListeners.push(listener) },
       onDisconnect: { addListener: (listener) => disconnectListeners.push(listener) },
@@ -925,12 +1087,14 @@ describe('local Tutor stream — real Port lifecycle', () => {
     return port;
   }
 
-  async function settlePortSetup() {
-    for (let i = 0; i < 8; i++) await Promise.resolve();
+  async function settlePortSetup(port, pending) {
+    await Promise.race([port.ready, pending]);
   }
 
   beforeEach(() => {
     originalConnect = global.chrome.runtime.connect;
+    originalSendMessage = global.chrome.runtime.sendMessage;
+    global.chrome.runtime.sendMessage = jest.fn(async () => ({ engines: { local: { permission: 'granted' } } }));
     global.chrome.storage = {
       local: {
         get: jest.fn(async (keys) => {
@@ -943,6 +1107,7 @@ describe('local Tutor stream — real Port lifecycle', () => {
 
   afterEach(() => {
     global.chrome.runtime.connect = originalConnect;
+    global.chrome.runtime.sendMessage = originalSendMessage;
     delete global.chrome.storage;
     jest.useRealTimers();
   });
@@ -954,7 +1119,7 @@ describe('local Tutor stream — real Port lifecycle', () => {
     const t = new SkilljarTranslator();
 
     const pending = t.chatStream('Explain tokens', 'ko', 'Lesson context', onChunk);
-    await settlePortSetup();
+    await settlePortSetup(port, pending);
 
     expect(global.chrome.runtime.connect).toHaveBeenCalledWith({ name: 'sb-local-chat' });
     expect(port.posted).toHaveLength(1);
@@ -982,7 +1147,7 @@ describe('local Tutor stream — real Port lifecycle', () => {
     const t = new SkilljarTranslator();
 
     const pending = t.refineText('Polish this block', { engine: 'local' });
-    await settlePortSetup();
+    await settlePortSetup(port, pending);
     port.emitMessage({ type: 'chunk', delta: 'Polished' });
     port.emitMessage({ type: 'done' });
 
@@ -1019,7 +1184,7 @@ describe('local Tutor stream — real Port lifecycle', () => {
 
     const pending = t._localChatStream('hello', jest.fn(), { signal: controller.signal });
     const rejection = expect(pending).rejects.toMatchObject({ name: 'AbortError' });
-    await settlePortSetup();
+    await settlePortSetup(port, pending);
     controller.abort();
 
     await rejection;
@@ -1035,7 +1200,7 @@ describe('local Tutor stream — real Port lifecycle', () => {
 
     const firstTokenPending = t._localChatStream('cold start', jest.fn());
     const firstTokenRejection = expect(firstTokenPending).rejects.toThrow('Local AI stream timed out');
-    await settlePortSetup();
+    await settlePortSetup(port, firstTokenPending);
     await jest.advanceTimersByTimeAsync(240_000);
     await firstTokenRejection;
     expect(port.disconnect).toHaveBeenCalledTimes(1);
@@ -1045,7 +1210,7 @@ describe('local Tutor stream — real Port lifecycle', () => {
     global.chrome.runtime.connect = jest.fn(() => streamingPort);
     const interTokenPending = t._localChatStream('mid stream', jest.fn());
     const interTokenRejection = expect(interTokenPending).rejects.toThrow('Local AI stream timed out');
-    await settlePortSetup();
+    await settlePortSetup(streamingPort, interTokenPending);
     streamingPort.emitMessage({ type: 'chunk', delta: 'first' });
     await jest.advanceTimersByTimeAsync(60_000);
     await interTokenRejection;

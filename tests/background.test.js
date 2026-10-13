@@ -47,7 +47,7 @@ const fns = new Function(
     registerAlarms, _gtFetchDedup, _inflightGT, _gtKey,
     _isPuterBrokerPort, _isAllowedCloudClient, _registerCloudBroker, _registerCloudClient,
     _cloudBrokers, _cloudClients, _cloudActive,
-    _isTrustedTutorOrigin, _isLocalChatPort, _isLocalRefinementPort,
+    _isTrustedTutorOrigin, _isLocalChatPort, _isLocalRefinementPort, _readEngineEnvironment,
   };
 `,
 )(
@@ -57,6 +57,7 @@ const fns = new Function(
 
 const {
   _isTrustedTutorOrigin,
+  _readEngineEnvironment,
   gtLangCode,
   parseGTResponse,
   _rateLimiter,
@@ -77,6 +78,36 @@ const {
 } = fns;
 
 // ── Tests ──────────────────────────────────────────────────────
+
+describe('engine environment inspection', () => {
+  test('uses the configured endpoint grant and keeps local refinement host policy separate', async () => {
+    const previousLocal = chrome.storage.local;
+    const previousPermissions = chrome.permissions;
+    const previousFetch = global.fetch;
+    chrome.storage.local = { get: async () => ({ sb_local_base: 'http://127.0.0.1:8080/v1' }) };
+    chrome.permissions = { contains: jest.fn(async () => true) };
+    global.fetch = jest.fn();
+    try {
+      const sender = { url: 'https://claude.com/resources/tutorials/example' };
+      const refinement = await _readEngineEnvironment('refinement', sender);
+      expect(refinement.engines.local).toEqual({ allowed: true, permission: 'granted' });
+      expect(refinement.engines.cloud.allowed).toBe(false);
+      expect(chrome.permissions.contains).toHaveBeenCalledWith({ origins: ['http://127.0.0.1/*'] });
+      expect((await _readEngineEnvironment('explanation', sender)).engines.local.allowed).toBe(false);
+      expect(global.fetch).not.toHaveBeenCalled();
+      chrome.permissions.contains.mockResolvedValue(false);
+      expect((await _readEngineEnvironment('refinement', sender)).engines.local.permission).toBe('required');
+      chrome.permissions.contains.mockRejectedValue(new Error('restricted'));
+      expect((await _readEngineEnvironment('refinement', sender)).engines.local.permission).toBe('unknown');
+      chrome.storage.local.get = async () => ({ sb_local_base: 'https://external.example/v1' });
+      expect((await _readEngineEnvironment('refinement', sender)).engines.local.setup).toBe('required');
+    } finally {
+      chrome.storage.local = previousLocal;
+      chrome.permissions = previousPermissions;
+      global.fetch = previousFetch;
+    }
+  });
+});
 
 describe('install preferences', () => {
   test('seeds a new profile but preserves preferences on repeated installation', async () => {

@@ -118,6 +118,7 @@
  * @property {(text: string) => boolean} isLikelyEnglish
  * @property {(newLang: string, opts?: { onDone?: () => void }) => Promise<void>} switchLanguage
  * @property {() => { url: string; title: string; lang: string; lessonText?: string }} getPageContext
+ * @property {(task: string) => Promise<object>} getEngineMatches — capability results for the current target language
  * @property {?(el: Element, newText: string) => boolean} safeReplaceText
  * @property {?() => void} updateLangClass
  * @property {() => boolean} detectExamPage

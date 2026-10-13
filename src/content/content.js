@@ -396,6 +396,7 @@
     switchLanguage,
     refreshTranslation,
     getPageContext,
+    getEngineMatches: (task) => translator.getEngineMatches({ task, targetLang: currentLang }),
     // Helpers consumed by gt-queue.js / banners / route-change handler:
     safeReplaceText: null, // filled below after function definition
     updateLangClass: null,
@@ -468,6 +469,7 @@
     restoreOriginal,
     toggleSidebar: () => window._sb.toggleSidebar?.(),
     getPageContext,
+    getEngineMatches: (task) => translator.getEngineMatches({ task, targetLang: currentLang }),
     isSupportedLanguage: (lang) => lang === 'en' || !!SUPPORTED_LANGUAGE_MAP[lang],
     switchLanguage,
     cleanupCache: () => {

@@ -15,6 +15,7 @@
     restoreOriginal,
     toggleSidebar,
     getPageContext,
+    getEngineMatches,
     isSupportedLanguage,
     switchLanguage,
     cleanupCache,
@@ -65,6 +66,16 @@
         case 'getPageContext':
           sendResponse({ context: getPageContext?.() });
           return false;
+
+        case 'getEngineMatches':
+          if (!getEngineMatches || !isReady?.()) {
+            sendResponse({ success: false, error: 'Engine matching is not ready' });
+            return false;
+          }
+          getEngineMatches(request.task)
+            .then((match) => sendResponse({ success: true, match }))
+            .catch((err) => sendResponse({ success: false, error: err.message }));
+          return true;
 
         case 'setLanguage': {
           const newLang = request.language;

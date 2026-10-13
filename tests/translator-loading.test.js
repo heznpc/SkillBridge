@@ -13,6 +13,7 @@ describe('translator classic-script loading', () => {
       'src/lib/runtime-contracts.js',
       'src/lib/dictionary-store.js',
       'src/lib/engine-adapters.js',
+      'src/lib/engine-matcher.js',
       'src/lib/translator.js',
     ]);
     const sendMessage = jest.fn(async () => ({ ok: true, translated: 'Bonjour' }));

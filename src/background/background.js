@@ -360,6 +360,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
 
+  if (msg.type === 'GET_ENGINE_ENVIRONMENT') {
+    _readEngineEnvironment(msg.task, sender)
+      .then(sendResponse)
+      .catch(() => sendResponse({ engines: {} }));
+    return true;
+  }
+
   if (msg?.type === 'GOOGLE_TRANSLATE' || msg?.type === 'GOOGLE_TRANSLATE_BATCH') {
     const validated = globalThis.SB_RUNTIME_CONTRACTS.translationRequest(msg);
     if (!validated) {
@@ -805,6 +812,29 @@ async function _checkLocalEngine(baseUrl) {
   } catch (err) {
     return { ok: false, status: 'unreachable', error: err.message };
   }
+}
+
+/** Inspect existing grants/configuration only; never fetch, prompt or load a model. */
+async function _readEngineEnvironment(task, sender) {
+  const url = sender.url || sender.tab?.url || '';
+  const trusted = _isTrustedTutorOrigin(url);
+  const allowedLocal = task === 'refinement' ? _isLocalRefinementOrigin(url) : trusted;
+  const engines = { cloud: { allowed: trusted }, local: { allowed: allowedLocal } };
+  try {
+    const { sb_local_base } = await chrome.storage.local.get('sb_local_base');
+    const base = _allowedLocalBase(sb_local_base);
+    if (!base) {
+      engines.local.setup = 'required';
+      return { engines };
+    }
+    const origin = `${new URL(base).origin.replace(/:\d+$/, '')}/*`;
+    const granted = await chrome.permissions.contains({ origins: [origin] });
+    engines.local.permission = granted ? 'granted' : 'required';
+  } catch {
+    // Missing API or managed-browser restrictions are not a verified grant.
+    engines.local.permission = 'unknown';
+  }
+  return { engines };
 }
 
 /**

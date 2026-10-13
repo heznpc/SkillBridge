@@ -73,6 +73,8 @@
 
   // The existing Port owners retain cancellation, reconnect and watchdog state.
   // These adapters pass request options through without choosing another engine.
+  // Stream transports call options.assertCurrent, when present, after async
+  // setup/reconnect and immediately before sending the request to their model.
   function createLocalAdapter({ stream }) {
     return { stream: ({ prompt, onChunk, options = {} }) => stream(prompt, onChunk, options) };
   }

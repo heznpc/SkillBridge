@@ -44,6 +44,17 @@ async function settlePromises() {
 }
 
 describe('translate messages', () => {
+  test('engine matching exposes request-owned results without starting translation', async () => {
+    const match = { request: { task: 'explanation', targetLang: 'fr' }, candidates: [], stale: false };
+    const { router, actions } = routerHarness({ getEngineMatches: jest.fn(async () => match) });
+    const sendResponse = jest.fn();
+    expect(router.handleMessage({ action: 'getEngineMatches', task: 'explanation' }, {}, sendResponse)).toBe(true);
+    await settlePromises();
+    expect(actions.getEngineMatches).toHaveBeenCalledWith('explanation');
+    expect(sendResponse).toHaveBeenCalledWith({ success: true, match });
+    expect(actions.translatePage).not.toHaveBeenCalled();
+  });
+
   test('a ready translation keeps the channel open and reports asynchronous success', async () => {
     const { router, actions } = routerHarness();
     const sendResponse = jest.fn();

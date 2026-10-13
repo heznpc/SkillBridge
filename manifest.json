@@ -49,6 +49,7 @@
         "src/lib/runtime-contracts.js",
         "src/lib/dictionary-store.js",
         "src/lib/engine-adapters.js",
+        "src/lib/engine-matcher.js",
         "src/lib/translator.js",
         "src/lib/youtube-subtitles.js",
         "src/lib/protected-terms.js",
