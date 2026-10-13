@@ -339,6 +339,7 @@ describe('SkilljarTranslator', () => {
 
   describe('staticLookup', () => {
     beforeEach(() => {
+      translator._staticLanguage = 'ko';
       translator.staticDict = {
         Hello: '안녕하세요',
         'prompt engineering': '프롬프트 엔지니어링',
@@ -362,6 +363,12 @@ describe('SkilljarTranslator', () => {
 
     test('exact match works', () => {
       expect(translator.staticLookup('Hello')).toBe('안녕하세요');
+    });
+
+    test('an explicit language cannot read another language dictionary', () => {
+      expect(translator.staticLookup('Hello', 'ko')).toBe('안녕하세요');
+      expect(translator.staticLookup('Hello', 'nl')).toBeNull();
+      expect(translator.staticLookup('Hello', 'en')).toBeNull();
     });
 
     test('trims whitespace before lookup', () => {
@@ -397,6 +404,20 @@ describe('SkilljarTranslator', () => {
     let originalFetch;
     let originalGetURL;
     let warnSpy;
+
+    function deferred() {
+      let resolve;
+      let reject;
+      const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+      return { promise, resolve, reject };
+    }
+
+    function response(hello, term) {
+      return { ok: true, json: async () => ({ core: { Hello: hello }, _protected: { Claude: [term] } }) };
+    }
 
     beforeEach(() => {
       originalFetch = global.fetch;
@@ -451,6 +472,96 @@ describe('SkilljarTranslator', () => {
       expect(translator.getProtectedTerms()).toEqual({});
       expect(translator.staticLookup('HELLO')).toBeNull();
     });
+
+    test('coalesces concurrent requests for one language into one packaged-file read', async () => {
+      global.fetch = jest.fn(async () => response('안녕하세요', '클로드'));
+      await Promise.all([translator.loadStaticTranslations('ko'), translator.loadStaticTranslations('ko')]);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(translator.staticLookup('Hello', 'ko')).toBe('안녕하세요');
+      expect(Object.isFrozen(translator.staticDict)).toBe(true);
+      expect(Object.isFrozen(translator.getProtectedTerms('ko').Claude)).toBe(true);
+    });
+
+    test('a late previous-language success cannot replace the selected snapshot or protected terms', async () => {
+      const korean = deferred();
+      const dutch = deferred();
+      global.fetch = jest.fn((url) => (url.includes('/ko.') ? korean.promise : dutch.promise));
+      const oldLoad = translator.loadStaticTranslations('ko');
+      const selectedLoad = translator.loadStaticTranslations('nl');
+      dutch.resolve(response('Hallo', 'oude vorm'));
+      await selectedLoad;
+      const selectedTerms = translator.getProtectedTerms('nl');
+      korean.resolve(response('안녕하세요', '클로드'));
+      await oldLoad;
+      expect(translator.staticLookup('Hello', 'nl')).toBe('Hallo');
+      expect(translator.staticLookup('Hello', 'ko')).toBeNull();
+      expect(translator.getProtectedTerms('nl')).toBe(selectedTerms);
+      expect(translator.getProtectedTerms('ko')).toEqual({});
+    });
+
+    test.each(['rejection', 'missing file'])(
+      'a late previous-language %s cannot clear the selected snapshot',
+      async (failure) => {
+        const korean = deferred();
+        global.fetch = jest.fn((url) =>
+          url.includes('/ko.') ? korean.promise : Promise.resolve(response('Hallo', 'vorm')),
+        );
+        const oldLoad = translator.loadStaticTranslations('ko');
+        await translator.loadStaticTranslations('nl');
+        if (failure === 'rejection') korean.reject(new Error('old request failed'));
+        else korean.resolve({ ok: false });
+        await oldLoad;
+        expect(translator.staticLookup('Hello', 'nl')).toBe('Hallo');
+        expect(translator.getProtectedTerms('nl')).toEqual({ Claude: ['vorm'] });
+      },
+    );
+
+    test('switching languages clears the previous dictionary before the new request settles', async () => {
+      global.fetch = jest.fn(async () => response('안녕하세요', '클로드'));
+      await translator.loadStaticTranslations('ko');
+      const dutch = deferred();
+      global.fetch = jest.fn(() => dutch.promise);
+      const pending = translator.loadStaticTranslations('nl');
+      expect(translator.staticLookup('Hello')).toBeNull();
+      expect(translator.getProtectedTerms()).toEqual({});
+      dutch.resolve(response('Hallo', 'vorm'));
+      await pending;
+      expect(translator.staticLookup('Hello', 'nl')).toBe('Hallo');
+    });
+
+    test.each(['success', 'failure'])('English restoration invalidates pending dictionary %s', async (outcome) => {
+      const korean = deferred();
+      global.fetch = jest.fn(() => korean.promise);
+      const pending = translator.loadStaticTranslations('ko');
+      translator.invalidateStaticTranslations('en');
+      if (outcome === 'success') korean.resolve(response('안녕하세요', '클로드'));
+      else korean.reject(new Error('old request failed'));
+      await pending;
+      expect(translator.staticLookup('Hello')).toBeNull();
+      expect(translator.getProtectedTerms()).toEqual({});
+    });
+
+    test('loading English invalidates pending work without requesting an English dictionary', async () => {
+      global.fetch = jest.fn();
+      await translator.loadStaticTranslations('en');
+      expect(global.fetch).not.toHaveBeenCalled();
+      expect(translator.staticDict).toEqual({});
+    });
+
+    test('returning to a still-loading language can reuse its request without allowing the middle language to publish', async () => {
+      const korean = deferred();
+      const dutch = deferred();
+      global.fetch = jest.fn((url) => (url.includes('/ko.') ? korean.promise : dutch.promise));
+      const first = translator.loadStaticTranslations('ko');
+      const middle = translator.loadStaticTranslations('nl');
+      const selected = translator.loadStaticTranslations('ko');
+      korean.resolve(response('안녕하세요', '클로드'));
+      await Promise.all([first, selected]);
+      dutch.resolve(response('Hallo', 'vorm'));
+      await middle;
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(translator.staticLookup('Hello', 'ko')).toBe('안녕하세요');
+    });
   });
 
   describe('getProtectedTerms', () => {
@@ -499,6 +610,7 @@ describe('SkilljarTranslator', () => {
     });
 
     test('restores protected terms on static dictionary hits', async () => {
+      translator._staticLanguage = 'ko';
       translator.staticDict = {
         'This is a Claude prompt example': '클로드 프롬프트 예시',
       };
@@ -523,8 +635,72 @@ describe('SkilljarTranslator', () => {
         'This is a Claude prompt example',
         'Claude 프롬프트 예시',
         'ko',
+        { restoreProtectedTerms: expect.any(Function) },
       );
       expect(translator.queueGeminiVerify).toBeUndefined();
+    });
+
+    test('an asynchronous translation retains its original term restorer after a language switch', async () => {
+      let currentPrefix = 'ko:';
+      global.window._protectedTerms = {
+        captureRestorer: () => {
+          const prefix = currentPrefix;
+          return (text) => `${prefix}${text}`;
+        },
+      };
+      let finish;
+      translator.cachedLookup = jest.fn(async () => null);
+      translator.googleTranslate = jest.fn(() => new Promise((resolve) => (finish = resolve)));
+      translator._cacheTranslation = jest.fn(async () => undefined);
+      const pending = translator.translate('Hello', 'ko');
+      await Promise.resolve();
+      currentPrefix = 'nl:';
+      translator.invalidateStaticTranslations('nl');
+      finish('translated');
+      await expect(pending).resolves.toEqual({ text: 'ko:translated', source: 'google' });
+      expect(translator._cacheTranslation.mock.calls[0][3].restoreProtectedTerms('text')).toBe('ko:text');
+    });
+
+    test('a cache wait retains the request masker without changing the active language map', async () => {
+      let activeMapLanguage = 'ko';
+      const buildProtectedTermsMap = jest.fn((language) => (activeMapLanguage = language));
+      global.window._protectedTerms = {
+        buildProtectedTermsMap,
+        captureMasker: () => {
+          const language = activeMapLanguage;
+          return (text) => ({ text: `${language}:${text}`, tokens: [text] });
+        },
+        unmaskProtectedTerms: (text) => text,
+        captureRestorer: () => {
+          const language = activeMapLanguage;
+          return (text) => `${language}:${text}`;
+        },
+      };
+      let releaseCache;
+      const originalSendMessage = global.chrome.runtime.sendMessage;
+      global.chrome.runtime.sendMessage = jest.fn(async () => ({ ok: true, translated: 'result' }));
+      translator._staticLanguage = 'ko';
+      translator.cachedLookup = jest.fn(() => new Promise((resolve) => (releaseCache = resolve)));
+      translator._cacheTranslation = jest.fn(async () => undefined);
+      try {
+        const pending = translator.translate('Hello', 'ko');
+        translator.invalidateStaticTranslations('nl');
+        buildProtectedTermsMap('nl');
+        releaseCache(null);
+        await expect(pending).resolves.toEqual({ text: 'ko:result', source: 'google' });
+        expect(global.chrome.runtime.sendMessage).toHaveBeenCalledWith(
+          expect.objectContaining({ text: 'ko:Hello', targetLang: 'ko' }),
+        );
+        expect(activeMapLanguage).toBe('nl');
+        expect(buildProtectedTermsMap).toHaveBeenCalledTimes(2);
+
+        await translator.googleTranslate('old request', 'ko');
+        expect(activeMapLanguage).toBe('nl');
+        expect(buildProtectedTermsMap).toHaveBeenCalledTimes(2);
+      } finally {
+        if (originalSendMessage === undefined) delete global.chrome.runtime.sendMessage;
+        else global.chrome.runtime.sendMessage = originalSendMessage;
+      }
     });
   });
 

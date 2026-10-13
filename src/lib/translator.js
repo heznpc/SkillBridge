@@ -19,6 +19,15 @@ class SkilljarTranslator {
     this._lowerDict = {};
     /** @type {Record<string, string[]>} Protected terms loaded from JSON */
     this._protectedTerms = {};
+    this._staticLanguage = null;
+    this._staticGeneration = 0;
+    this._dictionarySnapshot = globalThis.SB_DICTIONARY_STORE.emptySnapshot();
+    this._dictionaryStore = new globalThis.SB_DICTIONARY_STORE.DictionaryStore({
+      load: async (language) => {
+        const response = await fetch(chrome.runtime.getURL(`src/data/${language}.json`));
+        return response.ok ? response.json() : null;
+      },
+    });
     /** @type {boolean} True once the optional AI Tutor bridge is ready */
     this.isReady = false;
     /** @type {IDBDatabase|null} IndexedDB handle for the translation cache */
@@ -39,6 +48,19 @@ class SkilljarTranslator {
     this._cacheInitPromise = null;
     /** @type {boolean|null} Last reported Google Translate transport state. */
     this._translationAvailable = null;
+    const adapters = globalThis.SB_ENGINE_ADAPTERS;
+    this._googleAdapter = adapters.createGoogleAdapter({
+      sendMessage: (request) => chrome.runtime.sendMessage(request),
+      getContracts: () => globalThis.SB_RUNTIME_CONTRACTS,
+      getProtectedTerms: (targetLang) => this._captureProtectedTermsRuntime(targetLang),
+      reportAvailability: (available, kind) => this._reportTranslationAvailability(available, kind),
+    });
+    this._localAdapter = adapters.createLocalAdapter({
+      stream: (prompt, onChunk, options) => this._localChatStream(prompt, onChunk, options),
+    });
+    this._cloudAdapter = adapters.createCloudAdapter({
+      stream: (prompt, targetLang, onChunk, options) => this._cloudChatStream(prompt, targetLang, onChunk, options),
+    });
   }
 
   /**
@@ -177,9 +199,21 @@ class SkilljarTranslator {
   // ==================== STATIC DICTIONARY ====================
 
   _clearStaticTranslations() {
-    this.staticDict = {};
-    this._lowerDict = {};
-    this._protectedTerms = {};
+    this.invalidateStaticTranslations();
+  }
+
+  _applyStaticSnapshot(snapshot) {
+    this._dictionarySnapshot = snapshot;
+    this.staticDict = snapshot.entries;
+    this._lowerDict = snapshot.lowerEntries;
+    this._protectedTerms = snapshot.protectedTerms;
+  }
+
+  /** Discard the active dictionary and prevent pending loads from publishing it. */
+  invalidateStaticTranslations(lang = null) {
+    this._staticGeneration += 1;
+    this._staticLanguage = lang;
+    this._applyStaticSnapshot(globalThis.SB_DICTIONARY_STORE.emptySnapshot(lang));
   }
 
   /**
@@ -189,38 +223,20 @@ class SkilljarTranslator {
    * @returns {Promise<void>}
    */
   async loadStaticTranslations(lang) {
+    if (lang === 'en') {
+      this.invalidateStaticTranslations(lang);
+      return;
+    }
+    if (this._staticLanguage !== lang) this.invalidateStaticTranslations(lang);
+    const generation = ++this._staticGeneration;
     try {
-      const url = chrome.runtime.getURL(`src/data/${lang}.json`);
-      const resp = await fetch(url);
-      if (!resp.ok) {
-        this._clearStaticTranslations();
-        return;
-      }
-      const data = await resp.json();
-
-      const flat = {};
-      this._protectedTerms = {};
-      for (const [section, entries] of Object.entries(data)) {
-        if (section === '_meta') continue;
-        if (section === '_protected') {
-          // Protected terms: { "correct English": ["wrong Korean form 1", ...] }
-          Object.assign(this._protectedTerms, entries);
-          continue;
-        }
-        if (typeof entries === 'object') {
-          for (const [key, value] of Object.entries(entries)) {
-            flat[key] = value;
-          }
-        }
-      }
-      this.staticDict = flat;
-      this._lowerDict = {};
-      for (const [key, value] of Object.entries(flat)) {
-        this._lowerDict[key.toLowerCase()] = value;
-      }
+      const snapshot = await this._dictionaryStore.load(lang);
+      if (generation !== this._staticGeneration || lang !== this._staticLanguage) return;
+      this._applyStaticSnapshot(snapshot);
     } catch (err) {
+      if (generation !== this._staticGeneration || lang !== this._staticLanguage) return;
       console.warn('[SkillBridge] Failed to load static translations:', err);
-      this._clearStaticTranslations();
+      this._applyStaticSnapshot(globalThis.SB_DICTIONARY_STORE.emptySnapshot(lang));
     }
   }
 
@@ -236,11 +252,11 @@ class SkilljarTranslator {
       .replace(/\u00A0/g, ' ');
   }
 
-  /**
-   * Look up text in static dictionary.
-   * Tries: exact → typography-normalized → trimmed punctuation → normalized whitespace → case-insensitive
-   */
-  getProtectedTerms() {
+  /** Return the active snapshot's terms, or an empty map for another language. */
+  getProtectedTerms(targetLang) {
+    if (targetLang !== undefined && targetLang !== this._staticLanguage) {
+      return globalThis.SB_DICTIONARY_STORE.emptySnapshot().protectedTerms;
+    }
     return this._protectedTerms || {};
   }
 
@@ -255,8 +271,52 @@ class SkilljarTranslator {
     }
   }
 
-  /** @param {string} text @returns {string|null} */
-  staticLookup(text) {
+  _getProtectedTermsRuntime(targetLang) {
+    // A delayed caller for an inactive language must not replace the map used
+    // by the current page's DOM reconciliation and protected-term restoration.
+    if (this._staticLanguage !== null && this._staticLanguage !== targetLang) return null;
+    const runtime = typeof window !== 'undefined' ? window._protectedTerms : null;
+    runtime?.buildProtectedTermsMap?.(targetLang, this);
+    return runtime;
+  }
+
+  _captureProtectedTermsRuntime(targetLang) {
+    try {
+      const runtime = this._getProtectedTermsRuntime(targetLang);
+      if (!runtime) return null;
+      return {
+        maskProtectedTerms: runtime.captureMasker?.() || runtime.maskProtectedTerms,
+        unmaskProtectedTerms: runtime.unmaskProtectedTerms,
+        restoreProtectedTerms: runtime.captureRestorer?.() || runtime.restoreProtectedTerms,
+      };
+    } catch (err) {
+      console.warn('[SkillBridge] Protected-term restoration setup failed:', err);
+      return null;
+    }
+  }
+
+  _captureProtectedTermRestorer(targetLang, runtime = this._captureProtectedTermsRuntime(targetLang)) {
+    const restore = runtime?.restoreProtectedTerms;
+    return (text) => {
+      if (typeof restore !== 'function') return text;
+      try {
+        return restore(text);
+      } catch (err) {
+        console.warn('[SkillBridge] Protected-term restoration failed:', err);
+        return text;
+      }
+    };
+  }
+
+  /**
+   * Lookup order: exact, typography, punctuation, whitespace, lowercase.
+   * Omitting the language preserves the active-dictionary API for older callers.
+   * @param {string} text
+   * @param {string} [targetLang]
+   * @returns {string|null}
+   */
+  staticLookup(text, targetLang) {
+    if (targetLang !== undefined && targetLang !== this._staticLanguage) return null;
     if (!text) return null;
     const trimmed = text.trim();
     if (!trimmed) return null;
@@ -359,10 +419,12 @@ class SkilljarTranslator {
    * Look up a cached translation.
    * @param {string} text — original English text
    * @param {string} targetLang — ISO 639-1
+   * @param {{restoreProtectedTerms?: (text: string) => string}} [opts]
    * @returns {Promise<string|null>}
    */
-  async cachedLookup(text, targetLang) {
+  async cachedLookup(text, targetLang, opts = {}) {
     if (!this._db) return null;
+    const restore = opts.restoreProtectedTerms || this._captureProtectedTermRestorer(targetLang);
     return new Promise((resolve) => {
       try {
         const tx = this._db.transaction('translations', 'readonly');
@@ -388,7 +450,7 @@ class SkilljarTranslator {
           }
           // Markup entries were stored without prose restoration, and the HTML
           // path restores their text nodes after reconciliation instead.
-          resolve(entry.html ? entry.translation : this._restoreProtectedTerms(entry.translation));
+          resolve(entry.html ? entry.translation : restore(entry.translation));
         };
         req.onerror = () => resolve(null);
       } catch (e) {
@@ -411,7 +473,7 @@ class SkilljarTranslator {
    * @param {string} text — cache key (source text, or a namespaced HTML key)
    * @param {string} translation
    * @param {string} targetLang
-   * @param {{html?: boolean}} [opts] — `html: true` for structure-preserving
+   * @param {{html?: boolean, restoreProtectedTerms?: (text: string) => string}} [opts] — `html: true` for structure-preserving
    *   blocks, whose value is markup rather than prose. See _isValidTranslation.
    */
   _cacheTranslation(text, translation, targetLang, opts = {}) {
@@ -419,7 +481,8 @@ class SkilljarTranslator {
     // Blunt string restoration is for prose. On markup it would also rewrite
     // attribute values, and the HTML path already restores protected terms in
     // TEXT NODES only, after reconciliation.
-    const safeTranslation = opts.html ? translation : this._restoreProtectedTerms(translation);
+    const restore = opts.html ? null : opts.restoreProtectedTerms || this._captureProtectedTermRestorer(targetLang);
+    const safeTranslation = opts.html ? translation : restore(translation);
     if (!this._isValidTranslation(safeTranslation, text, targetLang, opts)) {
       console.warn('[SkillBridge] Skipping cache: translation failed shape check');
       return Promise.resolve();
@@ -503,85 +566,22 @@ class SkilljarTranslator {
    * Fast Google Translate via background service worker.
    * @param {string} text — English source text
    * @param {string} targetLang — ISO 639-1
+   * @param {{protectedTerms?: object|null}} [options] — optional request-owned term runtime
    * @returns {Promise<string|null>} translated text, or null on failure
    */
-  async googleTranslate(text, targetLang) {
-    try {
-      // Mask brand/technical terms so GT never sees them (protected-terms.js
-      // maskProtectedTerms). Unmasking fails closed, in which case we return
-      // null and the caller keeps the English source — strictly better than
-      // rendering a placeholder or a mangled brand name.
-      const pt = typeof window !== 'undefined' ? window._protectedTerms : null;
-      const masked = pt?.maskProtectedTerms ? pt.maskProtectedTerms(text.trim()) : null;
-      const contracts = globalThis.SB_RUNTIME_CONTRACTS;
-      const response = await chrome.runtime.sendMessage(
-        contracts.singleRequest(masked?.tokens.length ? masked.text : text.trim(), targetLang),
-      );
-      const translated = contracts.singleResponse(response);
-      if (translated) {
-        this._reportTranslationAvailability(true, 'single');
-        if (!masked?.tokens.length) return translated;
-        try {
-          return pt.unmaskProtectedTerms(translated, masked);
-        } catch (err) {
-          console.warn('[SkillBridge] Protected-term unmask failed:', err.message);
-          return null;
-        }
-      }
-      this._reportTranslationAvailability(false, 'single');
-      return null;
-    } catch (err) {
-      console.warn('[SkillBridge] Google Translate failed:', err.message);
-      this._reportTranslationAvailability(false, 'single');
-      return null;
-    }
+  async googleTranslate(text, targetLang, options = {}) {
+    return this._googleAdapter.translate(text, targetLang, options);
   }
 
   /**
    * Batch Google Translate for multiple texts at once.
    * @param {string[]} texts — English source texts
    * @param {string} targetLang — ISO 639-1
+   * @param {{protectedTerms?: object|null}} [options] — optional request-owned term runtime
    * @returns {Promise<string[]>} translated texts (originals on failure)
    */
-  async googleTranslateBatch(texts, targetLang) {
-    try {
-      // Per-text masking (see googleTranslate). Token indices restart per
-      // string and the batch response is positional, so entry i unmasks with
-      // masks[i].
-      const pt = typeof window !== 'undefined' ? window._protectedTerms : null;
-      const trimmed = texts.map((t) => t.trim());
-      const masks = pt?.maskProtectedTerms ? trimmed.map((t) => pt.maskProtectedTerms(t)) : null;
-      const contracts = globalThis.SB_RUNTIME_CONTRACTS;
-      const response = await chrome.runtime.sendMessage(
-        contracts.batchRequest(
-          masks ? masks.map((m, i) => (m.tokens.length ? m.text : trimmed[i])) : trimmed,
-          targetLang,
-        ),
-      );
-      const translations = contracts.batchResponse(response, texts.length);
-      if (translations) {
-        this._reportTranslationAvailability(true, 'batch');
-        if (!masks) return translations;
-        return translations.map((translated, i) => {
-          if (!masks[i].tokens.length) return translated;
-          // Unmask failure → hand back the source. applyGoogleTranslations
-          // skips entries equal to their source, so the block stays English
-          // instead of rendering a placeholder or a mistranslated brand.
-          try {
-            return pt.unmaskProtectedTerms(translated, masks[i]) ?? texts[i];
-          } catch (err) {
-            console.warn('[SkillBridge] Protected-term batch unmask failed:', err.message);
-            return texts[i];
-          }
-        });
-      }
-      this._reportTranslationAvailability(false, 'batch');
-      return texts; // return originals on failure
-    } catch (err) {
-      console.warn('[SkillBridge] Google Translate batch failed:', err.message);
-      this._reportTranslationAvailability(false, 'batch');
-      return texts;
-    }
+  async googleTranslateBatch(texts, targetLang, options = {}) {
+    return this._googleAdapter.translateBatch(texts, targetLang, options);
   }
 
   // ==================== MAIN TRANSLATE API ====================
@@ -595,20 +595,22 @@ class SkilljarTranslator {
   async translate(text, targetLang) {
     if (!text || !text.trim()) return { text, source: 'original' };
     if (targetLang === 'en') return { text, source: 'original' };
+    const protectedTerms = this._captureProtectedTermsRuntime(targetLang);
+    const restore = this._captureProtectedTermRestorer(targetLang, protectedTerms);
 
     // 1. Static dictionary (instant)
-    const staticResult = this.staticLookup(text);
-    if (staticResult) return { text: this._restoreProtectedTerms(staticResult), source: 'static' };
+    const staticResult = this.staticLookup(text, targetLang);
+    if (staticResult) return { text: restore(staticResult), source: 'static' };
 
     // 2. IndexedDB translation cache (instant)
-    const cached = await this.cachedLookup(text, targetLang);
+    const cached = await this.cachedLookup(text, targetLang, { restoreProtectedTerms: restore });
     if (cached) return { text: cached, source: 'cache' };
 
     // 3. Google Translate (fast)
-    const gtResult = await this.googleTranslate(text, targetLang);
+    const gtResult = await this.googleTranslate(text, targetLang, { protectedTerms });
     if (gtResult) {
-      const safeGtResult = this._restoreProtectedTerms(gtResult);
-      await this._cacheTranslation(text, safeGtResult, targetLang);
+      const safeGtResult = restore(gtResult);
+      await this._cacheTranslation(text, safeGtResult, targetLang, { restoreProtectedTerms: restore });
       return { text: safeGtResult, source: 'google' };
     }
 
@@ -913,9 +915,16 @@ User: ${userMessage}`;
     if (engine !== 'cloud' && engine !== 'local') {
       throw new Error(`refineText: refusing an unrecognised engine "${engine}"`);
     }
-    if (engine === 'local') return this._localChatStream(prompt, null, { signal, purpose: 'refinement' });
+    if (engine === 'local') {
+      return this._localAdapter.stream({ prompt, onChunk: null, options: { signal, purpose: 'refinement' } });
+    }
     // Refinement is a copy-edit, not a conversation — see SKILLBRIDGE_MODELS.
-    return this._cloudChatStream(prompt, targetLang, null, { signal, model: SKILLBRIDGE_MODELS.REFINEMENT });
+    return this._cloudAdapter.stream({
+      prompt,
+      targetLang,
+      onChunk: null,
+      options: { signal, model: SKILLBRIDGE_MODELS.REFINEMENT },
+    });
   }
 
   async chatStream(userMessage, targetLang, courseContext = '', onChunk, opts = {}) {
@@ -934,9 +943,9 @@ User: ${userMessage}`;
       // 'off' = no tutor.
       const engine = await this._getAiEngine();
       if (engine === 'off') throw new Error('AI tutor is turned off in settings.');
-      if (engine === 'local') return this._localChatStream(prompt, onChunk, opts);
+      if (engine === 'local') return this._localAdapter.stream({ prompt, onChunk, options: opts });
 
-      return this._cloudChatStream(prompt, targetLang, onChunk, opts);
+      return this._cloudAdapter.stream({ prompt, targetLang, onChunk, options: opts });
     } catch (err) {
       // Synchronous setup failures (most importantly `!this.isReady` — the Puter
       // bridge hasn't finished its handshake) must PROPAGATE, not resolve to a

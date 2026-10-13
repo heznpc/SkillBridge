@@ -192,42 +192,70 @@ async function evalInContentWorld(context, op, arg, targetUrl = null) {
                     ariaLive: banner?.getAttribute('aria-live') || null,
                   };
                 },
-                // Deterministically reproduce the static-apply language-switch race:
-                // force the FIRST (slow) language's dictionary load to resolve AFTER
-                // the second (fast) one, then record which langs actually reach
-                // applyStaticTranslations. A stale apply (the slow lang painting over
-                // the page after the user already switched) shows up as the slow lang
-                // appearing in `appliedWith`. Patches the translator/gt ONLY for the
-                // duration of the op (restored in finally) — no production change.
+                // Hold the first dictionary response BEFORE the loader can change
+                // its state. Delaying loadStaticTranslations after it returns only
+                // exercises the paint guard and misses a stale dictionary commit.
                 rapidSwitchRace: async (arg) => {
                   const sb = window._sb;
                   const tr = sb.translator;
                   const gt = sb._gt;
                   const slowLang = arg[0];
                   const fastLang = arg[1];
-                  const origLoad = tr.loadStaticTranslations.bind(tr);
-                  const origApply = gt.applyStaticTranslations.bind(gt);
+                  const origFetch = window.fetch;
+                  const origApply = gt.applyStaticTranslations;
                   const appliedWith = [];
+                  let releaseSlow;
+                  let signalSlowStarted;
+                  const slowGate = new Promise((resolve) => {
+                    releaseSlow = resolve;
+                  });
+                  const slowStarted = new Promise((resolve) => {
+                    signalSlowStarted = resolve;
+                  });
                   gt.applyStaticTranslations = (lang) => {
                     appliedWith.push(lang);
                     return origApply(lang);
                   };
-                  tr.loadStaticTranslations = async (lang) => {
-                    const r = await origLoad(lang);
-                    if (lang === slowLang) await new Promise((res) => setTimeout(res, 400));
-                    return r;
+                  window.fetch = async (...args) => {
+                    const response = await origFetch.apply(window, args);
+                    if (String(args[0]).endsWith('/src/data/' + slowLang + '.json')) {
+                      signalSlowStarted();
+                      await slowGate;
+                    }
+                    return response;
                   };
+                  let slowSwitch;
+                  let probe;
                   try {
-                    // no await — starts the slow path; swallow rejection so a stubbed
-                    // load failure can't surface as an unhandled rejection.
-                    sb.switchLanguage(slowLang).catch(() => {});
-                    await sb.switchLanguage(fastLang); // fast path applies first
-                    await new Promise((res) => setTimeout(res, 700)); // let the slow load resolve + (bail|apply)
+                    slowSwitch = sb.switchLanguage(slowLang);
+                    slowSwitch.catch(() => {});
+                    await slowStarted;
+                    await sb.switchLanguage(fastLang);
+                    releaseSlow();
+                    await slowSwitch;
+
+                    const source = 'Introduction to Claude Cowork';
+                    probe = document.createElement('p');
+                    probe.textContent = source;
+                    document.body.append(probe);
+                    gt.processOneElement(probe, fastLang);
+                    return {
+                      appliedWith,
+                      currentLang: sb.currentLang,
+                      dictionaryText: tr.staticLookup(source, fastLang),
+                      laterText: probe.textContent,
+                    };
                   } finally {
-                    tr.loadStaticTranslations = origLoad;
+                    releaseSlow();
+                    if (slowSwitch) await slowSwitch.catch(() => {});
+                    window.fetch = origFetch;
                     gt.applyStaticTranslations = origApply;
+                    if (probe) {
+                      probe.remove();
+                      sb.originalTexts.delete(probe);
+                      gt.pruneDetachedEntries();
+                    }
                   }
-                  return { appliedWith, currentLang: sb.currentLang };
                 },
                 injectSidebar: () => {
                   window._sb.injectSidebar();

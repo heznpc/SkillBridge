@@ -484,6 +484,7 @@
       if (enabled && currentLang !== 'en') {
         window._sb.translateCodeComments?.(currentLang);
       } else {
+        sb.invalidateCodeCommentTranslations?.();
         originalComments.forEach((html, el) => {
           if (el && el.parentNode) el.innerHTML = html;
         });
@@ -544,11 +545,16 @@
       // fire-and-forget below so Tutor startup cannot hold up page rendering.
       await translator.initializeCache();
 
-      if (currentLang !== 'en') {
-        await translator.loadStaticTranslations(currentLang);
-        if (stored.autoTranslate && Object.keys(translator.staticDict).length > 0) {
-          sb._gt.applyStaticTranslations(currentLang);
-        }
+      const initialLang = currentLang;
+      const initialReady = await transitionLanguage(initialLang, { skipRestore: true, applyTranslations: false });
+      if (
+        initialReady &&
+        pageState.isCurrent(initialReady, currentLang) &&
+        initialLang !== 'en' &&
+        stored.autoTranslate &&
+        Object.keys(translator.staticDict).length > 0
+      ) {
+        sb._gt.applyStaticTranslations(initialLang);
       }
 
       // Header language <select> + dark-mode toggle anchor on Skilljar's nav
@@ -571,20 +577,16 @@
 
       isReady = true;
 
-      for (const request of messageRouter.drainPendingTranslateRequests()) {
-        if (request.action === 'translatePage') {
-          currentLang = request.language;
-          if (Object.keys(translator.staticDict).length === 0) {
-            await translator.loadStaticTranslations(request.language);
-          }
-          sb._gt.applyStaticTranslations(request.language);
-        }
-      }
+      // Only the latest pre-ready choice is relevant. Sequentially awaiting
+      // older choices could replay one after a newer live message arrives.
+      const pendingTranslations = messageRouter.drainPendingTranslateRequests();
+      const latestPendingTranslation = pendingTranslations[pendingTranslations.length - 1];
+      if (latestPendingTranslation) await translatePage(latestPendingTranslation.language);
 
       domTranslationObserver.observe();
 
       if (stored.autoTranslate && currentLang !== 'en') {
-        setTimeout(() => sb._gt.applyStaticTranslations(currentLang), SKILLBRIDGE_DELAYS.LATE_CONTENT);
+        scheduleLateTranslation();
       }
 
       translator.initialize().catch((err) => {
@@ -623,35 +625,52 @@
   // ============================================================
 
   const pageState = globalThis.SB_RUNTIME_CONTRACTS.createPageState(() => location.href);
+  const outputLocaleAttributes = new WeakMap();
+
+  async function transitionLanguage(targetLang, opts = {}) {
+    if (!translator) return false;
+    if (!opts.skipRestore) restoreOriginal({ preserveTarget: true });
+    else {
+      sb._gt?.reset?.();
+      sb.invalidateCodeCommentTranslations?.();
+      domTranslationObserver.resetPending();
+    }
+    currentLang = targetLang;
+    translator.invalidateStaticTranslations?.(targetLang);
+    const transition = pageState.begin(targetLang);
+    sb.localization.setTarget(targetLang);
+    window._sb.refreshOfflineBanner?.();
+    if (targetLang === 'en') return transition;
+    await translator.loadStaticTranslations(targetLang);
+    if (!pageState.isCurrent(transition, currentLang)) return false;
+    if (opts.applyTranslations !== false) sb._gt.applyStaticTranslations(targetLang);
+    return transition;
+  }
 
   async function translatePage(targetLang) {
-    if (!translator) return;
-    currentLang = targetLang;
-    if (targetLang === 'en') {
-      restoreOriginal();
-      return;
-    }
-    const transition = pageState.begin(targetLang);
-    // Always load the TARGET language's dictionary. The old `length === 0` guard
-    // skipped the load whenever ANY dictionary was already populated, so a popup
-    // re-translate to a different language applied the previously-loaded dict.
-    await translator.loadStaticTranslations(targetLang);
-    // Same out-of-order-load guard as switchLanguage(): a newer request may have
-    // run while we awaited; currentLang is the synchronous source of truth for the
-    // latest target, so bail rather than paint a now-stale language.
-    if (!pageState.isCurrent(transition, currentLang)) return;
-    sb._gt.applyStaticTranslations(targetLang);
+    await transitionLanguage(targetLang);
+  }
+
+  function scheduleLateTranslation() {
+    const lang = currentLang;
+    const href = location.href;
+    const generation = sb._gt?.gtGeneration;
+    setTimeout(() => {
+      if (currentLang !== lang || location.href !== href || sb._gt?.gtGeneration !== generation) return;
+      sb._gt.applyStaticTranslations(lang);
+    }, SKILLBRIDGE_DELAYS.LATE_CONTENT);
   }
 
   async function refreshTranslation() {
     if (isCertDisabled || aiGate.paused || !isReady || currentLang === 'en') return;
     const lang = currentLang;
-    restoreOriginal();
     await translatePage(lang);
   }
 
-  function restoreOriginal() {
+  function restoreOriginal(opts = {}) {
     pageState.invalidate();
+    sb.translator?.invalidateStaticTranslations?.('en');
+    sb.invalidateCodeCommentTranslations?.();
     originalTexts.forEach((html, el) => {
       if (el && el.parentNode) el.innerHTML = html;
     });
@@ -663,6 +682,7 @@
     sb._gt?.reset?.();
     domTranslationObserver.resetPending();
     currentLang = 'en';
+    if (!opts.preserveTarget) sb.localization?.setTarget('en');
     window._protectedTerms.resetProtectedTerms();
     updateLangClass('en');
     window._sb.hideTranslationProgress?.();
@@ -722,30 +742,9 @@
     const storageData = { targetLanguage: newLang, autoTranslate: newLang !== 'en', ...opts.extraStorage };
     chrome.storage.local.set(storageData);
 
-    if (!opts.skipRestore) restoreOriginal();
-    currentLang = newLang;
-    const transition = pageState.begin(newLang);
-    // Re-resolve before any dictionary or GT work: on a localized site the
-    // answer to "may we translate at all" changes with the target.
-    sb.localization.setTarget(newLang);
-    window._sb.refreshOfflineBanner?.();
-
     try {
-      if (newLang === 'en') {
-        window._sb.updateLocalizedLabels?.();
-        if (subtitleManager) subtitleManager.setLanguage('en');
-        return;
-      }
-
-      await translator.loadStaticTranslations(newLang);
-      // A newer switchLanguage() can run while we await the dictionary load
-      // (disk/cache timing resolves loads out of order). currentLang is set
-      // synchronously to the latest request, so if it no longer equals this
-      // call's target the call is stale — bail rather than paint a now-wrong
-      // language over the page. The generation check in the GT queue handles
-      // network results; this guards the static-apply path as well.
-      if (!pageState.isCurrent(transition, currentLang)) return;
-      sb._gt.applyStaticTranslations(newLang);
+      const transition = await transitionLanguage(newLang, opts);
+      if (!transition || !pageState.isCurrent(transition, currentLang)) return;
       window._sb.updateLocalizedLabels?.();
       if (subtitleManager) subtitleManager.setLanguage(newLang);
     } finally {
@@ -762,11 +761,17 @@
   // the extension's "no third-party contact / no tracking" promise.
 
   function updateLangClass(lang) {
-    // html lang (screen readers) + dir (RTL) are page-level semantics — set on
-    // the document regardless of scope.
-    document.documentElement.lang = lang || 'en';
     const rtlLangs = ['ar', 'he'];
-    document.documentElement.dir = rtlLangs.includes(lang) ? 'rtl' : 'ltr';
+    const outputLang = lang || 'en';
+    const outputDir = rtlLangs.includes(lang) ? 'rtl' : 'ltr';
+    const localizedHost = sb.hostCaps?.localizedHost === true;
+    // On localized hosts <html lang> is the site's own locale evidence. Keep
+    // it intact so DOM-settled detection cannot read our output back as input.
+    // Screen readers receive the output language on the translated roots.
+    if (!localizedHost) {
+      document.documentElement.lang = outputLang;
+      document.documentElement.dir = outputDir;
+    }
     // Apply the font/lang class to the translation target(s). On document-wide
     // hosts that's <body>; on scoped hosts (claude.com tutorials) it's the
     // lesson root(s) only, so the surrounding marketing shell keeps Anthropic's
@@ -776,6 +781,24 @@
     for (const el of targets) {
       for (const cls of [...el.classList].filter((c) => c.startsWith('si18n-lang-'))) el.classList.remove(cls);
       if (lang && lang !== 'en') el.classList.add(`si18n-lang-${lang}`);
+      if (!localizedHost) continue;
+      if (outputLang === 'en') {
+        const original = outputLocaleAttributes.get(el);
+        if (!original) continue;
+        for (const attr of ['lang', 'dir']) {
+          if (el.getAttribute(attr) !== original.output[attr]) continue;
+          if (original[attr] === null) el.removeAttribute(attr);
+          else el.setAttribute(attr, original[attr]);
+        }
+        outputLocaleAttributes.delete(el);
+      } else {
+        if (!outputLocaleAttributes.has(el)) {
+          outputLocaleAttributes.set(el, { lang: el.getAttribute('lang'), dir: el.getAttribute('dir') });
+        }
+        outputLocaleAttributes.get(el).output = { lang: outputLang, dir: outputDir };
+        el.setAttribute('lang', outputLang);
+        el.setAttribute('dir', outputDir);
+      }
     }
   }
 
@@ -954,9 +977,8 @@
   // ============================================================
   //
   // Constructed HERE, at module scope, and deliberately before init(): it
-  // captures the page's own locale, and updateLangClass() later rewrites
-  // <html lang> to the SkillBridge target. Read after that point, every page
-  // would look like it was already in the target language.
+  // captures the page's own locale. Localized hosts retain their <html lang>;
+  // updateLangClass() labels the translated roots separately.
   //
   // On hosts that do not ship their own locales the policy resolves to FULL
   // and nothing downstream changes — see academy-localization.js.
@@ -1037,7 +1059,11 @@
       window._sb._chat?.syncAssessmentAccess?.();
     },
     onExamDomSettled,
-    redetectPageLocale: () => sb.localization.onRouteChange(location),
+    redetectPageLocale: () => {
+      pageState.invalidate();
+      sb.invalidateCodeCommentTranslations?.();
+      sb.localization.onRouteChange(location);
+    },
     // The settled DOM is what the language control can be read from; the route
     // change only marks the locale unresolved.
     onLocaleDomSettled: () => sb.localization.onDomSettled?.(document, location),
@@ -1048,7 +1074,7 @@
         sb._gt.resetOfflineCoverage?.();
       }
       if (currentLang !== 'en' && translator && isReady) {
-        setTimeout(() => sb._gt.applyStaticTranslations(currentLang), SKILLBRIDGE_DELAYS.LATE_CONTENT);
+        scheduleLateTranslation();
       }
     },
     onPageHide: () => {

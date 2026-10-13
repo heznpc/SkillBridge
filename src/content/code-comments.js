@@ -14,6 +14,19 @@
     console.warn('[SkillBridge] code-comments: _sb not ready');
     return;
   }
+  let commentGeneration = 0;
+  const pendingBlocks = new Map();
+
+  function releasePending(el, request, keepOriginal = false) {
+    if (pendingBlocks.get(el) !== request) return;
+    pendingBlocks.delete(el);
+    if (!keepOriginal && sb.originalComments.get(el) === request.originalHtml) sb.originalComments.delete(el);
+  }
+
+  function invalidateCodeCommentTranslations() {
+    commentGeneration++;
+    for (const [el, request] of pendingBlocks) releasePending(el, request);
+  }
 
   /**
    * Detect programming language from code element class names.
@@ -52,7 +65,7 @@
    * @param {Element} el
    * @param {string} targetLang
    */
-  async function _translateOneCodeBlock(el, targetLang) {
+  async function _translateOneCodeBlock(el, targetLang, isCurrent) {
     const originalComments = sb.originalComments;
     const translator = sb.translator;
 
@@ -62,9 +75,11 @@
     if (!text || text.length < 10) return;
 
     const pattern = _getCommentPattern(detectCodeLanguage(el));
-    originalComments.set(el, el.innerHTML);
+    const request = { originalHtml: el.innerHTML };
+    originalComments.set(el, request.originalHtml);
+    pendingBlocks.set(el, request);
 
-    let html = el.innerHTML;
+    let html = request.originalHtml;
     let hasTranslation = false;
 
     // Collect all comment matches (line + block), then translate + splice.
@@ -101,13 +116,26 @@
     }
 
     if (replacements.length === 0) {
-      originalComments.delete(el);
+      releasePending(el, request);
       return;
     }
 
-    const translations = await Promise.all(
-      replacements.map((r) => translator.translate(r.match[1].trim(), targetLang)),
-    );
+    let translations;
+    try {
+      translations = await Promise.all(
+        replacements.map((r) => translator.translate(r.match[1].trim(), targetLang)),
+      );
+    } catch (err) {
+      releasePending(el, request);
+      throw err;
+    }
+    // A restored language, changed route, disabled option, or replaced source
+    // owns the DOM now. An older response must not overwrite it or remove a
+    // newer request's original-text record.
+    if (!isCurrent() || !el.isConnected || el.innerHTML !== request.originalHtml || pendingBlocks.get(el) !== request) {
+      releasePending(el, request);
+      return;
+    }
 
     // Apply from the highest source offset to the lowest so each in-place
     // substring rewrite leaves the remaining (earlier, now guaranteed
@@ -139,9 +167,8 @@
 
     if (hasTranslation) {
       el.innerHTML = html;
-    } else {
-      originalComments.delete(el);
     }
+    releasePending(el, request, hasTranslation);
   }
 
   /**
@@ -153,6 +180,16 @@
     // Same policy chokepoint as the page walk: on a site that publishes its own
     // locales, code comments are part of the official copy too.
     if (sb.localization && !sb.localization.mayTranslate()) return;
+    const generation = commentGeneration;
+    const gtGeneration = sb._gt?.gtGeneration;
+    const href = location.href;
+    const isCurrent = () =>
+      commentGeneration === generation &&
+      sb._gt?.gtGeneration === gtGeneration &&
+      sb.currentLang === targetLang &&
+      location.href === href &&
+      (!sb.localization || sb.localization.mayTranslate());
+    if (!isCurrent()) return;
     window._protectedTerms.buildProtectedTermsMap(targetLang, sb.translator);
     // Honour the per-host content scope (e.g. claude.com tutorials) so code
     // comments in the surrounding marketing shell are never translated.
@@ -160,10 +197,11 @@
     const codeEls = Array.from(document.querySelectorAll('pre code, pre.code, .code-block code')).filter(
       (el) => !scope || el.closest(scope),
     );
-    await Promise.all(codeEls.map((el) => _translateOneCodeBlock(el, targetLang)));
+    await Promise.all(codeEls.map((el) => _translateOneCodeBlock(el, targetLang, isCurrent)));
   }
 
   // Register into _sb namespace
   sb.translateCodeComments = translateCodeComments;
+  sb.invalidateCodeCommentTranslations = invalidateCodeCommentTranslations;
   sb.registerModule?.('code-comments');
 })();

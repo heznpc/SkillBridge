@@ -12,6 +12,7 @@
 
   let _protectedTermsSorted = [];
   let _protectedTermsLang = null;
+  let _protectedTermsSource = null;
   let _protectedKeepEnglish = '';
   let _selfDupRe = null;
   let _maskTermsSorted = [];
@@ -35,17 +36,19 @@
 
   /**
    * Build the map of wrong->correct term replacements for the given language.
-   * No-ops if the map is already built for the same language.
+   * No-ops if the map is already built for the same language and dictionary.
    * @param {string} targetLang — ISO 639-1
    * @param {SkilljarTranslator} translator — needs .getProtectedTerms()
    * @returns {void}
    */
   function buildProtectedTermsMap(targetLang, translator) {
-    if (_protectedTermsLang === targetLang) return;
+    const source = translator.getProtectedTerms?.(targetLang) || null;
+    if (_protectedTermsLang === targetLang && _protectedTermsSource === source) return;
     _protectedTermsLang = targetLang;
+    _protectedTermsSource = source;
 
     const map = {};
-    const protectedEntries = { ...CORE_PROTECTED_TERMS, ...(translator.getProtectedTerms?.() || {}) };
+    const protectedEntries = { ...CORE_PROTECTED_TERMS, ...(source || {}) };
     for (const [correct, wrongForms] of Object.entries(protectedEntries)) {
       if (!Array.isArray(wrongForms)) continue;
       for (const wrong of wrongForms) {
@@ -153,12 +156,22 @@
   }
 
   function maskProtectedTerms(text) {
-    if (typeof text !== 'string' || !text || _maskTermsSorted.length === 0) {
+    return maskWithTerms(text, _maskTermsSorted);
+  }
+
+  /** Capture term masking before asynchronous cache or network work starts. */
+  function captureMasker() {
+    const terms = _maskTermsSorted;
+    return (text) => maskWithTerms(text, terms);
+  }
+
+  function maskWithTerms(text, terms) {
+    if (typeof text !== 'string' || !text || terms.length === 0) {
       return { text: typeof text === 'string' ? text : '', tokens: [], foreign: { open: 0, close: 0 } };
     }
     const tokens = [];
     let result = text;
-    for (const { term, re } of _maskTermsSorted) {
+    for (const { term, re } of terms) {
       if (!result.includes(term)) continue;
       result = result.replace(re, () => {
         tokens.push(term);
@@ -239,22 +252,33 @@
    * @returns {string}
    */
   function restoreProtectedTerms(text) {
+    return restoreWithTerms(text, _protectedTermsSorted, _selfDupRe);
+  }
+
+  /** Keep in-flight translations tied to the terms used when they started. */
+  function captureRestorer() {
+    const terms = _protectedTermsSorted;
+    const duplicatePattern = _selfDupRe;
+    return (text) => restoreWithTerms(text, terms, duplicatePattern);
+  }
+
+  function restoreWithTerms(text, terms, duplicatePattern) {
     // Defensive: callers occasionally pass `null` (e.g. when a translation
     // request aborts), and the previous implementation would throw
     // "Cannot read .includes of null" instead of returning a safe fallback.
     if (text == null) return '';
     if (typeof text !== 'string') return text;
-    if (_protectedTermsSorted.length === 0) return text;
+    if (terms.length === 0) return text;
     let result = text;
-    for (const { wrong, correct, re } of _protectedTermsSorted) {
+    for (const { wrong, correct, re } of terms) {
       // Cheap pre-filter: the literal must be present for either matcher to fire.
       if (!result.includes(wrong)) continue;
       result = re ? result.replace(re, correct) : result.replaceAll(wrong, correct);
     }
     // Collapse "Claude(Claude)"-style GT gloss duplicates the restore above can
     // produce. Cheap paren guard keeps the common (no-paren) node off the regex.
-    if (_selfDupRe && (result.indexOf('(') !== -1 || result.indexOf('（') !== -1)) {
-      result = result.replace(_selfDupRe, '$1');
+    if (duplicatePattern && (result.indexOf('(') !== -1 || result.indexOf('（') !== -1)) {
+      result = result.replace(duplicatePattern, '$1');
     }
     return result;
   }
@@ -265,6 +289,7 @@
    */
   function resetProtectedTerms() {
     _protectedTermsLang = null;
+    _protectedTermsSource = null;
   }
 
   /**
@@ -296,10 +321,12 @@
   window._protectedTerms = {
     buildProtectedTermsMap,
     restoreProtectedTerms,
+    captureRestorer,
     resetProtectedTerms,
     getKeepEnglishTerms,
     getProtectedTermList,
     maskProtectedTerms,
+    captureMasker,
     unmaskProtectedTerms,
   };
 })();

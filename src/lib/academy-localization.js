@@ -55,9 +55,8 @@ const NON_LATIN_TARGETS = Object.freeze(new Set(['ko', 'ja', 'zh-CN', 'zh-TW', '
  *
  * `observedLocale` is the site's native locale, read from the page. It is NOT
  * the SkillBridge target and must not share a state variable with it —
- * updateLangClass() rewrites <html lang> to the target, so anything reading
- * that attribute afterwards would see our value echoed back instead of the
- * site's.
+ * On localized hosts updateLangClass() labels translated roots separately and
+ * leaves <html lang> to the site, so settled DOM reads retain native evidence.
  *
  * @param {object} args
  * @param {string} args.observedLocale  The locale the page is actually in.
@@ -130,11 +129,11 @@ function mayTranslateText(resolved, looksEnglish) {
 }
 
 /**
- * Read the page's own locale, before anything of ours has overwritten it.
+ * Read the page's own locale.
  *
- * Prefers an explicit locale in the URL, then <html lang>. Callers must
- * capture this EARLY — once updateLangClass() has run, <html lang> reports the
- * SkillBridge target and this would return our own value.
+ * Prefers an explicit locale in the URL, then the site's <html lang>.
+ * SkillBridge keeps output language attributes on translated roots when this
+ * policy is enabled, so later DOM-settled reads use the same native signals.
  *
  * @param {Document} [doc]
  * @param {Location} [loc]
@@ -158,13 +157,9 @@ function readObservedLocale(doc, loc) {
  * Hold the page's own locale as state, and re-resolve the policy when either
  * half of the pair changes.
  *
- * The baseline has to be captured at construction, before anything of ours
- * runs: `updateLangClass()` rewrites <html lang> to the SkillBridge target, so
- * a later read of that attribute returns our own value and every page would
- * classify as "already in the target language". Academy puts the locale in the
- * first path segment for every non-English locale (`/es/courses/...`), so a
- * client-side navigation can be re-read from the URL alone; English carries no
- * prefix, and there the captured baseline is what survives.
+ * Capture an initial baseline, then resolve settled DOM evidence after route
+ * changes. Output language attributes belong to translated roots; the site's
+ * <html lang> and language control remain independent native-locale signals.
  *
  * `localizedHost` is the host-capability flag. Off — Skilljar, claude.com
  * tutorials — the page is English by construction and the policy is FULL, so

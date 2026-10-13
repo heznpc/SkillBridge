@@ -146,6 +146,7 @@
  *
  * --- code-comments.js ---
  * @property {?(targetLang: string) => Promise<void>} translateCodeComments
+ * @property {?() => void} invalidateCodeCommentTranslations
  *
  * --- sidebar-chat.js (and any extracted chat-* modules) ---
  * @property {?() => void} injectSidebar

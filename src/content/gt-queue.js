@@ -352,7 +352,7 @@
       return 'static';
     }
     const translator = sb.translator;
-    const elementMatch = translator.staticLookup(fullText);
+    const elementMatch = translator.staticLookup(fullText, _targetLang);
     if (elementMatch) {
       if (sb.safeReplaceText(el, elementMatch) !== false) {
         trackTranslatedElement(fullText, el);
@@ -372,7 +372,7 @@
     for (const node of textNodes) {
       const text = node.textContent.trim();
       if (text.length < 2) continue;
-      const nodeMatch = translator.staticLookup(text);
+      const nodeMatch = translator.staticLookup(text, _targetLang);
       if (nodeMatch) {
         pendingWrites.push([node, nodeMatch]);
       } else if (text.length >= 4 && isLikelyEnglish(text)) {

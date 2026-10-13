@@ -98,8 +98,9 @@ const updateLangSrc = contentSrc.match(/function updateLangClass\(lang\) \{[\s\S
 if (!updateLangSrc) {
   throw new Error('Could not extract updateLangClass from content.js — did the source shape change?');
 }
-const updateLangFactory = new Function('sb', `${updateLangSrc[0]}\nreturn updateLangClass;`);
-const makeUpdate = (translationScope) => updateLangFactory({ translationScope });
+const updateLangFactory = new Function('sb', 'outputLocaleAttributes', `${updateLangSrc[0]}\nreturn updateLangClass;`);
+const makeUpdate = (translationScope, localizedHost = false) =>
+  updateLangFactory({ translationScope, hostCaps: { localizedHost } }, new WeakMap());
 
 describe('updateLangClass — lang/font class targets the scope, not the whole page', () => {
   beforeEach(() => {
@@ -107,6 +108,8 @@ describe('updateLangClass — lang/font class targets the scope, not the whole p
     document.documentElement.className = '';
     document.documentElement.removeAttribute('lang');
     document.documentElement.removeAttribute('dir');
+    document.body.removeAttribute('lang');
+    document.body.removeAttribute('dir');
   });
 
   test('scoped host applies si18n-lang-* to the lesson root, NOT <body>', () => {
@@ -136,5 +139,34 @@ describe('updateLangClass — lang/font class targets the scope, not the whole p
     expect(document.body.classList.contains('si18n-lang-ar')).toBe(false);
     expect(document.documentElement.lang).toBe('en');
     expect(document.documentElement.dir).toBe('ltr');
+  });
+
+  test('localized hosts keep native html evidence and label translated roots for screen readers', () => {
+    document.documentElement.lang = 'en';
+    document.documentElement.dir = 'ltr';
+    document.body.innerHTML = '<main id="lesson" lang="en"><p>Lesson text</p></main><nav>English</nav>';
+    const update = makeUpdate('#lesson', true);
+    update('ar');
+    expect(document.documentElement.lang).toBe('en');
+    expect(document.documentElement.dir).toBe('ltr');
+    expect(document.getElementById('lesson').lang).toBe('ar');
+    expect(document.getElementById('lesson').dir).toBe('rtl');
+
+    update('en');
+    expect(document.getElementById('lesson').lang).toBe('en');
+    expect(document.getElementById('lesson').hasAttribute('dir')).toBe(false);
+    expect(document.documentElement.lang).toBe('en');
+  });
+
+  test('restore preserves native locale changes made while output attributes were active', () => {
+    document.documentElement.lang = 'ko';
+    const update = makeUpdate(null, true);
+    update('ko');
+    document.documentElement.lang = 'ja';
+    document.body.lang = 'ja';
+    update('en');
+    expect(document.documentElement.lang).toBe('ja');
+    expect(document.body.lang).toBe('ja');
+    expect(document.body.hasAttribute('dir')).toBe(false);
   });
 });

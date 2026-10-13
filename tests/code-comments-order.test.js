@@ -49,6 +49,8 @@ describe('code-comments splice ordering (block comment before line comment)', ()
     };
 
     window._sb = {
+      currentLang: 'ko',
+      _gt: { gtGeneration: 0 },
       originalComments: new Map(),
       translationScope: null,
       isLikelyEnglish: () => true,
@@ -63,6 +65,7 @@ describe('code-comments splice ordering (block comment before line comment)', ()
     };
 
     document.body.innerHTML = '<pre><code class="language-js"></code></pre>';
+    window.history.replaceState({}, '', '/lesson-a');
     // Block comment at source index 0, line comment later — the corrupting order.
     document.querySelector('code').textContent = '/* Alpha block comment */\ndoStuff(); // Beta line comment';
 
@@ -102,5 +105,61 @@ describe('code-comments splice ordering (block comment before line comment)', ()
     // No stray delimiters / duplicated fragments from an overlapping splice.
     expect(html).not.toContain('*/*/');
     expect(html).not.toMatch(/\*\/\)/);
+  });
+
+  function delayTranslations() {
+    const pending = [];
+    window._sb.translator.translate = (text) =>
+      new Promise((resolve) => pending.push(() => resolve({ text: TRANSLATIONS[text], source: 'gt' })));
+    return () => pending.splice(0).forEach((resolve) => resolve());
+  }
+
+  test.each(['language', 'generation', 'route', 'cancel'])(
+    'a late result cannot replace the code after a %s change',
+    async (change) => {
+      const finish = delayTranslations();
+      const code = document.querySelector('code');
+      const original = code.innerHTML;
+      const pending = window._sb.translateCodeComments('ko');
+      if (change === 'language') window._sb.currentLang = 'en';
+      if (change === 'generation') window._sb._gt.gtGeneration++;
+      if (change === 'route') window.history.replaceState({}, '', '/lesson-b');
+      if (change === 'cancel') window._sb.invalidateCodeCommentTranslations();
+      finish();
+      await pending;
+      expect(code.innerHTML).toBe(original);
+      expect(window._sb.originalComments.has(code)).toBe(false);
+    },
+  );
+
+  test('a late result cannot overwrite a code block whose source changed', async () => {
+    const finish = delayTranslations();
+    const code = document.querySelector('code');
+    const pending = window._sb.translateCodeComments('ko');
+    code.textContent = 'runDifferentCode(); // New source comment';
+    finish();
+    await pending;
+    expect(code.textContent).toBe('runDifferentCode(); // New source comment');
+    expect(window._sb.originalComments.has(code)).toBe(false);
+  });
+
+  test('an invalidated request cannot delete a newer request original for the same block', async () => {
+    const finishOld = delayTranslations();
+    const code = document.querySelector('code');
+    const original = code.innerHTML;
+    const oldRequest = window._sb.translateCodeComments('ko');
+    window._sb.invalidateCodeCommentTranslations();
+
+    const finishNew = delayTranslations();
+    const newRequest = window._sb.translateCodeComments('ko');
+    finishOld();
+    await oldRequest;
+    expect(code.innerHTML).toBe(original);
+    expect(window._sb.originalComments.get(code)).toBe(original);
+
+    finishNew();
+    await newRequest;
+    expect(code.innerHTML).toBe('/* 블록 */\ndoStuff(); // 라인');
+    expect(window._sb.originalComments.get(code)).toBe(original);
   });
 });

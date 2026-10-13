@@ -112,6 +112,23 @@ describe('processOneElement — partial static match routed to Google Translate'
     expect(processOneElement(el, 'ko')).toBe('static');
     expect(el.textContent).toBe('다음 xyz');
   });
+
+  test('uses the requested dictionary language for both whole blocks and inline nodes', () => {
+    const dictionary = { 'Hello reader': 'Bonjour', 'Read more': 'En savoir plus' };
+    const { processOneElement } = loadModule(
+      {},
+      { staticLookup: (text, language) => (language === 'fr' ? dictionary[text] || null : null) },
+    );
+    document.body.innerHTML =
+      '<p id="whole">Hello reader</p><p id="inline"><span>Hello reader</span> <span>Read more</span></p>';
+
+    const whole = document.getElementById('whole');
+    const inline = document.getElementById('inline');
+    expect(processOneElement(whole, 'fr')).toBe('static');
+    expect(processOneElement(inline, 'fr')).toBe('static');
+    expect(whole.textContent).toBe('Bonjour');
+    expect(inline.textContent).toBe('Bonjour En savoir plus');
+  });
 });
 
 describe('translatedTexts — original text to live element index', () => {

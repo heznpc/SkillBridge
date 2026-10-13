@@ -25,6 +25,15 @@ function load(file) {
 const { TRANSLATION_POLICY, resolveTranslationPolicy, mayTranslateText, readObservedLocale, createLocalizationPolicy } =
   load('academy-localization.js');
 
+const contentSource = fs.readFileSync(path.join(__dirname, '..', 'src', 'content', 'content.js'), 'utf8');
+const outputLocaleSource = contentSource.match(/function updateLangClass\(lang\) \{[\s\S]*?\n {2}\}/);
+if (!outputLocaleSource) throw new Error('Missing production updateLangClass');
+const makeOutputLocale = () =>
+  new Function('sb', 'outputLocaleAttributes', `${outputLocaleSource[0]}\nreturn updateLangClass;`)(
+    { hostCaps: { localizedHost: true }, translationScope: '#lesson' },
+    new WeakMap(),
+  );
+
 test('Premium dictionaries preserve Academy brand naming separately from Skilljar', () => {
   const dictionary = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'ko.json'), 'utf8'));
   expect(dictionary.ui['Claude Academy']).toBe('Claude 아카데미');
@@ -153,10 +162,10 @@ describe('createLocalizationPolicy', () => {
     document.documentElement.removeAttribute('lang');
   });
 
-  test('captures the page locale at construction, before <html lang> is rewritten', () => {
+  test('changing the target does not silently replace the captured page locale', () => {
     document.documentElement.setAttribute('lang', 'es');
     const policy = createLocalizationPolicy({ localizedHost: true, doc: document, loc: loc('/es/courses/c') });
-    // updateLangClass() does exactly this once translation starts.
+    // Native DOM changes become authoritative only at the settled boundary.
     document.documentElement.setAttribute('lang', 'ko');
     policy.setTarget('ko');
     // Still Spanish as far as the policy is concerned — not "already Korean".
@@ -191,6 +200,41 @@ describe('createLocalizationPolicy', () => {
     button.textContent = label;
     document.body.appendChild(button);
   };
+
+  test('translated output does not turn English selector evidence into a conflict on DOM settle', () => {
+    document.documentElement.lang = 'en';
+    renderSelector('English');
+    const lesson = document.createElement('main');
+    lesson.id = 'lesson';
+    document.body.appendChild(lesson);
+    const policy = createLocalizationPolicy({ localizedHost: true, doc: document, loc: loc('/courses/c') });
+    policy.setTarget('ko');
+    makeOutputLocale()('ko');
+    policy.onDomSettled(document, loc('/courses/c'));
+    expect(lesson.lang).toBe('ko');
+    expect(document.documentElement.lang).toBe('en');
+    expect(policy.observedLocale()).toBe('en');
+    expect(policy.resolved().policy).toBe(TRANSLATION_POLICY.FULL);
+  });
+
+  test('English restoration preserves a Korean native locale for subsequent policy reads', () => {
+    document.documentElement.lang = 'ko';
+    renderSelector('한국어');
+    const lesson = document.createElement('main');
+    lesson.id = 'lesson';
+    document.body.appendChild(lesson);
+    const policy = createLocalizationPolicy({ localizedHost: true, doc: document, loc: loc('/courses/c') });
+    const output = makeOutputLocale();
+    policy.setTarget('ko');
+    output('ko');
+    output('en');
+    policy.setTarget('en');
+    policy.onDomSettled(document, loc('/courses/c'));
+    expect(document.documentElement.lang).toBe('ko');
+    expect(lesson.hasAttribute('lang')).toBe(false);
+    expect(policy.observedLocale()).toBe('ko');
+    expect(policy.resolved().reason).toBe('no-english-baseline');
+  });
 
   test('a route change leaves the locale unresolved until the DOM answers', () => {
     document.documentElement.setAttribute('lang', 'en');

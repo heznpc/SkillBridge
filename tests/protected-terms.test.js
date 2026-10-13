@@ -22,7 +22,7 @@ const DEFAULT_PROTECTED_TERMS = 'API, Claude, Anthropic';
 const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'lib', 'protected-terms.js'), 'utf8');
 new Function('window', 'DEFAULT_PROTECTED_TERMS', src)(fakeWindow, DEFAULT_PROTECTED_TERMS);
 
-const { buildProtectedTermsMap, restoreProtectedTerms, resetProtectedTerms, getKeepEnglishTerms } =
+const { buildProtectedTermsMap, restoreProtectedTerms, captureRestorer, resetProtectedTerms, getKeepEnglishTerms } =
   fakeWindow._protectedTerms;
 
 const fakeTranslator = (entries) => ({ getProtectedTerms: () => entries });
@@ -50,12 +50,21 @@ describe('Protected Terms System (real production code)', () => {
       expect(restoreProtectedTerms('클로드 코드를 설치하세요')).toBe('Claude Code를 설치하세요');
     });
 
-    test('skips rebuild for same language even if entries change', () => {
+    test('rebuilds when the dictionary for the same language changes', () => {
       buildProtectedTermsMap('ko', fakeTranslator(koProtected));
-      // Calling again with the same lang but empty entries must NOT clear
-      // the map — the cache key is the language code, not the data.
       buildProtectedTermsMap('ko', fakeTranslator({}));
-      expect(restoreProtectedTerms('클로드')).toBe('Claude');
+      expect(restoreProtectedTerms('클로드')).toBe('클로드');
+    });
+
+    test('keeps an in-flight restorer on its original dictionary after a language switch', () => {
+      buildProtectedTermsMap('ko', fakeTranslator(koProtected));
+      const restoreKorean = captureRestorer();
+      buildProtectedTermsMap('ja', fakeTranslator({ Claude: ['クロード'] }));
+
+      expect(restoreKorean('클로드(Claude)')).toBe('Claude');
+      expect(restoreKorean('クロード')).toBe('クロード');
+      expect(restoreProtectedTerms('クロード')).toBe('Claude');
+      expect(restoreProtectedTerms('클로드')).toBe('클로드');
     });
 
     test('rebuilds for different language', () => {
@@ -396,7 +405,7 @@ describe('restore engine — substring/boundary safety', () => {
 // which is why those entries were removed in #172). Masking removes the term
 // from GT's view instead, so there is nothing left to mistranslate.
 describe('maskProtectedTerms / unmaskProtectedTerms', () => {
-  const { maskProtectedTerms, unmaskProtectedTerms } = fakeWindow._protectedTerms;
+  const { maskProtectedTerms, captureMasker, unmaskProtectedTerms } = fakeWindow._protectedTerms;
 
   beforeEach(() => {
     resetProtectedTerms();
@@ -409,6 +418,18 @@ describe('maskProtectedTerms / unmaskProtectedTerms', () => {
     expect(tokens).toEqual(['Anthropic']);
     // The whole point: the payload GT receives no longer contains the brand.
     expect(text).not.toContain('Anthropic');
+  });
+
+  test('a pending request keeps its masking terms after the active dictionary changes', () => {
+    buildProtectedTermsMap('fr', fakeTranslator({ 'Course Toolkit': ['Boîte à outils'] }));
+    const maskFrench = captureMasker();
+    buildProtectedTermsMap('de', fakeTranslator({ 'Lesson Runner': ['Lektionsstarter'] }));
+
+    const original = 'Course Toolkit and Lesson Runner';
+    const pendingMask = maskFrench(original);
+    expect(pendingMask.tokens).toEqual(['Course Toolkit']);
+    expect(maskProtectedTerms(original).tokens).toEqual(['Lesson Runner']);
+    expect(unmaskProtectedTerms(pendingMask.text, pendingMask)).toBe(original);
   });
 
   test('round-trips back to the original term', () => {

@@ -47,6 +47,8 @@
         "src/shared/runtime-constants.js",
         "src/lib/constants.js",
         "src/lib/runtime-contracts.js",
+        "src/lib/dictionary-store.js",
+        "src/lib/engine-adapters.js",
         "src/lib/translator.js",
         "src/lib/youtube-subtitles.js",
         "src/lib/protected-terms.js",
