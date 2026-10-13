@@ -218,6 +218,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const localStatus = document.getElementById('local-status');
   const LOCALHOST_ORIGINS = ['http://localhost/*', 'http://127.0.0.1/*'];
+  let engineChangeRevision = 0;
+  let localProbeRevision = 0;
+  let engineWrite = Promise.resolve();
+  let currentEngine;
+
+  // Keep writes in selection order, including a permission-denial rollback.
+  // A later choice must win even when an earlier storage write is still pending.
+  function persistEngine(value) {
+    engineWrite = engineWrite.catch(() => {}).then(() => chrome.storage.local.set({ sb_ai_engine: value }));
+    return engineWrite;
+  }
 
   function syncLocalConfigVisibility() {
     localConfig.style.display = engineSelect.value === 'local' ? 'block' : 'none';
@@ -232,6 +243,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // classifies reachability: ok / cors / unreachable. Requires the optional
   // localhost host permission first (granted from the select's user gesture).
   async function probeLocalEngine() {
+    const revision = ++localProbeRevision;
+    const selectionRevision = engineChangeRevision;
     const baseUrl = localBaseInput.value.trim() || undefined;
     setLocalStatus(ENGINE_LABELS.statusChecking);
     let result;
@@ -240,6 +253,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch {
       result = { status: 'unreachable' };
     }
+    if (
+      revision !== localProbeRevision ||
+      selectionRevision !== engineChangeRevision ||
+      engineSelect.value !== 'local' ||
+      baseUrl !== (localBaseInput.value.trim() || undefined)
+    )
+      return;
     if (!result || result.status === 'unreachable' || result.status === 'error') {
       setLocalStatus(ENGINE_LABELS.statusUnreachable);
     } else if (result.status === 'cors') {
@@ -253,17 +273,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   // localhost prompt: persisting 'local' without the permission would route
   // every later tutor message into a fetch that can never succeed, and the
   // reopened popup would show Local selected with no explanation.
-  async function ensureLocalPermissionAndProbe(previousEngine) {
+  async function ensureLocalPermissionAndProbe(previousEngine, revision) {
     let granted;
     try {
       granted = await chrome.permissions.request({ origins: LOCALHOST_ORIGINS });
     } catch {
       granted = false;
     }
+    // A previous permission dialog must never replace a later choice, such as off.
+    if (revision !== engineChangeRevision || engineSelect.value !== 'local') return;
     if (!granted) {
       const revertTo = previousEngine && previousEngine !== 'local' ? previousEngine : 'cloud';
       engineSelect.value = revertTo;
-      await chrome.storage.local.set({ sb_ai_engine: revertTo });
+      currentEngine = revertTo;
+      await persistEngine(revertTo);
+      if (revision !== engineChangeRevision) return;
       setLocalStatus(null);
       syncLocalConfigVisibility();
       // The local config (and its status line) is hidden again by the revert,
@@ -283,17 +307,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     localModelInput.value = eng.sb_local_model || '';
     syncLocalConfigVisibility();
 
-    let currentEngine = engineSelect.value;
+    currentEngine = engineSelect.value;
     engineSelect.addEventListener('change', () => {
+      const revision = ++engineChangeRevision;
+      localProbeRevision++;
       const previousEngine = currentEngine;
       currentEngine = engineSelect.value;
-      chrome.storage.local.set({ sb_ai_engine: engineSelect.value });
+      persistEngine(engineSelect.value);
       syncLocalConfigVisibility();
       setLocalStatus(null);
       if (engineSelect.value === 'local') {
-        ensureLocalPermissionAndProbe(previousEngine).then(() => {
-          currentEngine = engineSelect.value;
-        });
+        ensureLocalPermissionAndProbe(previousEngine, revision);
       }
     });
     // Persist trimmed values; empty falls back to the SW defaults. A changed

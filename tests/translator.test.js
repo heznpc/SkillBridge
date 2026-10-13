@@ -942,6 +942,27 @@ describe('engine matching at the dispatch boundary', () => {
     expect(t._cloudChatStream).not.toHaveBeenCalled();
   });
 
+  test('a language change during the initial preference read prevents engine inspection and dispatch', async () => {
+    let release;
+    global.chrome.storage.local.get.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+    const t = new SkilljarTranslator();
+    t._localChatStream = jest.fn();
+    t._cloudChatStream = jest.fn();
+    const pending = t.chatStream('Explain', 'fr');
+    const assertion = expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    t.invalidateStaticTranslations('ja');
+    release({ sb_ai_engine: 'local' });
+    await assertion;
+    expect(global.chrome.runtime.sendMessage).not.toHaveBeenCalled();
+    expect(t._localChatStream).not.toHaveBeenCalled();
+    expect(t._cloudChatStream).not.toHaveBeenCalled();
+  });
+
   test('unknown selections are refused rather than interpreted as cloud', async () => {
     global.chrome.storage.local.get.mockResolvedValue({ sb_ai_engine: 'missing-provider' });
     const t = new SkilljarTranslator();

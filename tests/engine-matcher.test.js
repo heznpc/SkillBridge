@@ -61,6 +61,34 @@ describe('engine capability matching', () => {
     expect(languageMatches('', '*')).toBe(false);
   });
 
+  test('partial model observations preserve adapter language restrictions', () => {
+    const environment = {
+      engines: {
+        [profile.id]: { available: true, operations: { translation: { target: ['fr', 'ko'] } } },
+      },
+    };
+    expect(matchEngine(profile, { ...request('fr'), sourceLang: 'de' }, environment).reasons).toContain(
+      'source-unsupported',
+    );
+    expect(matchEngine(profile, request('ko'), environment).reasons).toContain('target-unsupported');
+    expect(matchEngine(profile, request('ja'), environment).reasons).toContain('target-unsupported');
+    expect(matchEngine(profile, request('fr'), environment).status).toBe('ready');
+  });
+
+  test('dispatch inspection does not contact unselected or task-incompatible adapters', async () => {
+    const registry = new EngineRegistry();
+    const selected = jest.fn(() => ({ available: true }));
+    const unrelated = jest.fn();
+    registry.register(profile, { inspect: selected });
+    registry.register({ ...profile, id: 'other' }, { inspect: unrelated });
+    await registry.inspect({ ...request('fr'), selectedEngine: profile.id });
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(unrelated).not.toHaveBeenCalled();
+    await registry.inspect(request('fr', 'refinement'));
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(unrelated).not.toHaveBeenCalled();
+  });
+
   test('unknown model language support stays visible but is never labelled ready', () => {
     const engine = { id: 'user-model', location: 'loopback', operations: { explanation: {} } };
     for (const language of ['ko', 'ar', 'nl', 'zh-Hant']) {

@@ -50,20 +50,27 @@
     if (!operation) blocked.push('task-unsupported');
     if (!request.sourceLang || !request.targetLang) blocked.push('language-missing');
     if (operation) {
-      const languages = observation.operations?.[request.task] || operation;
+      // Observations may narrow a model's support, but a partial update must
+      // not erase the adapter's source, target or pair restrictions.
+      const constraints = [operation, observation.operations?.[request.task]].filter(Boolean);
       for (const [field, key] of [
         ['sourceLang', 'source'],
         ['targetLang', 'target'],
       ]) {
-        const ranges = languages[key];
-        if (!Array.isArray(ranges) && !Array.isArray(languages.pairs)) unknown.push(`${key}-language-unverified`);
-        else if (!Array.isArray(ranges)) continue;
-        else if (!ranges.some((range) => languageMatches(request[field], range))) blocked.push(`${key}-unsupported`);
+        const rangeSets = constraints.map((languages) => languages[key]).filter(Array.isArray);
+        if (!rangeSets.length && !constraints.some((languages) => Array.isArray(languages.pairs))) {
+          unknown.push(`${key}-language-unverified`);
+        } else if (rangeSets.some((ranges) => !ranges.some((range) => languageMatches(request[field], range)))) {
+          blocked.push(`${key}-unsupported`);
+        }
       }
-      if (Array.isArray(languages.pairs)) {
+      for (const languages of constraints) {
+        if (!Array.isArray(languages.pairs)) continue;
         const supported = languages.pairs.some(
           (pair) =>
-            languageMatches(request.sourceLang, pair.source) && languageMatches(request.targetLang, pair.target),
+            pair &&
+            languageMatches(request.sourceLang, pair.source) &&
+            languageMatches(request.targetLang, pair.target),
         );
         if (!supported) blocked.push('language-pair-unsupported');
       }
@@ -132,7 +139,9 @@
     async inspect(request) {
       const snapshot = freezeCopy(request);
       const observations = await Promise.all(
-        [...this._entries.entries()].map(async ([id, { adapter }]) => {
+        [...this._entries.entries()].map(async ([id, { profile, adapter }]) => {
+          if (request.selectedEngine && request.selectedEngine !== id) return [id, {}];
+          if (!Object.hasOwn(profile.operations, request.task)) return [id, {}];
           if (typeof adapter.inspect !== 'function') return [id, {}];
           let timer;
           try {

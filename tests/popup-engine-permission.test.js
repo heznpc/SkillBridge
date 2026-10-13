@@ -57,19 +57,30 @@ function createChrome(initial = {}, { permissionGranted = false, probeResult = {
 }
 
 async function settlePopup() {
-  for (let i = 0; i < 8; i++) await Promise.resolve();
+  for (let i = 0; i < 20; i++) await Promise.resolve();
 }
 
 function loadPopup(chrome) {
   document.body.innerHTML = popupDocument.body.innerHTML;
   const names = ['chrome', ...Object.keys(constants)];
   const values = [chrome, ...Object.values(constants)];
-  new Function(...names, popupSource)(...values);
+  // A real popup document initializes once. Do not retain earlier fixtures'
+  // ready listeners (and their chrome mocks) on jsdom's shared document.
+  const addListener = document.addEventListener.bind(document);
+  const registration = jest.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
+    addListener(type, listener, type === 'DOMContentLoaded' ? { once: true } : options);
+  });
+  try {
+    new Function(...names, popupSource)(...values);
+  } finally {
+    registration.mockRestore();
+  }
   document.dispatchEvent(new document.defaultView.Event('DOMContentLoaded'));
 }
 
 describe('popup local-engine permission flow', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     Object.defineProperty(globalThis, '__SKILLBRIDGE_AI_GATEWAY_ENABLED__', {
       configurable: true,
       value: true,
@@ -77,6 +88,8 @@ describe('popup local-engine permission flow', () => {
   });
 
   afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
     delete globalThis.__SKILLBRIDGE_AI_GATEWAY_ENABLED__;
     document.body.innerHTML = '';
   });
@@ -133,5 +146,115 @@ describe('popup local-engine permission flow', () => {
     await settlePopup();
 
     expect(document.getElementById('local-status').textContent).toBe(constants.ENGINE_LABELS.statusOk.ko);
+  });
+
+  test.each([false, true])('a stale permission result (%s) cannot replace a later off selection', async (granted) => {
+    const { chrome, store } = createChrome({ sb_ai_engine: 'cloud' });
+    let release;
+    chrome.permissions.request.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+    loadPopup(chrome);
+    await settlePopup();
+    const engine = document.getElementById('engine-select');
+    engine.value = 'local';
+    engine.dispatchEvent(new document.defaultView.Event('change'));
+    engine.value = 'off';
+    engine.dispatchEvent(new document.defaultView.Event('change'));
+    release(granted);
+    await settlePopup();
+    expect(engine.value).toBe('off');
+    expect(store.sb_ai_engine).toBe('off');
+    expect(chrome.runtime.sendMessage).not.toHaveBeenCalled();
+  });
+
+  test('a pending rollback write cannot overtake a later off selection', async () => {
+    const { chrome, store } = createChrome({ sb_ai_engine: 'cloud' });
+    loadPopup(chrome);
+    await settlePopup();
+    let release;
+    chrome.storage.local.set.mockImplementation((values) => {
+      if (values.sb_ai_engine === 'cloud') {
+        return new Promise((resolve) => {
+          release = () => {
+            Object.assign(store, values);
+            resolve();
+          };
+        });
+      }
+      Object.assign(store, values);
+      return Promise.resolve();
+    });
+    const engine = document.getElementById('engine-select');
+    engine.value = 'local';
+    engine.dispatchEvent(new document.defaultView.Event('change'));
+    await settlePopup();
+    expect(release).toBeDefined();
+    engine.value = 'off';
+    engine.dispatchEvent(new document.defaultView.Event('change'));
+    release();
+    await settlePopup();
+    expect(engine.value).toBe('off');
+    expect(store.sb_ai_engine).toBe('off');
+  });
+
+  test('an old localhost probe cannot overwrite the result for a new base URL', async () => {
+    const { chrome } = createChrome({ sb_ai_engine: 'cloud' }, { permissionGranted: true });
+    let release;
+    chrome.runtime.sendMessage.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+    loadPopup(chrome);
+    await settlePopup();
+    const engine = document.getElementById('engine-select');
+    engine.value = 'local';
+    engine.dispatchEvent(new document.defaultView.Event('change'));
+    await settlePopup();
+    const base = document.getElementById('local-base-input');
+    base.value = 'http://localhost:9999';
+    base.dispatchEvent(new document.defaultView.Event('change'));
+    await settlePopup();
+    release({ status: 'unreachable' });
+    await settlePopup();
+    expect(document.getElementById('local-status').textContent).toBe(constants.ENGINE_LABELS.statusOk.en);
+  });
+
+  test('reselecting local during a denied rollback preserves the previous off choice', async () => {
+    const { chrome, store } = createChrome({ sb_ai_engine: 'off' });
+    loadPopup(chrome);
+    await settlePopup();
+    let release;
+    chrome.storage.local.set.mockImplementation((values) => {
+      if (values.sb_ai_engine === 'off' && !release) {
+        return new Promise((resolve) => {
+          release = () => {
+            Object.assign(store, values);
+            resolve();
+          };
+        });
+      }
+      Object.assign(store, values);
+      return Promise.resolve();
+    });
+    const engine = document.getElementById('engine-select');
+    engine.value = 'local';
+    engine.dispatchEvent(new document.defaultView.Event('change'));
+    await settlePopup();
+    expect(engine.value).toBe('off');
+    expect(release).toBeDefined();
+    engine.value = 'local';
+    engine.dispatchEvent(new document.defaultView.Event('change'));
+    await settlePopup();
+    release();
+    await settlePopup();
+    expect(engine.value).toBe('off');
+    expect(store.sb_ai_engine).toBe('off');
+    expect(chrome.storage.local.set).not.toHaveBeenCalledWith({ sb_ai_engine: 'cloud' });
   });
 });

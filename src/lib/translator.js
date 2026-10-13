@@ -130,16 +130,11 @@ class SkilljarTranslator {
     return Object.freeze({ ...this.engines.match(request, environment), stale });
   }
 
-  async _matchStreamEngine(engine, task, targetLang, signal) {
-    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
-    const adapter = this.engines.get(engine);
-    if (!adapter?.stream) {
-      throw new Error(`${task === 'refinement' ? 'refineText' : task}: refusing an unrecognised engine "${engine}"`);
-    }
+  _captureEngineRequest(signal) {
     const generation = this._staticGeneration;
     const settingsRevision = this._engineSettingsRevision();
     const revision = this.engines.revision;
-    const assertCurrent = () => {
+    return () => {
       if (
         signal?.aborted ||
         generation !== this._staticGeneration ||
@@ -149,6 +144,14 @@ class SkilljarTranslator {
         throw new DOMException('Engine request changed', 'AbortError');
       }
     };
+  }
+
+  async _matchStreamEngine(engine, task, targetLang, signal, assertCurrent = this._captureEngineRequest(signal)) {
+    assertCurrent();
+    const adapter = this.engines.get(engine);
+    if (!adapter?.stream) {
+      throw new Error(`${task === 'refinement' ? 'refineText' : task}: refusing an unrecognised engine "${engine}"`);
+    }
     const match = await this.getEngineMatches({ task, targetLang, selectedEngine: engine });
     assertCurrent();
     if (match.stale) throw new DOMException('Engine request changed', 'AbortError');
@@ -1049,6 +1052,7 @@ User: ${userMessage}`;
 
   async chatStream(userMessage, targetLang, courseContext = '', onChunk, opts = {}) {
     if (opts.isExamPage) throw new Error('Tutor is unavailable on assessments.');
+    const requestIsCurrent = this._captureEngineRequest(opts.signal);
     try {
       const prompt = this._buildTutorPrompt({
         userMessage,
@@ -1062,8 +1066,15 @@ User: ${userMessage}`;
       // OpenAI-compatible server (Ollama) proxied by the service worker;
       // 'off' = no tutor.
       const engine = await this._getAiEngine();
+      requestIsCurrent();
       if (engine === 'off') throw new Error('AI tutor is turned off in settings.');
-      const { adapter, assertCurrent } = await this._matchStreamEngine(engine, 'explanation', targetLang, opts.signal);
+      const { adapter, assertCurrent } = await this._matchStreamEngine(
+        engine,
+        'explanation',
+        targetLang,
+        opts.signal,
+        requestIsCurrent,
+      );
       // A slow permission/device check cannot revive an earlier selection.
       if ((await this._getAiEngine()) !== engine) throw new DOMException('Engine selection changed', 'AbortError');
       assertCurrent();
