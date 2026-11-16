@@ -226,14 +226,14 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.65.0",
-    "astro": "^7.4.7",
+    "astro": "^7.4.11",
     "esbuild": "^0.28.2",
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
     "istanbul-lib-instrument": "^6.0.3",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.1",
     "typescript": "^7.0.2",
     "take-a-repo": "git+https://github.com/heznpc/take-a-repo.git#677da48fe103ad31b5b6c9235b4a26f453bc5b71"
   }
