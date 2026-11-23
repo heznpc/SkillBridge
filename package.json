@@ -225,10 +225,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.65.0",
-    "astro": "^7.4.11",
+    "@playwright/test": "^1.65.1",
+    "astro": "^7.4.13",
     "esbuild": "^0.28.2",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "istanbul-lib-instrument": "^6.0.3",
     "jest": "^30.5.2",
